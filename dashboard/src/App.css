@@ -203,3 +203,67 @@ body {
 .example-after {
   margin-top: 4px;
 }
+
+.doc-drilldown {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 16px;
+}
+
+.doc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid #262a38;
+  border-radius: 8px;
+}
+
+.doc-list-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #21242f;
+  color: #c7cbe0;
+  padding: 10px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.doc-list-item:hover {
+  background: #1c1f2b;
+}
+
+.doc-list-item.active {
+  background: #232743;
+  color: #fff;
+}
+
+.doc-detail {
+  background: #171a23;
+  border: 1px solid #262a38;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.doc-detail h3 {
+  margin-top: 0;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.doc-detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 6px 0;
+  border-bottom: 1px solid #21242f;
+}
+
+.doc-detail-empty {
+  color: #7d8199;
+  font-size: 13px;
+}

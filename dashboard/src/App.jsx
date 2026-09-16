@@ -122,6 +122,57 @@ function CorpusSummary({ summary }) {
   );
 }
 
+function DocumentDrilldown({ documents }) {
+  const [selectedId, setSelectedId] = useState(null);
+  const selected = documents.find((d) => d.doc_id === selectedId) || null;
+
+  return (
+    <div className="panel">
+      <h2>Document Drill-down</h2>
+      <p className="panel-sub">Click a source document to see its journey through the pipeline.</p>
+      <div className="doc-drilldown">
+        <ul className="doc-list">
+          {documents.map((doc) => (
+            <li key={doc.doc_id}>
+              <button
+                className={`doc-list-item ${selectedId === doc.doc_id ? "active" : ""}`}
+                onClick={() => setSelectedId(doc.doc_id)}
+              >
+                {doc.source_file}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <div className="doc-detail">
+          {selected ? (
+            <>
+              <h3>{selected.source_file}</h3>
+              <div className="doc-detail-row">
+                <span>Characters extracted</span>
+                <span>{selected.char_count.toLocaleString()}</span>
+              </div>
+              <div className="doc-detail-row">
+                <span>Chunks surviving dedup</span>
+                <span>{selected.chunks_after_dedup}</span>
+              </div>
+              <div className="doc-detail-row">
+                <span>Chunks surviving quality filter</span>
+                <span>{selected.chunks_after_quality_filter}</span>
+              </div>
+              <div className="doc-detail-row">
+                <span>Chunks with PII redacted</span>
+                <span>{selected.chunks_with_pii_redacted}</span>
+              </div>
+            </>
+          ) : (
+            <p className="doc-detail-empty">Select a document to see details.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [summary, setSummary] = useState(null);
   const [error, setError] = useState(null);
@@ -172,6 +223,7 @@ export default function App() {
             entityCounts={summary.pii_entity_type_counts}
             nameDetectionAvailable={summary.name_detection_available}
           />
+          <DocumentDrilldown documents={summary.documents || []} />
         </main>
       )}
     </div>

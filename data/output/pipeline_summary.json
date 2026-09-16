@@ -255,5 +255,151 @@
     }
   ],
   "final_output_chunks": 2189,
-  "final_output_chars": 2533821
+  "final_output_chars": 2533821,
+  "documents": [
+    {
+      "doc_id": "bank_of_baroda_kyc",
+      "source_file": "bank_of_baroda_kyc.pdf",
+      "char_count": 9317,
+      "chunks_after_dedup": 8,
+      "chunks_after_quality_filter": 8,
+      "chunks_with_pii_redacted": 4
+    },
+    {
+      "doc_id": "bhiwani_dccb_kyc_aml_cft_2023_24",
+      "source_file": "bhiwani_dccb_kyc_aml_cft_2023_24.pdf",
+      "char_count": 231775,
+      "chunks_after_dedup": 201,
+      "chunks_after_quality_filter": 201,
+      "chunks_with_pii_redacted": 4
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2021",
+      "source_file": "central_bank_india_kyc_aml_2021.pdf",
+      "char_count": 279493,
+      "chunks_after_dedup": 229,
+      "chunks_after_quality_filter": 229,
+      "chunks_with_pii_redacted": 101
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2024_25",
+      "source_file": "central_bank_india_kyc_aml_2024_25.pdf",
+      "char_count": 334144,
+      "chunks_after_dedup": 274,
+      "chunks_after_quality_filter": 274,
+      "chunks_with_pii_redacted": 3
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2025_26",
+      "source_file": "central_bank_india_kyc_aml_2025_26.pdf",
+      "char_count": 368301,
+      "chunks_after_dedup": 250,
+      "chunks_after_quality_filter": 250,
+      "chunks_with_pii_redacted": 117
+    },
+    {
+      "doc_id": "fiu_india_aml_cft_guidelines_2023",
+      "source_file": "fiu_india_aml_cft_guidelines_2023.pdf",
+      "char_count": 30894,
+      "chunks_after_dedup": 24,
+      "chunks_after_quality_filter": 22,
+      "chunks_with_pii_redacted": 0
+    },
+    {
+      "doc_id": "fiu_india_brochure",
+      "source_file": "fiu_india_brochure.pdf",
+      "char_count": 11661,
+      "chunks_after_dedup": 10,
+      "chunks_after_quality_filter": 10,
+      "chunks_with_pii_redacted": 1
+    },
+    {
+      "doc_id": "fiu_india_reporting_format",
+      "source_file": "fiu_india_reporting_format.pdf",
+      "char_count": 754610,
+      "chunks_after_dedup": 635,
+      "chunks_after_quality_filter": 601,
+      "chunks_with_pii_redacted": 0
+    },
+    {
+      "doc_id": "manappuram_kyc_policy",
+      "source_file": "manappuram_kyc_policy.pdf",
+      "char_count": 114066,
+      "chunks_after_dedup": 97,
+      "chunks_after_quality_filter": 97,
+      "chunks_with_pii_redacted": 0
+    },
+    {
+      "doc_id": "nainital_bank_kyc_aml_policy",
+      "source_file": "nainital_bank_kyc_aml_policy.pdf",
+      "char_count": 250465,
+      "chunks_after_dedup": 196,
+      "chunks_after_quality_filter": 196,
+      "chunks_with_pii_redacted": 7
+    },
+    {
+      "doc_id": "rbi_fraud_master_direction_elp",
+      "source_file": "rbi_fraud_master_direction_elp.pdf",
+      "char_count": 14103,
+      "chunks_after_dedup": 12,
+      "chunks_after_quality_filter": 12,
+      "chunks_with_pii_redacted": 1
+    },
+    {
+      "doc_id": "rbi_fraud_master_direction_pwc",
+      "source_file": "rbi_fraud_master_direction_pwc.pdf",
+      "char_count": 20176,
+      "chunks_after_dedup": 17,
+      "chunks_after_quality_filter": 17,
+      "chunks_with_pii_redacted": 1
+    },
+    {
+      "doc_id": "rbi_kyc_ebixcash",
+      "source_file": "rbi_kyc_ebixcash.pdf",
+      "char_count": 218971,
+      "chunks_after_dedup": 169,
+      "chunks_after_quality_filter": 155,
+      "chunks_with_pii_redacted": 5
+    },
+    {
+      "doc_id": "rbi_kyc_fidcindia_aug2025",
+      "source_file": "rbi_kyc_fidcindia_aug2025.pdf",
+      "char_count": 3054,
+      "chunks_after_dedup": 3,
+      "chunks_after_quality_filter": 3,
+      "chunks_with_pii_redacted": 0
+    },
+    {
+      "doc_id": "rbi_kyc_master_direction_slbc_mp",
+      "source_file": "rbi_kyc_master_direction_slbc_mp.pdf",
+      "char_count": 104278,
+      "chunks_after_dedup": 85,
+      "chunks_after_quality_filter": 77,
+      "chunks_with_pii_redacted": 5
+    },
+    {
+      "doc_id": "rbi_kyc_summary_banklaw1",
+      "source_file": "rbi_kyc_summary_banklaw1.pdf",
+      "char_count": 8348,
+      "chunks_after_dedup": 8,
+      "chunks_after_quality_filter": 8,
+      "chunks_with_pii_redacted": 0
+    },
+    {
+      "doc_id": "rbi_kyc_summary_banklaw2",
+      "source_file": "rbi_kyc_summary_banklaw2.pdf",
+      "char_count": 8005,
+      "chunks_after_dedup": 7,
+      "chunks_after_quality_filter": 7,
+      "chunks_with_pii_redacted": 0
+    },
+    {
+      "doc_id": "rbi_kyc_updated_aug2025_allinonebanking",
+      "source_file": "rbi_kyc_updated_aug2025_allinonebanking.pdf",
+      "char_count": 47350,
+      "chunks_after_dedup": 22,
+      "chunks_after_quality_filter": 22,
+      "chunks_with_pii_redacted": 0
+    }
+  ]
 }

@@ -34,6 +34,61 @@ STAGE_RECORD_PATHS = {
 }
 
 
+def _count_chunks_by_doc(jsonl_path: Path) -> dict:
+    counts = {}
+    if not jsonl_path.exists():
+        return counts
+    with jsonl_path.open(encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            chunk = json.loads(line)
+            counts[chunk["doc_id"]] = counts.get(chunk["doc_id"], 0) + 1
+    return counts
+
+
+def _count_pii_chunks_by_doc(jsonl_path: Path) -> dict:
+    counts = {}
+    if not jsonl_path.exists():
+        return counts
+    with jsonl_path.open(encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            chunk = json.loads(line)
+            if chunk.get("pii_redacted"):
+                counts[chunk["doc_id"]] = counts.get(chunk["doc_id"], 0) + 1
+    return counts
+
+
+def build_document_drilldown() -> list:
+    """T1.4: per-document journey through the pipeline, for dashboard drill-down."""
+    cleaned_dir = ROOT / "data" / "cleaned"
+    after_dedup = _count_chunks_by_doc(ROOT / "data" / "deduped" / "chunks.jsonl")
+    after_quality = _count_chunks_by_doc(ROOT / "data" / "filtered" / "chunks.jsonl")
+    with_pii = _count_pii_chunks_by_doc(ROOT / "data" / "redacted" / "chunks.jsonl")
+
+    documents = []
+    for doc_path in sorted(cleaned_dir.glob("*.json")):
+        if doc_path.name.startswith("_"):
+            continue
+        record = json.loads(doc_path.read_text(encoding="utf-8"))
+        doc_id = record["doc_id"]
+        documents.append(
+            {
+                "doc_id": doc_id,
+                "source_file": record["source_file"],
+                "char_count": record["char_count"],
+                "chunks_after_dedup": after_dedup.get(doc_id, 0),
+                "chunks_after_quality_filter": after_quality.get(doc_id, 0),
+                "chunks_with_pii_redacted": with_pii.get(doc_id, 0),
+            }
+        )
+    return documents
+
+
 def main():
     stage_results = []
     for name, fn in STAGES:
@@ -65,6 +120,7 @@ def main():
         "pii_examples": pii_examples,
         "final_output_chunks": output_stage.get("docs_out", 0),
         "final_output_chars": output_stage.get("total_chars", 0),
+        "documents": build_document_drilldown(),
     }
     SUMMARY_PATH.parent.mkdir(parents=True, exist_ok=True)
     summary_json = json.dumps(summary, indent=2, ensure_ascii=False)

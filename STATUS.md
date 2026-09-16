@@ -1,5 +1,5 @@
 # Build Status
-Last updated: 2026-09-17 00:52 IST
+Last updated: 2026-09-17 01:02 IST
 
 ## Tier 0
 - [x] T0.1 PDFs downloaded — 19 real RBI/bank KYC/AML PDFs downloaded, 19 valid (`data/raw/*.pdf`)
@@ -19,7 +19,7 @@ Last updated: 2026-09-17 00:52 IST
 - [ ] T1.1 `pip show nemo-curator` — FAILED, not installed (see Fallbacks)
 - [ ] T1.2 Real NeMo Curator `ProcessingStage`/`Pipeline` execution — not attempted, blocked by T1.1
 - [x] T1.3 Dashboard/README label equivalent-logic stages clearly — done
-- [ ] T1.4 Document-level drill-down in dashboard — not built (time permitting)
+- [x] T1.4 Document-level drill-down in dashboard — done: click a source PDF, see chars extracted, chunks surviving dedup/quality filter, chunks with PII redacted (real per-doc data from `pipeline_summary.json.documents`)
 
 ## Blockers
 - None currently open.
