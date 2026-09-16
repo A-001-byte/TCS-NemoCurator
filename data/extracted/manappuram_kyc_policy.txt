@@ -1,0 +1,1781 @@
+KNOW YOUR CUSTOMER (KYC) AND PREVENTION OF MONEY
+LAUNDERING POLICY
+Version Control
+Version Number Description Date
+Version 0.1 Modification of existing Policy Aug 2019
+Version 0.2 Amendment July 2020
+Version 0.3 Renewal July 2021
+Version 0.4 Renewal July 2022
+Version 0.5 Renewal July 2023
+Version 0.6 Renewal Oct 2024
+Effective Date 05th October 2024
+Next Review Date October 2025
+Policy Owner Operations Department
+Prepared By Operations Department
+Reviewed by Policy Review Committee
+Approved By Board of Directors
+Point Content Page
+No No
+1 Introduction 3
+2 Policy Statement 3
+3 Objectives of the Policy 3
+4 Scope of the Policy 4
+5 Important Definitions 5
+6 Key Elements of the Policy 10
+6.1 Customer Acceptance Policy (CAP) 11
+6.2 Customer Identification Procedure (CIP) 12
+6.2.1 Video Based Customer Identification Process (V-CIP) 12
+6.3 Customer Due Diligence Procedure (CDD) in case of individuals 14
+6.3.1 Offline Verification Through Proof of Possession of Aadhaar Number 15
+6.3.2 Accounts opened using Aadhaar OTP based e-KYC, in non-face-to-face mode 15
+6.3.3 Verification Through Digital KYC 15
+Page 1 of 44 Classification: Internal
+Document Classification : Confidential
+6.3.4 Verification of Equivalent E-document 15
+Page 2 of 44 Classification: Internal
+Document Classification : Confidential
+6.4 Identification of Beneficial Owner 15
+6.5 CDD Measures in Respect of Non-individuals 16
+7 Customer Due Diligence By Third Party 16
+8 Simplified Procedures For Small Value Loans 17
+9 Selling Third Party Products 17
+10 Issuance Of Prepaid Payment Instruments (PPI) 18
+11 Monitoring of Transactions 18
+12 Ongoing Due Diligence 19
+13 Periodic Updation 19
+14 Existing Customers 21
+15 Risk Management 21
+16 Risk Assessment 22
+17 A Enhanced Due Diligence 22
+17.1 Accounts of Politically Exposed Persons (PEP) 23
+17.2 Accounts of Non face-to-face Customers 24
+17.3 Enhanced Due Diligence (EDD) for non-face-to-face customer onboarding 24
+(other than customer onboarding in terms of Section 17)
+17.4 Client Accounts Opened by Professional Intermediaries 24
+17.5 Clients of Special Category (CSC) 25
+17.6 Simplified KYC norms for Foreign Portfolio Investors (FPIs) 25
+18 Confidentiality of Information About Customers 26
+19 Maintenance of Records of Transactions 26
+20 General 27
+20.1 Adherence to KYC Guidelines by Agents/Brokers or the Like 27
+20.2 Principal Officer 27
+20.3 Designated Director 27
+20.4 Staff and management responsibilities – Offence of Money Laundering 28
+20.5 CDD Procedure and Sharing KYC information with Central KYC Records Registry 28
+(CKYCR)
+20.6 Training Programme 29
+21 Compliance with Policy Norms 29
+22 Other Operating Instructions 29
+23 Wire Transfer 29
+24 Obligations under Weapons of Mass Destruction (WMD) and their Delivery Systems 33
+(Prohibition of Unlawful Activities) Act, 2005 (WMD Act, 2005)
+Annexure – I 35
+Annexure – II 38
+Annexure – III 39
+Annexure – IV 41
+Annexure – V 42
+Page 3 of 44 Classification: Internal
+Document Classification : Confidential
+1. INTRODUCTION
+In accordance with the Master Directions issued (as amended from time to time) by
+Reserve Bank of India, all Regulated Entities (REs) including Manappuram Finance Limited
+(MAFIL) is required to put in place appropriate Policy and procedures to comply with the
+relevant Know Your Customer (KYC) norms and Customer Due Diligence (CDD) processes
+at the time of onboarding the Customer and also during the continued relationship with such
+Customer which includes monitoring of transactions in terms of the provisions of Prevention
+of Money-Laundering Act, 2002 and the Prevention of Money-Laundering (Maintenance of
+Records) Rules, 2005, as amended from time to time by the Government of India as well
+as the relevant norms as put out by SEBI which has also issued guidelines on AML
+standards to be followed by market intermediaries viz Depository Participants, Asset
+Management Companies etc. Accordingly, MAFIL puts in place the Policy, which is further
+detailed below:
+2. POLICY STATEMENT
+MAFIL is primarily engaged in retail finance and by nature of its business operations, the
+potential risks of money laundering, terrorist financing that it faces is relatively low. MAFIL
+recognizes the importance of the AML programs and commits itself to inculcating a vigilant
+culture in combating money laundering to the extent applicable to the firm. Accordingly, it
+puts in place a detailed KYC & AML Policy and procedures hereunder in line with RBI
+Directions and Prevention of the Money Laundering Act, 2002 / Rules as amended from
+time to time as well that of the norms put out by the other relevant regulations that is
+applicable to its business operations, for the time being in force. A group-wide policy against
+money laundering and terror financing, including group-wide policies for sharing information
+required for the purposes of client due diligence and money laundering and terror finance
+risk management and such programmes shall include adequate safeguards on the
+confidentiality and use of information exchanged, including safeguards to prevent tipping-
+off, is implemented for the purpose of discharging obligations under the provisions of
+Chapter IV of the Prevention of Money-laundering Act, 2002 (15 of 2003).
+3. OBJECTIVES OF THE POLICY:
+The Policy seeks to achieve the following objectives.
+● To provide a framework for how the company, in its process of conducting business
+with Customers, will deal with the threat of money laundering and terrorism
+financing.
+● To prevent criminal elements from using Company for Money Laundering and
+Terrorist Funding activities
+● That all the staff are aware and receive training on the Anti Money laundering
+legislation applicable to them, as well as to adhere to their responsibilities under
+the regulations
+● To put in place an effective system and procedure for Customer identification and
+verifying its / his / her identity and residential address.
+● To enable the Company to know and understand its Customers and their financial
+dealings better which, in turn, would help the Company to manage risks prudently.
+● To put in place appropriate controls for detection and reporting of suspicious
+activities as envisaged under the Prevention of Money Laundering Act, 2002 and
+in accordance with laid down procedures.
+Page 4 of 44 Classification: Internal
+Document Classification : Confidential
+● To comply with applicable laws and regulatory guidelines
+4. SCOPE OF THE POLICY
+This Policy applies to all employees of MAFIL and third-party agents engaged by it for
+origination, fulfilment, collection, outsourcing agencies, etc. The Policy seeks to maintain
+high standards of conduct within the Company and among its agents, if any, by preventing
+criminal activity through money laundering. The Policy sets out the procedures which must
+be followed (for example the reporting of suspicions of money laundering activity) to enable
+the Company to comply with its legal obligations.
+The legislation and Regulatory directives places responsibility upon MAFIL, its employees
+and its agents to combat money laundering and covers a very wide area of financial
+transactions, including possessing, or in any way dealing with, or concealing, the proceeds
+of any crime. It applies to all employees involved with handling monetary transactions. It is
+a criminal offence to, assist a money launderer, “tip off” a person suspected to be involved
+in money laundering that they are suspected or that they are the subject of police
+investigations, fail to report a suspicion of money laundering and acquire, use, or possess
+criminal property.
+The legislative requirements concerning anti-money laundering procedures are extensive
+and complex. This Policy aims to meet the legal requirements proportionate to the intensity
+of risks that MAFIL is exposed to in respect of the businesses/activities (business verticals)
+being undertaken by the company as detailed below.
+- Gold Loan including all types (online or offline)
+- Vehicle and Equipment Finance
+- Remittances
+- Pre-paid Instruments.
+- Depository Participant
+- Money Changing
+- All other businesses/products/services such as: -
+a) Digital Personal Loan
+b) Health Care Industry Loan
+c) Micro Home Finance
+d) MSME
+e) Secured Personal Loan
+f) Corporate Loans
+g) Loan to Consumer Durables
+h) Loan to Food Industry
+i) Mahila Credit Loan
+j) Micro Credit Loan
+k) Restaurant Finance
+l) School Finance
+m) Small Scale Industrial Finance
+n) Traders Micro Credit
+Page 5 of 44 Classification: Internal
+Document Classification : Confidential
+- Any other activities requiring on boarding of a customer, whether corporate or
+otherwise, for the purpose of any one off or continued transactions.
+- Anywhere applicable laws and regulations prohibit implementation of these
+guidelines, the same shall be brought to the notice of the Reserve Bank of India.
+RBI may advise further necessary action by the MAFIL including application of
+additional measures to be taken to manage the money laundering or terror
+funding risks.
+This Policy shall be reviewed semi-annually by the Board of Directors.
+5. IMPORTANT DEFINITIONS
+(i) Beneficial Owner (BO)
+a. Where the Customer is a company, the beneficial owner is the natural person(s),
+who, whether acting alone or together, or through one or more juridical persons,
+has/have a controlling ownership interest or who exercise control through other
+means.
+“Controlling ownership interest” means ownership of/entitlement to more than 10
+per cent of the shares or capital or profits of the company.
+“Control” shall include the right to appoint majority of the directors or to control the
+management or Policy decisions including by virtue of their shareholding or
+management rights or shareholder’s agreements or voting agreements.
+b. Where the Customer is a partnership firm, the beneficial owner is the natural
+person(s), who, whether acting alone or together, or through one or more juridical
+person, has/have ownership of/entitlement to more than 10 per cent of capital or
+profits of the partnership or who exercises control through other means.
+Explanation - For the purpose of this sub-clause, “control” shall include the right to
+control the management or policy decision.
+c. Where the Customer is an unincorporated association or body of individuals, the
+beneficial owner is the natural person(s), who, whether acting alone or together, or
+through one or more juridical person, has/have ownership of/entitlement to more
+than 15 per cent of the property or capital or profits of the unincorporated
+association or body of individuals.
+Explanation: Term ‘body of individuals’ includes societies. Where no natural person
+is identified under (a), (b) or (c) above, the beneficial owner is the relevant natural
+person who holds the position of senior managing official.
+d. Where the Customer is a trust, the identification of beneficial owner(s) shall include
+identification of the author of the trust, the trustee, the beneficiaries with 10% or
+more interest in the trust and any other natural person exercising ultimate effective
+control over the trust through a chain of control or ownership.
+(ii) “Central KYC Records Registry” (CKYCR) means an entity defined under Rule 2(1)
+of the Prevention of Money-Laundering (Maintenance of Records) Rules, 2005, to
+receive, store, safeguard and retrieve the KYC records in digital form of a Customer.
+Page 6 of 44 Classification: Internal
+Document Classification : Confidential
+(iii) “Customer “means.
+a) a person who is engaged in a financial transaction or activity with MAFIL and
+includes a person on whose behalf the person who is engaged in the transaction
+or activity is acting.
+b) any other person connected with a financial transaction which can pose
+significant reputation or other risks to MAFIL.
+(iv) “Digital KYC” means capturing live photo of the Customer and officially valid
+document or the proof of possession of Aadhaar, where offline verification cannot be
+carried out, along with the latitude and longitude of the location where such live photo
+is being taken by an authorized officer of the Regulated Entity (RE) as per the
+provisions contained in the Act.
+(v) “Digital Signature” means authentication of any electronic record by a subscriber by
+means of an electronic method or procedure in accordance with the provisions of
+subsection (1) of section (2) of the Information Technology Act, 2000 (21 of 2000).
+(vi) “Equivalent e-document” means an electronic equivalent of a document, issued by
+the issuing authority of such document with its valid digital signature including
+documents issued to the digital locker account of the Customer as per rule 9 of the
+Information Technology (Preservation and Retention of Information by
+Intermediaries Providing Digital Locker Facilities) Rules, 2016.
+(vii) FATCA” means Foreign Account Tax Compliance Act of the United States of
+America (USA) which, inter alia, requires foreign financial institutions to report about
+financial accounts held by U.S. taxpayers or foreign entities in which U.S. taxpayers
+hold a substantial ownership interest.
+(viii) Know Your Client (KYC) Identifier” means the unique number or code assigned to a
+Customer by the Central KYC Records Registry.
+(ix) Non-face-to-face Customers means Customers who open accounts without visiting
+branches / offices of MAFIL or meeting its officials.
+(x) “Obtaining certified copy of Officially Valid Document (OVD)” – Means comparing the
+copy of OVD with the original and recording the same on the copy by authorized
+officer of MAFIL. Provided that in case of Non-Resident Indians (NRIs) and Persons
+of Indian Origin (PIOs), as defined in Foreign Exchange Management (Deposit)
+Regulations, 2016 {FEMA 5(R)}, alternatively, the original certified copy of OVD,
+certified by any one of the following, may be obtained:
+● authorised officials of overseas branches of Scheduled Commercial Banks
+registered in India,
+● branches of overseas banks with whom Indian banks have relationships,
+● Notary Public abroad,
+● Court Magistrate,
+● Judge,
+● Indian Embassy/Consulate General in the country where the non-resident
+Customer resides.
+(xi) “Offline verification” means the process of verifying the identity of the Aadhaar
+Page 7 of 44 Classification: Internal
+Document Classification : Confidential
+number holder without authentication, through such offline modes as per clause (pa)
+of section 2 of the Aadhaar (Targeted Delivery of Financial and Other Subsidies,
+Benefits and Services) Act, 2016 (18 of 2016).
+(xii) “Senior Management”
+Senior Management for the purpose of the Policy shall constitute MD & CEO,
+Chief Financial Officer, Head - Analytics and Business Review, Company Secretary, Vice
+President – Compliance Head CCO, Chief Risk Office, Head - Information Technology
+Department, Head - Human Resource Department, Head - Internal Audit Department, HRM
+Training Head, Head of Operation Department, Head of Vigilance Department, Business
+Head of Gold Loan Department.
+.
+(xiii) Video based Customer Identification Process (V-CIP)”: an alternative method of
+customer identification with facial recognition and customer due diligence by an
+authorised official of the RE by undertaking seamless, secure, live, informed consent
+based audio-visual interaction with the customer to obtain identification information
+required for CDD purpose, and to ascertain the veracity of the information furnished
+by the customer through independent verification and maintaining audit trail of the
+process. Such processes complying with prescribed standards and
+procedures shall be treated on par with face-to-face CIP. for the purpose of
+this Master Direction.
+(xiv) “Walk-in Customer” means a person who does not have an account-based
+relationship with the RE, but undertakes transactions with the RE.
+(xv) “Wire transfer” related definitions:
+a. Batch transfer: Batch transfer is a transfer comprised of a number of individual wire
+transfers that are being sent to the same financial institutions but may/may not be
+ultimately intended for different persons.
+b. Beneficiary: Beneficiary refers to a natural or legal person or legal arrangement
+who / which is identified by the originator as the receiver of the requested wire transfer.
+c. Beneficiary RE: It refers to a financial institution, regulated by the RBI, which
+receives the wire transfer from the ordering financial institution directly or through an
+intermediary RE and makes the funds available to the beneficiary.
+d. Cover Payment: Cover Payment refers to a wire transfer that combines a payment
+message sent directly by the ordering financial institution to the beneficiary financial
+institution with the routing of the funding instruction (the cover) from the ordering
+financial institution to the beneficiary financial institution through one or more
+intermediary financial institutions.
+e. Cross-border wire transfer: Cross-border wire transfer refers to any wire transfer
+where the ordering financial institution and beneficiary financial institution are located
+in different countries. This term also refers to any chain of wire transfer in which at
+least one of the financial institutions involved is located in a different country.
+Page 8 of 44 Classification: Internal
+Document Classification : Confidential
+f. Domestic wire transfer: Domestic wire transfer refers to any wire transfer where the
+ordering financial institution and beneficiary financial institution are located in India.
+This term, therefore, refers to any chain of wire transfer that takes place entirely within
+the borders of India, even though the system used to transfer the payment message
+may be located in another country.
+g. Financial Institution: In the context of wire-transfer instructions, the term ‘Financial
+Institution’ shall have the same meaning as has been ascribed to it in the FATF
+Recommendations, as revised from time to time.
+h. Intermediary RE: Intermediary RE refers to a financial institution or any other entity,
+regulated by the RBI which handles an intermediary element of the wire transfer, in a
+serial or cover payment chain and that receives and transmits a wire transfer on behalf
+of the ordering financial institution and the beneficiary financial institution, or another
+intermediary financial institution.
+i. Ordering RE: Ordering RE refers to the financial institution, regulated by the RBI,
+which initiates the wire transfer and transfers the funds upon receiving the request for
+a wire transfer on behalf of the originator.
+j. Originator: Originator refers to the account holder who allows the wire transfer from
+that account, or where there is no account, the natural or legal person that places the
+order with the ordering financial institution to perform the wire transfer.
+k. Serial Payment: Serial Payment refers to a direct sequential chain of payment
+where the wire transfer and accompanying payment message travel together from the
+ordering financial institution to the beneficiary financial institution directly or through
+one or more intermediary financial institutions (e.g., correspondent banks).
+l. Straight-through Processing: Straight-through processing refers to payment
+transactions that are conducted electronically without the need for manual
+intervention.
+m. Unique transaction reference number: Unique transaction reference number refers
+to a combination of letters, numbers or symbols, determined by the payment service
+provider, in accordance with the protocols of the payment and settlement system or
+messaging system used for the wire transfer.
+n. Wire transfer: Wire transfer refers to any transaction carried out on behalf of an
+originator through a financial institution by electronic means with a view to making an
+amount of funds available to a beneficiary at a beneficiary financial institution,
+irrespective of whether the originator and the beneficiary are the same person.
+(o) All other expressions unless defined herein shall have the same meaning as have
+been assigned to them under the Banking Regulation Act, 1949, the Reserve Bank of
+India Act, 1935, the Prevention of Money Laundering Act, 2002, the Prevention of
+Money Laundering (Maintenance of Records) Rules, 2005, the 23Aadhaar (Targeted
+Delivery of Financial and Other Subsidies, Benefits and Services) Act, 2016 and
+regulations made thereunder, any statutory modification or re-enactment thereto or as
+used in commercial parlance, as the case may be.
+xvi. Customer Due Diligence (CDD)
+Customer Due Diligence (CDD)” means identifying and verifying the customer and the
+beneficial owner using reliable and independent sources of identification.
+Explanation – The CDD, at the time of commencement of an account-based relationship or
+while carrying out occasional transaction of an amount equal to or exceeding rupees fifty
+Page 9 of 44 Classification: Internal
+Document Classification : Confidential
+thousand, whether conducted as a single transaction or several transactions that appear to be
+connected, or any international money transfer operations, shall include:
+a. Identification of the customer, verification of their identity using reliable and
+independent sources of identification, obtaining information on the purpose and
+intended nature of the business relationship, where applicable.
+b. Taking reasonable steps to understand the nature of the customer's business, and its
+ownership and control.
+c. Determining whether a customer is acting on behalf of a beneficial owner, and
+identifying the beneficial owner and taking all steps to verify the identity of the
+beneficial owner, using reliable and independent sources of identification.
+• Designated Director" means a person designated by the RE to ensure overall compliance
+with the obligations imposed under chapter IV of the PML Act and the Rules and shall
+include:
+a. the Managing Director or a whole-time Director, duly authorized by the Board of
+Directors, If the RE is a company,
+b. the Managing Partner, if the RE is a partnership firm,
+c. the Proprietor, if the RE is a proprietorship concern,
+d. the Managing Trustee, if the RE is a trust,
+e. a person or individual, as the case may be, who controls and manages the affairs
+of the RE, if the RE is an unincorporated association or a body of individuals, and
+f. a person who holds the position of senior management or equivalent designated
+as a 'Designated Director’ in respect of Cooperative Banks and Regional Rural
+Banks.
+g. Explanation - For the purpose of this clause, the terms "Managing Director" and
+"Whole-time Director" shall have the meaning assigned to them in the Companies
+Act, 2013..
+b) The name, designation and address of the Designated Director shall be communicated to
+the FIU-IND.
+(d) In no case, the Principal Officer shall be nominated as the 'Designated Director'.
+• “Person” has the same meaning assigned in the Act and includes:
+a. an individual,
+b. a Hindu undivided family,
+c. a company,
+d. a firm,
+e. an association of persons or a body of individuals, whether incorporated or not,
+f. every artificial juridical person, not falling within any one of the above persons (a to e),
+and
+g. any agency, office or branch owned or controlled by any of the above persons (a to f).
+Page 10 of 44 Classification: Internal
+Document Classification : Confidential
+• “Non-profit organization” means which will now include any entity or organization
+constituted for religious or charitable purposes referred to in Section 2(15) of the Income-
+tax Act, 1961; or registered as a trust or a society under the Societies Registration Act,
+1860 or any similar state legislation; or a company registered under Section 8 of the
+Companies Act, 2013
+• “Suspicious transaction” means a “transaction” as defined below, including an
+attempted transaction, whether or not made in cash, which, to a person acting in good
+faith:
+a. gives rise to a reasonable ground of suspicion that it may involve proceeds of an
+offence specified in the Schedule to the Act, regardless of the value involved; or
+b. appears to be made in circumstances of unusual or unjustified complexity; or
+c. appears to not have economic rationale or bona-fide purpose; or
+d. gives rise to a reasonable ground of suspicion that it may involve financing of the
+activities relating to terrorism.
+Explanation: Transaction involving financing of the activities relating to terrorism includes
+transaction involving funds suspected to be linked or related to, or to be used for terrorism,
+terrorist acts or by a terrorist, terrorist organization or those who finance or are attempting to
+finance terrorism.
+• “Transaction” means a purchase, sale, loan, pledge, gift, transfer, delivery or the
+arrangement thereof and includes:
+a. opening of an account;
+b. deposit, withdrawal, exchange or transfer of funds in whatever currency, whether in
+cash or by cheque, payment order or other instruments or by electronic or other non-
+physical means;
+c. the use of a safety deposit box or any other form of safe deposit;
+d. entering into any fiduciary relationship;
+e. any payment made or received, in whole or in part, for any contractual or other legal
+obligation; or
+f. establishing or creating a legal person or legal arrangement.
+i. “Common Reporting Standards” (CRS) means reporting standards set for implementation
+of multilateral agreement signed to automatically exchange information based on Article 6 of
+the Convention on Mutual Administrative Assistance in Tax Matters.
+6. KEY ELEMENTS OF THE POLICY
+As mentioned in the scope above, this Policy is applicable to all business operations and
+services including DP services, Money Transfer Services, etc and also applicable to
+business verticals of MAFIL and it is to be read in conjunction with related operational
+guidelines issued from time to time.
+The Policy includes the following key elements:
+a. Customer Acceptance Policy (CAP)
+b. Customer Identification Procedures (CIP)
+c. Monitoring of Transactions (including Reporting STR, CTR & CCR) & Ongoing
+Page 11 of 44 Classification: Internal
+Document Classification : Confidential
+Monitoring
+d. Risk Management
+6.1 CUSTOMER ACCEPTANCE POLICY (CAP)
+MAFIL’s CAP lays down criteria for acceptance of Customers. While taking decision
+to grant any facilities to the Customers as well as during the continuation of any
+facilities the following norms and procedures will be followed by the company
+a. No account will be opened in anonymous or fictitious/benami name.
+b. Customers will be accepted only after verifying their identity, as laid down in Customer
+Identification Procedures. Necessary checks will be done before opening a new
+account to ensure that the identity of the Customer does not match with any person
+with known criminal background or with banned entities.
+c. MAFIL will refrain from opening an account where the company is unable to apply
+appropriate Customer Due Diligence (CDD) measures either due to non-cooperation
+of the Customer or non-reliability of the documents/information furnished by the
+Customer.
+d. No transaction or account-based relationship shall be undertaken without the
+Customer Due Diligence procedure (CDD), set out in para 6.3 of this Policy. CDD
+procedures to be followed for all joint account holders while opening joint accounts.
+e. A Unique Customer Identification Code (UCIC) shall be allotted to new and existing
+Customers. MAFIL shall apply the CDD procedure at the UCIC level. Thus, if an
+existing KYC compliant Customer of MAFIL desires to open another account with
+MAFIL, there shall be no need for a fresh CDD exercise.
+f. MAFIL has a system in place to ensure that the identity of the Customer does not
+match with any person or entity, whose name appears in the sanctions lists circulated
+by Reserve Bank of India.
+g. Where Permanent Account Number (PAN) is obtained, the same shall be verified
+from the verification facility of the issuing authority.
+h. Where an equivalent e-document is obtained from the Customer, RE shall verify the
+digital signature as per the provisions of the Information Technology Act, 2000 (21 of
+2000).
+i. MAFIL shall ensure to specify the mandatory information which need to be sought for
+KYC purpose while opening an account and during the periodic updation.
+j. MAFIL shall ensure the optional /Additional information, where such information
+requirement has not been specified in the internal KYC Policy of the RE, is obtained
+with the explicit consent of the customer after the account is opened. Circumstances
+in which, a customer is permitted to act on behalf of another person/entity, is clearly
+spelt out.
+k. Where Goods and Services Tax (GST) details are available the GST number shall be
+verified from the search/verification facility of the issuing authority.
+l. Where MAFIL is suspicious of money laundering or terrorist financing, and it
+reasonably believes that performing the CDD process will tip-off the customer, it shall
+not pursue the CDD process, and instead file an STR
+Implementation of CAP should not become too restrictive and result in denial of the
+MAFIL’s services to public, especially those who are financially or socially
+disadvantaged.
+Page 12 of 44 Classification: Internal
+Document Classification : Confidential
+6.2 CUSTOMER IDENTIFICATION PROCEDURE (CIP)
+Customer Identification involves verification of Customer’s identity by using reliable,
+independent source documents, data, or information. MAFIL shall obtain enough
+information necessary to verify the identity of each Customer. A broad guideline for
+the Customer identification is given below:
+MAFIL shall ensure that Customer identification process is undertaken, whenever, an
+account-based relationship is being established.
+a. carrying out any international money transfer operations for a person who is
+not an account holder.
+b. there is doubt about the authenticity or adequacy of Customer identification
+data already obtained.
+c. selling third party products as agents, selling their own products, payment of
+dues of credit cards/sale and reloading of prepaid/travel cards and any other
+product for more than rupees fifty thousand.
+d. carrying out transactions with walk in Customers, where the amount involves
+equal or exceeds rupees fifty thousand, whether conducted as a single
+transaction or
+several transactions that appear to be connected.
+e. MAFIL has reasons to believe that a Customer is intentionally structuring
+transactions into a series of transactions below the threshold of Rupees Fifty
+thousand.
+f. MAFIL shall also ensure that introduction is not to be sought while opening
+accounts.
+6.2.1 VIDEO BASED CUSTOMER IDENTIFICATION PROCESS (V-CIP):
+MAFIL may undertake live V-CIP for establishment of an account-based relationship
+with an individual Customer after obtaining his informed consent and adhering to the
+procedures prescribed in RBI regulations. This process shall be treated as face to
+face process for the purpose of Customer identification.
+The officials performing the V-CIP shall record video as well as capture photograph
+of the Customer present for identification and obtain the identification information as
+below:
+a. Shall capture a clear image of PAN card to be displayed by the Customer during
+the process, except in cases where e-PAN is provided by the Customer. The
+PAN details shall be verified from the database of the issuing authority.
+b. Live location of the Customer (Geotagging) shall be captured to ensure that
+Customer is physically present in India.
+c. The official shall ensure that photograph of the Customer in the Aadhaar/PAN
+details matches with the Customer undertaking the V-CIP and the dentification
+details in Aadhaar/PAN shall match with the details provided by the Customer.
+d. The official shall ensure that the sequence and/or type of questions during video
+interactions are varied in order to establish that the interactions are real-time
+Page 13 of 44 Classification: Internal
+Document Classification : Confidential
+and not pre-recorded.
+e. In case of offline verification of Aadhaar using XML file or Aadhaar Secure QR
+Code, it shall be ensured that the XML file or QR code generation date is not
+older than 3 days from the date of carrying out V-CIP.
+f. All accounts opened through V-CIP shall be made operational only after being
+subject to concurrent audit, to ensure the integrity of process.
+g. It shall be ensured that the process is a seamless, real-time, secured, end-to-
+end encrypted audio-visual interaction with the Customer and the quality of the
+communication is adequate to allow identification of the Customer beyond
+doubt. MAFIL shall carry out the liveliness check in order to guard against
+spoofing and such other fraudulent manipulations.
+h. To ensure security, robustness and end to end encryption, MAFIL shall carry
+out software and security audit and validation of the V-CIP application before
+rolling it out.
+i. The audio-visual interaction shall be triggered from the domain of MAFIL and
+not from third party service provider, if any. The officials operating the V-CIP
+process shall be specifically trained for this purpose. The activity log along with
+the credentials of the official performing the V-CIP shall be preserved.
+j. The video recording shall be stored in a safe and secure manner and bears the
+date and time stamp.
+k. It shall be ensured that the Aadhaar number is redacted or blacked-out.
+V- CIP Infrastructure
+i) The RE should have complied with the RBI guidelines on minimum baseline cyber
+security and resilience framework for banks, as updated from time to time as well as
+other general guidelines on IT risks. The technology infrastructure should be housed
+in own premises of the RE and the V-CIP connection and interaction shall necessarily
+originate from its own secured network domain. Any technology related outsourcing
+for the process should be compliant with relevant RBI guidelines. Where cloud
+deployment model is used, it shall be ensured that the ownership of data in such
+model rests with the RE only and all the data including video recording is transferred
+to the RE’s exclusively owned / leased server(s) including cloud server, if any,
+immediately after the V-CIP process is completed and no data shall be retained by
+the cloud service provider or third-party technology provider assisting the V-CIP of
+the RE.
+ii) The RE shall ensure end-to-end encryption of data between customer device and
+the hosting point of the V-CIP application, as per appropriate encryption standards.
+The customer consent should be recorded in an auditable and alteration proof
+manner.
+iii) The V-CIP infrastructure / application should be capable of preventing connection
+from IP addresses outside India or from spoofed IP addresses.
+iv) The video recordings should contain the live GPS co-ordinates (geo-tagging) of
+the customer undertaking the V-CIP and date-time stamp. The quality of the live video
+in the V-CIP shall be adequate to allow identification of the customer beyond doubt.
+Page 14 of 44 Classification: Internal
+Document Classification : Confidential
+v) The application shall have components with face liveness / spoof detection as well
+as face matching technology with high degree of accuracy, even though the ultimate
+responsibility of any customer identification rests with the RE. Appropriate artificial
+intelligence (AI) technology can be used to ensure that the V-CIP is robust.
+vi) Based on experience of detected / attempted / ‘near-miss’ cases of forged identity,
+the technology infrastructure including application software as well as work flows shall
+be regularly upgraded. Any detected case of forged identity through V-CIP shall be
+reported as a cyber event under extant regulatory guidelines.
+vii) The V-CIP infrastructure shall undergo necessary tests such as Vulnerability
+Assessment, Penetration testing and a Security Audit to ensure its robustness and
+end-to-end encryption capabilities. Any critical gap reported under this process shall
+be mitigated before rolling out its implementation. Such tests should be conducted by
+the empanelled auditors of Indian Computer Emergency Response Team (CERT-In).
+Such tests should also be carried out periodically in conformance to internal /
+regulatory guidelines.
+viii) The V-CIP application software and relevant APIs / webservices shall also
+undergo appropriate testing of functional, performance, maintenance strength before
+being used in live environment. Only after closure of any critical gap found during
+such tests, the application should be rolled out. Such tests shall also be carried out
+periodically in conformity with internal/ regulatory guidelines
+V-CIP PROCEDURE
+In case of offline verification of Aadhaar using XML file or Aadhaar Secure QR Code,
+it shall be ensured that the XML file or QR code generation date is not older than
+three working days from the date of carrying out V-CIP.
+6.3. CUSTOMER DUE DILIGENCE PROCEDURE (CDD) IN CASE OF INDIVIDUALS
+For undertaking CDD, MAFIL shall obtain the following from an individual while
+establishing an account-based relationship or while dealing with individual who is a
+beneficial owner, authorised signatory or power of attorney holder related to any legal
+entity. The use of Aadhaar, proof of possession of Aadhaar etc., shall be in accordance
+with the Aadhaar (Targeted Delivery of Financial and Other Subsidies Benefits and
+Services) Act, 2016 and the regulations made thereunder
+a. A certified copy of Officially Valid Documents (OVD), as given in Annexure I.
+b. One recent photograph (For the gold loan Customers capturing of photos of
+the individuals and keeping in the ERP to be continued).
+c. Permanent Account Number or the equivalent e-document thereof or Form
+No. 60 as defined in Income-tax Rules, 1962; and
+d. Such other documents pertaining to the nature of business or financial status
+specified in this Policy.
+Page 15 of 44 Classification: Internal
+Document Classification : Confidential
+6.3.1. OFFLINE VERIFICATION THROUGH PROOF OF POSSESSION OF AADHAAR
+NUMBER:
+MAFIL may carry out Offline Verification of Customers if they are desirous of
+undergoing Aadhaar Offline Verification for identification purposes. No such offline
+verification shall be performed without obtaining the written consent of the Customer in
+the manner prescribed in the Aadhaar Regulations.
+The proof of possession of Aadhaar number where offline verification cannot be carried
+out or any OVD or the equivalent e-document thereof containing the details of his
+identity and Address; or the KYC Identifier with an explicit consent to download records
+from CKYCR;
+Wherever Aadhaar details are collected, it shall be ensured that Customers have
+redacted or blacked out their Aadhaar numbers through appropriate means. The e-KYC
+service of Unique Identification Authority of India (UIDAI) shall be accepted as a valid
+process for KYC verification, when NBFCs or itself are authorized by RBI to do such
+verification for establishing account-based relationship.
+6.3.2 Accounts opened using Aadhaar OTP based e-KYC, in non-face-to-face mode
+MAFIL shall ensure that transaction alerts, OTP, etc., are sent only to the mobile number
+of the customer registered with Aadhaar. MAFIL has a robust process of due diligence for
+dealing with requests for change of mobile number in such accounts.
+6.3.3 VERIFICATION THROUGH DIGITAL KYC:
+MAFIL may carry out verification by capturing live photo of the Customer and OVD or
+the proof of possession of Aadhaar, where offline verification cannot be carried out,
+along with latitude and longitude of the location where such live photo is being taken by
+the authorized officer of the Company. Guidelines on digital KYC process is provided
+in Annexure V.
+6.3.4 VERIFICATION OF EQUIVALENT E‐DOCUMENT:
+Where the Customer submits an equivalent e‐document of any Officially Valid
+Document (OVD), issued by the issuing authority of such document with its valid digital
+signature including documents issued to the digital locker account of the Customer,
+MAFIL shall verify the digital signature as per the provisions of the Information
+Technology Act, 2000 and take live photo of the Customer as specified in the guidelines
+for digital KYC.
+6.4 IDENTIFICATION OF BENEFICIAL OWNER
+For opening an account of a Legal Person who is not a natural person, the beneficial
+owner(s) shall be identified and all reasonable steps to verify his/her identity shall be
+undertaken keeping in view the following:
+a. Where the Customer or the owner of the controlling interest is (i) an entity listed
+on a stock exchange in India, or (ii) is an entity resident in jurisdictions notified by
+Page 16 of 44 Classification: Internal
+Document Classification : Confidential
+the Central Government and listed on stock exchanges in such jurisdictions, or
+(iii) is a subsidiary of such a company, it is not necessary to identify and verify the identity
+of any shareholder or beneficial owner of such companies.
+b. In cases of trust/nominee or fiduciary accounts whether the Customer is acting on behalf
+of another person as trustee/nominee or any other intermediary is determined. In such
+cases, satisfactory evidence of the identity of the intermediaries and of the persons on
+whose behalf they are acting, as also details of the nature of the trust or other
+arrangements in place shall be obtained.
+6.5 CDD MEASURES IN RESPECT OF NON-INDIVIDUALS:
+CDD Standards and documents to be collected in respect of Proprietary firms, partnership
+firms, companies and other Legal entities are given in Annexure I.
+7. CUSTOMER DUE DILIGENCE BY THIRD PARTY
+In compliance of the KYC regulations, MAFIL may rely on the Customer due diligence done by
+third parties, for verifying identity of Customers at the time of commencement of account-based
+relationship, subject to the following conditions.
+a. Records or information of the Customer due diligence carried out by the third party is
+obtained immediately from the third party or from Central KYC Records Registry.
+b. MAFIL is satisfied that copies of the identification data and other relevant documents
+relating to the Customer due diligence requirements will be available from the third party
+up on request without delay.
+c. The third party is regulated, supervised, or monitored and has capabilities to comply with
+the Customer due diligence and record keeping requirements as prescribed in the
+Prevention of Money Laundering Act.
+d. The third party shall not be based in a country or jurisdiction assessed as high risk.
+The ultimate responsibility for Customer due diligence and undertaking enhanced due diligence
+measures, as applicable, will be with MAFIL. (Description of RE are given in Annexure II).
+REs shall ensure compliance with KYC Policy through:
+i. Specifying as to who constitute ‘Senior Management’ for the purpose of KYC
+compliance.
+ii. Allocation of responsibility for effective implementation of policies and procedures
+iii. at HO / Zonal Office / Branch level.
+iv. Independent evaluation of the compliance functions of REs’ policies and procedures,
+including legal and regulatory requirements.
+v. Concurrent/internal audit system to verify the compliance with KYC/AML policies and
+procedures.
+vi. Submission of quarterly audit notes and compliance to the Audit Committee.
+REs shall ensure that decision-making functions of determining compliance with KYC norms are not
+outsourced.
+Page 17 of 44 Classification: Internal
+Document Classification : Confidential
+8. SIMPLIFIED PROCEDURES FOR SMALL VALUE LOANS:
+In case a person who desires to open an account is not able to produce identity
+documents as mentioned in Annexure I (i.e., any of OVDs and PAN/ Form 60), Proof of
+Identity alone will be sufficient provided that the Customer gives full and complete
+address in the loan application form and his telephone number is confirmed by the
+branches to be correct. Interim / Temporary KYC documents such as Labour card, Civil
+ID card, Credit Card, Employer Company ID card, LIC card, State ID card, Bank
+Passbook, etc. may be accepted subject to the following conditions:
+a. The Customer shall provide his self-attested photograph.
+b. Branch Head/ Designated Officer of MAFIL shall certify under his/her signature that
+the Customer has affixed his signature or thumb impression in his presence.
+c. The account shall remain operational initially for 12 months, within which the
+Customer must furnish his identity documents for conducting CDD as mentioned in
+para 6.3. Customer shall be suitably informed at the time of starting the relationship.
+d. Maximum outstanding shall not exceed Rs 0.50 Lakh in all their accounts taken
+together at any point of time and the total credit in all the accounts taken together
+shall not exceed Rs. 1.00 lakh in a year.
+e. The Customer shall be made aware that no further transaction will be permitted until
+full KYC procedure is completed in case of condition no. d. as mentioned above is
+breached.
+f. Regularization of Interim/Temporary KYC: In-order to avoid any inconvenience to the
+Customers MAFIL shall notify the Customer when the balance reaches rupees forty
+thousand (Rs. 40,000/-) or the total credit in a year reaches rupees eighty thousand
+(Rs. 80,000/-) that appropriate documents for conducting the KYC must be submitted
+and that otherwise the operations in the account will be stopped when the total
+balance in all the accounts taken together exceeds Rs.0.50 lakh at any point of time
+or the total credit in the accounts in year exceeds Rs 1.00 Lakh.
+g. Permanent and communication address of the customer is collected through the
+application form submitted.
+h. The account shall be monitored and when there is suspicion of ML/TF activities or
+other high-risk scenarios, the identity of the customer shall be established as per
+Section 16 or Section 18 of KYC Master Direction.
+KYC verification once done by one branch shall be valid for transfer of account to any
+other branch, provided full KYC verification has already been done and the same is not
+due for periodic updating.
+9. SELLING THIRD PARTY PRODUCTS
+While selling third party products, MAFIL shall comply with the following directions:
+a. Identity and address of the walk-in Customers shall be verified for transactions
+Page 18 of 44 Classification: Internal
+Document Classification : Confidential
+above Rs 0.50 lakh, whether conducted as a single transaction or several
+transactions that appear to be connected.
+b. Transaction details of sale of third-party products and related records shall be
+maintained as specified under this Policy.
+c. AML software capable of capturing, generating and analyzing alerts for the
+purpose of filing CTR/STR in respect of transactions relating to third party products
+with Customers including walk-in Customers shall be made available.
+d. Transactions involving Rs 0.50 lakh and above shall be undertaken only by:
+▪ Debit to Customer’s account or against cheque, transfer from banks / debit
+cards / credit card etc.
+▪ Obtaining and verifying PAN (regular Customer as well as walk in Customer).
+Note: Direction no. d shall also apply to sale of MAFIL’s own products, sale and
+reloading of prepaid / travel cards and any other products for Rs 0.50 lakh and above.
+10. ISSUANCE OF PREPAID PAYMENT INSTRUMENTS (PPI)
+With regard to PPI, MAFIL shall ensure that the instructions issued by Department of
+Payment and Settlement System of Reserve Bank of India through their Master
+Direction are strictly adhered to.
+11. MONITORING OF TRANSACTIONS
+a. MAFIL shall monitor transactions on an ongoing basis for the purpose of reporting
+it to the appropriate authorities in case any suspicious transactions are found to
+be carried out by the concerned Customer. (An illustrative list of suspicious
+transactions is given in Annexure III). The extent of monitoring by the MAFIL will
+depend on the risk sensitivity of the account and special attention will be given to
+all complex unusually large transactions, which have no apparent economic or
+lawful purpose.
+b. MAFIL shall exercise caution with respect to the transactions with persons
+(including legal persons and other financial institutions) from the countries which
+have been identified by Financial Action Task Force (FATF) as high risk and non-
+cooperative jurisdictions with respect to compliance with the FATF
+Recommendations, 2012.
+c. Transactions carried out involving Jurisdiction and countries that do not or
+insufficiently apply the FATF recommendations like the FATF Grey List countries
+,i.e., those countries that are subject to increased monitoring as a result of their
+AML/CFT deficiencies and the Black Listed countries, i.e., those countries that
+FATF has deemed to have “significant strategic deficiencies” in their AML/CFT
+regimes shall be subject to additional monitoring.
+FATF Statements circulated by Reserve Bank of India from time to time, and
+publicly available information, for identifying countries, which do not or
+insufficiently apply the FATF Recommendations, shall be considered. REs shall
+apply enhanced due diligence measures, which are effective and proportionate to
+the risks, to business relationships and transactions with natural and legal persons
+(including financial institutions) from countries for which this is called for by the
+FATF.
+Page 19 of 44 Classification: Internal
+Document Classification : Confidential
+Special attention shall be given to business relationships and transactions with
+persons (including legal persons and other financial institutions) from or in
+countries that do not or insufficiently apply the FATF Recommendations and
+jurisdictions included in FATF Statements.
+The background and purpose of transactions with persons (including legal
+persons and other financial institutions) from jurisdictions included in FATF Statements and
+countries that do not or insufficiently apply the FATF Recommendations shall be examined,
+and written findings together with all documents shall be retained and shall be made available
+to Reserve Bank/other relevant authorities, on request.
+d. MAFIL shall file Suspicious Transaction Report (STR), Cash Transaction Report
+(CTR), counterfeit currency report (CCR) and other applicable reports filling under
+FATCA in terms of the direction of the RBI/PMLA in respect of all products/
+services.
+12. ONGOING DUE DILIGENCE
+a. MAFIL shall undertake on going due diligence of Customers to ensure that their
+transactions are consistent with their knowledge about the Customers,
+Customers’ business and risk profile, and source of funds/wealth.
+b. Without prejudice to the generality of factors that call for close monitoring, the
+following types of transactions are monitored closely: -
+i) Large and complex transactions including RTGS transactions, and those
+with unusual patterns, inconsistent with the normal and expected activity of
+the Customer, which have no apparent economic rationale or legitimate
+purpose.
+ii) Transactions which exceed the thresholds prescribed for specific categories
+of accounts.
+iii) High account turnover inconsistent with the size of the balance maintained.
+iv) Deposit of third-party cheques, drafts, etc. in the existing and newly opened
+accounts followed by cash withdrawals for large amounts.
+c. The extent of monitoring shall be aligned with the risk category of the Customer
+and high-risk category accounts shall be subjected to more intensified monitoring.
+d. A system of periodic review of risk categorisation of accounts, with such
+periodicity being at least once in six months, and the need for applying enhanced
+due diligence measures shall be put in place.
+13. PERIODIC UPDATION
+Periodic updation shall be carried out at least once in every two years, for high-risk
+Customers, once in every eight years for medium risk Customers and once in every
+ten years for low risk Customers as per the following procedure:
+a. FOR INDIVIDUAL CUSTOMERS
+i. No change in KYC information: In case of no change in the KYC
+information, a self- declaration from the Customer in this regard shall be
+obtained through Customer’s email-id registered with the MAFIL, Customer’s
+mobile number registered with the MAFIL, digital channels (such as mobile
+application of MAFIL), letter etc.
+Page 20 of 44 Classification: Internal
+Document Classification : Confidential
+ii. Change in address: In case of a change only in the address details of the
+Customer, a self-declaration of the new address shall be obtained from the
+Customer through Customer’s email-id registered with the MAFIL,
+Customer’s mobile number registered with the MAFIL, digital channels (such
+as mobile application of MAFIL), letter etc., and the declared address shall
+be verified through positive confirmation within two months, by means such
+as address verification letter, contact point verification, deliverables etc.
+Further, MAFIL, may at its option, obtain a copy of OVD or deemed OVD or
+the equivalent e-documents thereof, as mentioned in Annexure 1, for the
+purpose of proof of address, declared by the Customer at the time of periodic
+updation.
+Aadhaar OTP based e-KYC in non-face to face mode may be used for
+periodic updation. Declaration of current address, if the current address is
+different from the address in Aadhaar, shall not require positive confirmation
+in this case. MAFIL shall ensure that the mobile number for Aadhaar
+authentication is same as the one available with them in the customer’s
+profile, to prevent any fraud.
+b. CUSTOMERS OTHER THAN INDIVIDUALS:
+i. No change in KYC information: In case of no change in the KYC
+information of the LE Customer, a self-declaration in this regard shall be
+obtained from the LE Customer through its email id registered with MAFIL,
+digital channels (such as mobile application of MAFIL), letter from an official
+authorized by the LE in this regard, board resolution etc. Further, MAFIL
+shall during this process ensure that the Beneficial Ownership (BO)
+information available is accurate and shall update the same, if required, to
+keep it as up- to-date as possible.
+ii. Change in KYC information: In case of change in KYC information, MAFIL
+shall undertake the KYC process equivalent to that applicable for on-
+boarding a new LE Customer.
+c. ADDITIONAL MEASURES: In addition to the above, MAFIL shall also ensure
+that,
+i. The KYC documents of the Customer as per the current CDD standards is
+available and this shall be applicable even if there is no change in Customer
+information but the documents available with the MAFIL are not as per the
+existing CDD standards. Further, in case the validity of the CDD documents
+available with MAFIL has expired at the time of periodic updation of KYC,
+MAFIL shall undertake the KYC process equivalent to that applicable for on-
+boarding a new Customer.
+ii. Customer’s PAN details, if available with the MAFIL, is verified from the
+database of the issuing authority at the time of periodic updation of KYC.
+iii. An acknowledgment is provided to the Customer mentioning the date of
+receipt of the relevant document(s), including self-declaration from the
+Customer, for carrying out periodic updation.
+iv. In order to ensure Customer convenience, MAFIL may consider making
+available the facility of periodic updation of KYC at any of its branches.
+v. MAFIL shall adopt a risk-based approach with respect to periodic updation
+Page 21 of 44 Classification: Internal
+Document Classification : Confidential
+of KYC.
+MAFIL shall advise the customers that to comply with the PML Rules, in case of any
+update in the documents submitted by the customer at the time of establishment of
+business relationship / account-based relationship and thereafter, as necessary;
+MAFIL will collect the update of such documents. This shall be done within 30 days of
+the update to the documents for the purpose of updating the records at MAFIL’s end
+(Note: The time limits prescribed above would apply from the date of opening of
+the account/ last verification of KYC.)
+14. EXISTING CUSTOMERS
+For gold loan Customers, a copy of the PAN Card of the borrower shall be collected for
+all transaction above 5 lakh as guided by the regulatory guidelines to NBFCs financing
+against the collateral of gold.
+Simplified norms for Self Help Groups (SHGs)
+CDD of all the members of SHG may be undertaken at the time of credit linking of SHGs
+Reporting Requirements to Financial Intelligence Unit – India
+REs shall not put any restriction on operations in the accounts where an inf has been filed.
+REs shall keep the fact of furnishing of STR strictly confidential. It shall be ensured that there
+is no tipping off to the customer at any level.
+15. RISK MANAGEMENT
+MAFIL has put in place appropriate procedures to ensure effective implementation of
+KYC guidelines.
+a. Risk categorization of Customers shall be undertaken based on various factors, such
+as customer’s identity, social/financial status, nature of business activity, and
+information about the customer’s business and their location, geographical risk
+covering customers as well as transactions, type of products/services offered, delivery
+channel used for delivery of products/services, types of transaction undertaken – cash,
+cheque/monetary instruments, wire transfers, forex transactions, etc. While
+considering customer’s identity, the ability to confirm identity documents through online
+or other services offered by issuing authorities may also be factored in
+b. MAFIL has categorized its customers into ‘High Risk / Medium Risk / Low Risk’ based
+on the profile of the Customers. MAFIL shall apply higher due diligence measures
+keeping in view the risk level.
+c. MAFIL has developed robust underwriting procedures for onboarding borrowers, which
+include verification of ownership of the gold ornaments (in the case of gold loans),
+assessment of financial resources of the borrowers, collection of their market reports
+etc (for other loans).
+d. MAFIL’s internal audit periodically evaluate the level of adherence to the KYC
+procedures. Audit function shall provide an independent evaluation of the effectiveness
+of KYC policies and procedures, including legal and regulatory requirements..
+Page 22 of 44 Classification: Internal
+Document Classification : Confidential
+The risk categorisation of a customer and the specific reasons for such categorisation
+shall be kept confidential and shall not be revealed to the customer to avoid tipping off
+the customer.
+16. RISK ASSESSMENT
+MAFIL shall carry out ‘Money Laundering (ML) and Terrorist Financing (TF) Risk
+Assessment’ exercise periodically to identify, assess and take effective measures to
+mitigate its money laundering and terrorist financing risk. The assessment process
+shall consider all the relevant risk factors before determining the level of overall risk
+and the appropriate level and type of mitigation to be applied. While preparing the
+internal risk assessment, cognizance of the overall sector-specific vulnerabilities if any,
+that the regulator/supervisor may share from time to time shall be taken.
+The risk assessment exercise shall be conducted on a quarterly basis and parameters
+of the assessment shall be modified, in alignment with the outcome of the risk
+assessment exercise. An internal document detailing the assessment process may be
+kept separately for the same.
+The outcome of the exercise shall be put up to Risk Management Committee and
+should be available to competent authorities and self-regulating bodies.
+MAFIL shall carry out sanctions screening based on the consolidated list of RBI. The
+department shall update the list at periodical intervals. Such screening will be carried
+out automatically/manually of all Customers at the time of on boarding. MAFIL shall
+apply a Risk Based Approach (RBA) for mitigation and management of the identified
+risk and shall monitor the implementation of the controls and enhance them, if
+necessary.
+REs are encouraged to leverage latest technological innovations and tools for effective
+implementation of name screening to meet the sanctions requirements.
+17. A. ENHANCED DUE DILIGENCE
+(1) Company shall, prior to the commencement of each specified transaction,—
+(a) verify the identity of the clients undertaking such specified transaction by
+authentication under the Aadhaar (Targeted Delivery of Financial and Other Subsidies,
+Benefits, and Services) Act, 2016 (18 of 2016) in such manner and subject to such
+conditions, as may be prescribed:
+Provided that where verification requires authentication of a person who is not entitled
+to obtain an Aadhar number under the provisions of the said Act, verification to
+authenticate the identity of the client undertaking such specified transaction shall be
+carried out by such other process or mode, as may be prescribed;
+(b) take additional steps to examine the ownership and financial position, including
+sources of funds of the client, in such manner as may be prescribed;
+(c) take additional steps as may be prescribed to record the purpose behind
+conducting the specified transaction and the intended nature of the relationship
+between the transaction parties.
+(2) Where the client fails to fulfill the conditions laid down under sub-section (1),
+the reporting entity shall not allow the specified transaction to be carried out.
+Page 23 of 44 Classification: Internal
+Document Classification : Confidential
+(3) Where any specified transaction or series of specified transactions undertaken
+by a client is considered suspicious or likely to involve proceeds of crime, the reporting
+entity shall increase the future monitoring of the business relationship with the client,
+including greater scrutiny or transactions in such manner as may be prescribed. The
+opening of accounts and monitoring of transactions shall be strictly adhered to, in order
+to minimise the operations of “Money Mules” which are used to launder the proceeds
+of fraud schemes (e.g., phishing and identity theft) by criminals who gain illegal access
+to deposit accounts by recruiting third parties which act as “money mules.” MAFIL shall
+undertake diligence measures and meticulous monitoring to identify accounts which
+are operated as Money Mules and take appropriate action, including reporting of
+suspicious transactions to FIU-IND.
+(4) The information obtained while applying the enhanced due diligence measures
+under sub-section (1) shall be maintained for a period of five years from the date of
+transaction between a client and the reporting entity.
+Explanation.—For the purposes of this section, "specified transaction" means—
+(a) any withdrawal or deposit in cash, exceeding such amount;
+(b) any transaction in foreign exchange, exceeding such amount;
+(c) any transaction in any high value imports or remittances;
+(d) such other transaction or class of transactions, in the interest of revenue or
+where there is a high risk or money-laundering or terrorist financing, as may be
+prescribed.
+17.1 ACCOUNTS OF POLITICALLY EXPOSED PERSONS (PEP): Politically
+Exposed Persons are those individuals who are or have been entrusted with
+prominent public functions by a foreign country including the Heads of
+States/Governments, senior politicians, senior government/judicial/military
+officers, senior executives of state-owned corporations, important political party
+officials, etc.
+Special care and diligence shall be taken in respect of Politically Exposed
+Persons. Generally, the MAFIL may not (would not) open loan accounts of PEP.
+However, any request from PEPs shall be escalated to Senior Management and
+will be dealt with based on their approval and will be subject to enhanced due
+diligence (comprising of additional documents) and monitoring.
+(a) sufficient information including information about the sources of funds,
+accounts of family members and close relatives is gathered on the PEP;
+(b) the identity of the person shall have been verified before accepting the PEP
+as a customer.
+(c) the decision to open an account for a PEP is taken at a senior level in
+accordance with the MAFIL Customer Acceptance Policy.
+(d) all such accounts are subjected to enhanced monitoring on an on-going basis;
+(e) in the event of an existing customer or the beneficial owner of an existing
+account subsequently becoming a PEP, senior management’s approval is
+obtained to continue the business relationship.
+(f) the CDD measures as applicable to PEPs including enhanced monitoring on
+an on-going basis are applicable.
+B. These instructions shall also be applicable to accounts where a PEP is the
+beneficial owner, to family members or close relatives of PEP.
+Page 24 of 44 Classification: Internal
+Document Classification : Confidential
+17.2 ACCOUNTS OF NON-FACE-TO-FACE CUSTOMERS: These Customers are
+those who opened accounts without visiting the branches / offices of MAFIL or
+meeting its officials. MAFIL shall ensure that first payment from these accounts
+shall be affected through the Customers’ KYC-Complied account with another
+Regulated Entity.
+17.3 Enhanced Due Diligence (EDD) for non-face-to-face customer onboarding
+(other than customer onboarding in terms of Section 17):
+Non-face-to-face onboarding facilitates the REs to establish relationship with the
+customer without meeting the customer physically or through V-CIP. Such non-
+face-to-face modes for the purpose of this Section includes use of digital
+channels such as CKYCR, DigiLocker, equivalent e-document, etc., and non-
+digital modes such as obtaining copy of OVD certified by additional certifying
+authorities as allowed for NRIs and PIOs.
+Following EDD measures shall be undertaken by REs for non face-to-face
+customer onboarding (other than customer onboarding in terms of Section 17):
+a) In case RE has introduced the process of V-CIP, the same shall be provided
+as the first option to the customer for remote onboarding. It is reiterated that
+processes complying with prescribed standards and procedures for V-CIP shall
+be treated on par with face-to-face CIP for the purpose of this Master Direction.
+b) In order to prevent frauds, alternate mobile numbers shall not be linked post
+CDD with such accounts for transaction OTP, transaction updates, etc.
+Transactions shall be permitted only from the mobile number used for account
+opening.
+c) Apart from obtaining the current address proof, RE shall verify the current
+address through positive confirmation before allowing operations in the account.
+Positive confirmation may be carried out by means such as address verification
+letter, contact point verification, deliverables, etc.
+d) RE shall obtain PAN from the customer and the PAN shall be verified from the
+verification facility of the issuing authority.
+e) First transaction in such accounts shall be a credit from existing KYC-complied
+bank account of the customer.
+f) Such customers shall be categorized as high-risk customers and accounts
+opened in non-face to face mode shall be subjected to enhanced monitoring until
+the identity of the customer is verified in face-to-face manner or through V-CIP
+17.4 CLIENT ACCOUNTS OPENED BY PROFESSIONAL INTERMEDIARIES:
+MAFIL shall ensure while opening client accounts through professional
+intermediaries, that:
+a. Clients shall be identified when client account is opened by a professional
+intermediary on behalf of a single client.
+b. MAFIL shall have option to hold 'pooled' accounts managed by professional
+intermediaries on behalf of entities like mutual funds, pension funds or other
+types of funds.
+c. MAFIL shall not open accounts of such professional intermediaries who are
+bound by any client confidentiality that prohibits disclosure of the client details
+to MAFIL.
+d. All the beneficial owners shall be identified where funds held by the
+intermediaries are not co-mingled at the level of MAFIL, and there are 'sub-
+Page 25 of 44 Classification: Internal
+Document Classification : Confidential
+accounts', each of them attributable to a beneficial owner, or where such funds
+are co-mingled at the level of MAFIL, the MAFIL shall look for the beneficial
+owners.
+e. MAFIL may, at its discretion, rely on the 'Customer due diligence' (CDD) done
+by an intermediary, provided that the intermediary is a regulated and
+supervised entity and has adequate systems in place to comply with the KYC
+requirements of the Customers.
+f. The ultimate responsibility for knowing the Customer lies with MAFIL.
+17.5 CLIENTS OF SPECIAL CATEGORY (CSC): As per the guidelines on AML
+standards of SEBI, enhanced due diligence is required for Customers belonging
+to CSC (Eg. non – residents, High net worth clients etc). Appropriate measures
+shall be exercised by way of independent judgment to ascertain whether new
+clients engaged through DP services need to be classified as CSC or not. An
+illustrative list of Special Category Customers identifiable to DP is given in
+Annexure IV.
+17.6 Simplified KYC norms for Foreign Portfolio Investors (FPIs) –
+Accounts of FPIs which are eligible/ registered as per SEBI guidelines, for the
+purpose of investment under Portfolio Investment Scheme (PIS), shall be opened
+by accepting KYC documents as detailed in Annex III, subject to Income Tax
+(FATCA/CRS) Rules. Provided that banks shall obtain undertaking from FPIs or
+the Global Custodian acting on behalf of the FPI that as and when required, the
+exempted documents as detailed in Annex III will be submitted
+Reporting requirement under Foreign Account Tax Compliance Act (FATCA) and
+Common Reporting Standards (CRS)
+Under FATCA and CRS, REs shall adhere to the provisions of Income Tax Rules 114F, 114G
+and 114H and determine whether they are a Reporting Financial Institution as defined in
+Income Tax Rule 114F and if so, shall take following steps for complying with the reporting
+requirements:
+(a) Register on the related e-filling portal of Income Tax Department as Reporting Financial
+Institutions at the link https://incometaxindiaefiling.gov.in/ post login --> My Account -->
+Register as Reporting Financial Institution,
+(b) Submit online reports by using the digital signature of the ‘Designated Director’ by either
+uploading the Form 61B or ‘NIL’ report, for which, the schema prepared by Central Board of
+Direct Taxes (CBDT) shall be referred to.
+Explanation: REs shall refer to the spot reference rates published by Foreign Exchange
+Dealers’ Association of India (FEDAI) on their website at
+http://www.fedai.org.in/RevaluationRates.aspx for carrying out the due diligence procedure for
+the purposes of identifying reportable accounts in terms of Rule 114H.
+(c) Develop Information Technology (IT) framework for carrying out due diligence procedure
+and for recording and maintaining the same, as provided in Rule 114H.
+(d) Develop a system of audit for the IT framework and compliance with Rules 114F, 114G
+Page 26 of 44 Classification: Internal
+Document Classification : Confidential
+and 114H of Income Tax Rules.
+(e) Constitute a “High Level Monitoring Committee” under the Designated Director or any other
+equivalent functionary to ensure compliance.
+(f) Ensure compliance with updated instructions/ rules/ guidance notes/ Press releases/ issued
+on the subject by Central Board of Direct Taxes (CBDT) from time to time and available on the
+web site http://www.incometaxindia.gov.in/Pages/default.aspx. REs may take note of the
+following:
+i. updated Guidance Note on FATCA and CRS
+ii. a press release on ‘Closure of Financial Accounts’ under Rule 114H (8).
+18. CONFIDENTIALITY OF INFORMATION ABOUT CUSTOMERS
+All the information collected from the Customers by MAFIL shall be kept confidential
+and all such information shall be treated as per the agreement/terms and conditions
+signed by the Customers. Additionally, the information sought from each Customer
+should be relevant to the risk perceived in respect of that Customer, should not be
+intrusive and should be in line with the guidelines issued by the RBI in that behalf.
+Information collected from Customers shall not be divulged for the purpose of cross
+selling, or for any other purpose without the express permission of the customer.
+Exception to the confidentiality of customer information shall be as under:
+a. Where disclosure is under compulsion of law.
+e. Where there is a duty to the public to disclose.
+f. The interest of the company requires disclosure.
+d. Where the disclosure is made with express or implied consent of the customer.
+19. MAINTENANCE OF RECORDS OF TRANSACTIONS
+MAFIL take all reasonable steps regarding maintenance, preservation and reporting of
+customer account information, with reference to provisions of PML Act and Rules
+thereunder. MAFIL shall
+a. maintain all necessary records of transactions between MAFIL and the
+customer, both domestic and international, for at least five years from the date
+of transaction or any other higher periods specified in any other law
+b. preserve the records pertaining to the identification of the Customers and their
+addresses obtained while opening the account and during business relationship,
+for at least five years after the business relationship is ended or the account has
+been closed, whichever is later.
+c. Make available the identification records and transaction data to the competent
+authorities upon request;
+d. introduce a system of maintaining proper record of transactions prescribed
+under Rule 3 of Prevention of Money Laundering (Maintenance of Records)
+Rules, 2005 (PML Rules, 2005)
+e. maintain all necessary information in respect of transactions prescribed under
+PML Rule 3 to permit reconstruction of individual transaction, including the
+Page 27 of 44 Classification: Internal
+Document Classification : Confidential
+following:
+(i) the nature of the transactions.
+(ii) the amount of the transaction and the currency in which it was denominated.
+(iii) the date on which the transaction was conducted; and
+(iv) the parties to the transaction.
+f. MAFIL have a system for proper maintenance and preservation of information
+in a manner (in hard and/or soft copies) that allows data to be retrieved easily
+and quickly whenever required or as/ when requested by the competent
+authorities.
+g. Maintain records of the identity and address of its Customers, and records in
+respect of transactions referred to in Rule 3 of PML Rules, in hard or soft format.
+Explanation. – For the purpose of this Section, the expressions "records
+pertaining to the identification", “identification records”, etc., shall include
+updated records of the identification data, account files, business
+correspondence and results of any analysis undertaken MAFIL shall ensure that
+in case of customers who are non-profit organisations, the details of such
+customers are registered on the DARPAN Portal of NITI Aayog. If the same are
+not registered, MAFIL shall register the details on the DARPAN Portal. MAFIL
+shall also maintain such registration records for a period of five years after the
+business relationship between the customer and the MAFIL has ended or the
+account has been closed, whichever is later.
+20. GENERAL:
+20.1 ADHERENCE TO KYC GUIDELINES BY AGENTS/ BROKERS OR THE
+LIKE
+a. Agents/ brokers or the like shall be appointed only after detailed due
+diligence and ensuring that they are fully compliant with KYC guidelines
+applicable to MAFIL.
+b. MAFIL shall make available all information to RBI to verify the compliance
+with KYC guidelines. MAFIL shall be responsible for non-customer
+guidelines by the brokers/agents etc. who are operating on MAFIL's behalf.
+20.2 PRINCIPAL OFFICER
+MAFIL shall have a designated Principal Officer (PO) who shall be responsible
+for ensuring compliance, monitoring transactions, sharing, and reporting
+information as required under the law/regulations and responsible for furnishing
+information as per rule 8 of the Rules. The Chief Compliance Officer of MAFIL
+shall be the Principal Officer.
+20.3 DESIGNATED DIRECTOR
+MAFIL shall have a Designated Director, to ensure overall compliance with the
+obligations under the Prevention of Money laundering Act, 2002 and Rules
+framed thereunder, from time to time. The Managing Director and Chief
+Executive Officer of MAFIL shall be the Designated Director.
+Page 28 of 44 Classification: Internal
+Document Classification : Confidential
+The name, designation and address of the Principal Officer and the Designated
+Officer shall be communicated to the FIU-IND and to the RBI.
+20.4. STAFF and MANAGEMENT RESPONSIBILITIES – OFFENCE OF MONEY
+LAUNDERING
+Staff and management shall take note that whosoever directly or indirectly attempts
+to indulge or knowingly assists or knowingly is a party or is actually involved in any
+process or activity connected with the proceeds of offence of Money Laundering
+shall be subjected to appropriate internal disciplinary proceedings which may lead
+upto termination of service over and above the penalties under the relevant statutory
+Acts/Rules/ Regulations which includes punishment of being criminally proceeded
+against with and punishable with rigorous imprisonment and also liable to fine.
+20.5. CDD PROCEDURE AND SHARING KYC INFORMATION WITH CENTRAL
+KYC RECORDS REGISTRY (CKYCR)
+MAFIL shall capture the KYC information for uploading the data pertaining to all
+new individual accounts opened on or after 1/4/2017 with the CKYCR in the
+manner mentioned in the Prevention of Money-Laundering (Maintenance of
+Records) Rules, 2005, as amended from time to time. Additionally, MAFIL shall
+also upload KYC records pertaining to accounts of Legal Entities opened on or
+after April 1, 2021, with CKYCR in such manner as specified under the PML
+Rules.
+MAFIL shall also ensure that during periodic updation of the Customers, the
+Customers are migrated to the current CDD standard as applicable to MAFIL.
+Government of India has authorized the Central Registry of Securitization Asset
+Reconstruction and Security Interest of India (CERSAI), to act as, and to perform
+the functions of the CKYCR.
+In terms of provision of Rule 9(1A) of the PML Rules, the REs shall capture
+customer’s KYC records and upload onto CKYCR within 10 days of
+commencement of an account-based relationship with the customer.
+“KYC Templates” means templates prepared to facilitate collating and reporting
+the KYC data to the CKYCR, for individuals and legal entities. The templates
+may be revised from time to time, as may be required and released by CERSAI.
+Once KYC Identifier is generated by CKYCR, REs shall ensure that the same is
+communicated to the individual/LE as the case may be.
+Where a customer, for the purposes of establishing an account-based
+relationship, submits a KYC Identifier to a RE, with an explicit consent to
+download records from CKYCR, then such RE shall retrieve the KYC records
+online from the CKYCR using the KYC Identifier and the customer shall not be
+required to submit the same KYC records or information or any other additional
+identification documents or details, unless –
+i. there is a change in the information of the customer as existing in the records
+of CKYCR;
+ii. the current address of the customer is required to be verified;
+iii. the RE considers it necessary in order to verify the identity or address of the
+customer, or to perform enhanced due diligence or to build an appropriate
+risk profile of the client.
+iv. the validity period of documents downloaded from CKYCR has lapsed.
+Page 29 of 44 Classification: Internal
+Document Classification : Confidential
+20.6. TRAINING PROGRAMME
+MAFIL shall have adequate screening mechanism as an integral part of personnel
+recruitment / hiring process and should have an ongoing employee training
+programs so that members of the staff are adequately trained in KYC/AML/CFT
+procedures. Training requirements shall have different focuses for front line staff,
+Compliance Staff and officer/staff dealing with new Customers so that all
+concerned fully understand the rationale behind the KYC policies and implement
+them consistently. Such training may be a mix of in-house as well as through
+external agencies, as the case may be.
+21. COMPLIANCE WITH POLICY NORMS
+a. MAFIL’s internal audit and compliance functions shall periodically evaluate the
+level of adherence to the KYC policies and procedures. The compliance function
+and audit function together shall provide an independent evaluation of the
+effectiveness of KYC policies and procedures, including legal and regulatory
+requirements. The Audit Committee of the Board shall review adherence to the
+KYC guidelines at quarterly intervals.
+b. Internal Audit shall on a yearly basis conduct an evaluation of compliance
+functions of policies and procedures including legal and regulatory requirements.
+22. OTHER OPERATING INSTRUCTIONS
+a. In case of Customers whose accounts have not been operated (or who have not
+been transacting) for more than 12 months, fresh KYC documents will need to
+be taken before undertaking any new transactions. System based control will be
+put in place.
+b. As a Policy, Gold loan will be granted to individuals only and not to companies,
+firms, trusts etc.
+c. In the case of ‘pardanashin’ (veil) women, capturing of the customer’s
+photograph (in Customer ID file on the system) may waived provided an
+acceptable Proof of Identity document is furnished and KYC verification has been
+carried down by any of female staffs.
+23. Wire Transfer: -
+A. Information requirements for wire transfers for the purpose of this Master
+Direction:
+i. All cross-border wire transfers shall be accompanied by accurate, complete, and
+meaningful originator and beneficiary information as mentioned below:
+a. name of the originator;
+b. the originator account number where such an account is used to process the
+transaction;
+c. the originator’s address, or national identity number, or customer identification
+number, or date and place of birth;
+Page 30 of 44 Classification: Internal
+Document Classification : Confidential
+d. name of the beneficiary; and
+e. the beneficiary account number where such an account is used to process the
+transaction. In the absence of an account, a unique transaction reference number
+should be included which permits traceability of the transaction.
+ii. In case of batch transfer, where several individual cross-border wire transfers from
+a single originator are bundled in a batch file for transmission to beneficiaries, they
+(i.e., individual transfers) are exempted from the requirements of clause (i) above in
+respect of originator information, provided that they include the originator’s account
+number or unique transaction reference number, as mentioned above, and the
+batch file contains required and accurate originator information, and full beneficiary
+information, that is fully traceable within the beneficiary country.
+iii. Domestic wire transfer, where the originator is an account holder of the ordering
+RE, shall be accompanied by originator and beneficiary information, as indicated for
+cross-border wire transfers in (i) and (ii) above.
+iv. Domestic wire transfers of rupees fifty thousand and above, where the originator is
+not an account holder of the ordering RE, shall also be accompanied by originator
+and beneficiary information as indicated for cross-border wire transfers. In case of
+domestic wire transfers below rupees fifty thousand where the originator is not an
+account holder of the ordering RE and where the information accompanying the wire
+transfer can be made available to the beneficiary RE and appropriate authorities by
+other means, it is sufficient for the ordering RE to include a unique transaction
+reference number, provided that this number or identifier will permit the transaction
+to be traced back to the originator or the beneficiary. Further, the ordering RE shall
+make the information available within three working/business days of receiving the
+request from the intermediary RE, beneficiary RE, or from appropriate competent
+authorities.
+v. REs shall ensure that all the information on the wire transfers shall be immediately
+made available to appropriate law enforcement and/or prosecutorial authorities as
+well as FIU-IND on receiving such requests with appropriate legal provisions.
+vi. The wire transfer instructions are not intended to cover the following types of
+payments:
+a) Any transfer that flows from a transaction carried out using a credit card / debit
+card / Prepaid Payment Instrument (PPI), including through a token or any other
+similar reference string associated with the card / PPI, for the purchase of goods
+or services, so long as the credit or debit card number or PPI id or reference
+number accompanies all transfers flowing from the transaction. However, when
+a credit or debit card or PPI is used as a payment system to effect a person-to-
+person wire transfer, the wire transfer instructions shall apply to such
+transactions and the necessary information should be included in the message.
+b) Financial institution-to-financial institution transfers and settlements, where
+both the originator person and the beneficiary person are regulated financial
+institutions acting on their own behalf.
+It is, however, clarified that nothing within these instructions will impact the obligation
+of an RE to comply with applicable reporting requirements under PML Act, 2002, and
+the Rules made thereunder, or any other statutory requirement in force.
+Page 31 of 44 Classification: Internal
+Document Classification : Confidential
+B. Responsibilities of ordering RE, intermediary RE and beneficiary RE, effecting
+wire transfer, are as under:
+i. Ordering RE:
+a. The ordering RE shall ensure that all cross-border and qualifying domestic
+wire transfers {viz., transactions as per clauses (iii) and (iv) of paragraph ‘A’
+above}, contain required and accurate originator information and required
+beneficiary information, as indicated above.
+b. Customer Identification shall be made if a customer, who is not an account
+holder of the ordering RE, is intentionally structuring domestic wire transfers
+below rupees fifty thousand to avoid reporting or monitoring. In case of non-
+cooperation from the customer, efforts shall be made to establish identity and if
+the same transaction is found to be suspicious, STR may be filed with FIU-IND
+in accordance with the PML Rules.
+c. Ordering RE shall not execute the wire transfer if it is not able to comply with
+the requirements stipulated in this section.
+ii. Intermediary RE:
+a. RE processing an intermediary element of a chain of wire transfers shall
+ensure that all originator and beneficiary information accompanying a wire
+transfer is retained with the transfer.
+b. Where technical limitations prevent the required originator or beneficiary
+information accompanying a cross-border wire transfer from remaining with a
+related domestic wire transfer, the intermediary RE shall keep a record, for at
+least five years, of all the information received from the ordering financial
+institution or another intermediary RE.
+c. Intermediary RE shall take reasonable measures to identify cross-border wire
+transfers that lack required originator information or required beneficiary
+information. Such measures should be consistent with straight-through
+processing.
+d. Intermediary RE shall have effective risk-based policies and procedures for
+determining: (a) when to execute, reject, or suspend a wire transfer lacking
+required originator or required beneficiary information; and (b) the appropriate
+follow-up action including seeking further information and if the transaction is
+found to be suspicious, reporting to FIU-IND in accordance with the PML Rules.
+iii. Beneficiary RE:
+a. Beneficiary RE shall take reasonable measures, including post-event
+monitoring or real-time monitoring where feasible, to identify cross-border wire
+transfers and qualifying domestic wire transfers {viz., transactions as per clauses
+(iii) and (iv) of paragraph ‘A’ above}, that lack required originator information or
+required beneficiary information.
+b. Beneficiary RE shall have effective risk-based policies and procedures for
+determining: (a) when to execute, reject, or suspend a wire transfer lacking
+required originator or required beneficiary information; and (b) the appropriate
+follow-up action follow-up action including seeking further information and if the
+transaction is found to be suspicious, reporting to FIU-IND in accordance with
+the PML Rules.
+Page 32 of 44 Classification: Internal
+Document Classification : Confidential
+iv. Money Transfer Service Scheme (MTSS) providers are required to comply
+with all of the relevant requirements of this Section, whether they are providing
+services directly or through their agents. In the case of a MTSS provider that
+controls both the ordering and the beneficiary side of a wire transfer, the MTSS
+provider:
+a. shall take into account all the information from both the ordering and
+beneficiary sides in order to determine whether an STR has to be filed; and
+b. shall file an STR with FIU, in accordance with the PML Rules, if a transaction
+is found to be suspicious.
+C. Other Obligations
+i. Obligations in respect of REs’ engagement or involvement with
+unregulated entities in the process of wire transfer
+REs shall be cognizant of their obligations under these instructions and ensure
+strict compliance, in respect of engagement or involvement of any unregulated
+entities in the process of wire transfer. More specifically, whenever there is
+involvement of any unregulated entities in the process of wire transfers, the
+concerned REs shall be fully responsible for information, reporting and other
+requirements and therefore shall ensure, inter alia, that,
+i) there is unhindered flow of complete wire transfer information, as mandated
+under these directions, from and through the unregulated entities involved;
+ii) the agreement / arrangement, if any, with such unregulated entities by REs
+clearly stipulates the obligations under wire transfer instructions; and
+iii) a termination clause is available in their agreement / arrangement, if any, with
+such entities so that in case the unregulated entities are unable to support the
+wire information requirements, the agreement / arrangement can be terminated.
+Existing agreements / arrangements, if any, with such entities shall be reviewed
+within three months to ensure aforementioned requirements.
+ii. REs’ responsibility while undertaking cross-border wire transfer with
+respect to name screening (such that they do not process cross-border
+transactions of designated persons and entities)
+REs are prohibited from conducting transactions with designated persons and
+entities and accordingly, in addition to compliance with Chapter IX of the Master
+Direction, REs shall ensure that they do not process cross-border transactions
+of designated persons and entities.
+iii. REs’ responsibility to fulfil record management requirements
+Complete originator and beneficiary information relating to wire transfers shall be
+preserved by the REs involved in the wire transfer, in accordance with Section
+46 of the Master Direction.
+Page 33 of 44 Classification: Internal
+Document Classification : Confidential
+24. Obligations under Weapons of Mass Destruction (WMD) and their Delivery
+Systems (Prohibition of Unlawful Activities) Act, 2005 (WMD Act, 2005):
+a. REs shall ensure meticulous compliance with the “Procedure for
+Implementation of Section 12A of the Weapons of Mass Destruction (WMD) and
+their Delivery Systems (Prohibition of Unlawful Activities) Act, 2005” laid down in
+terms of Section 12A of the WMD Act, 2005 vide Order dated January 30, 2023,
+or any latest amendments updated by the Ministry of Finance, Government of
+India.
+b. In accordance with paragraph 3 of the aforementioned Order, REs shall ensure
+not to carry out transactions in case the particulars of the individual / entity match
+with the particulars in the designated list.
+c. Further, REs shall run a check, on the given parameters, at the time of
+establishing a relation with a customer and on a periodic basis to verify whether
+individuals and entities in the designated list are holding any funds, financial
+asset, etc., in the form of bank account, etc.
+d. In case of match in the above cases, REs shall immediately inform the
+transaction details with full particulars of the funds, financial assets or economic
+resources involved to the Central Nodal Officer (CNO), designated as the
+authority to exercise powers under Section 12A of the WMD Act, 2005. A copy of
+the communication shall be sent to State Nodal Officer, where the account /
+transaction is held and to the RBI. REs shall file an STR with FIUIND covering all
+transactions in the accounts, covered above, carried through or attempted. It may
+be noted that in terms of Paragraph 1 of the Order, Director, FIU-India has been
+designated as the CNO.
+e. REs may refer to the designated list, as amended from time to time, available
+on the portal of FIU-India.
+f. In case there are reasons to believe beyond doubt that funds or assets held by
+a customer would fall under the purview of clause (a) or (b) of sub-section (2) of
+Section 12A of the WMD Act, 2005, REs shall prevent such individual/entity from
+conducting financial transactions, under intimation to the CNO by email, FAX and
+by post, without delay.
+g. In case an order to freeze assets under Section 12A is received by the Res
+from the CNO, REs shall, without delay, take necessary action to comply with the
+Order.
+h. The process of unfreezing of funds, etc., shall be observed as per paragraph
+7 of the Order. Accordingly, copy of application received from an individual/entity
+regarding unfreezing shall be forwarded by RE along with full details of the asset
+frozen, as given by the applicant, to the CNO by email, FAX and by post, within
+two working days.
+i. REs shall verify every day, the ‘UNSCR 1718 Sanctions List of Designated
+Individuals and Entities‘, as available at https://www.mea.gov.in/Implementation-
+of-UNSC-Sanctions-DPRK.htm, to take into account any modifications to the list
+in terms of additions, deletions or other changes and also ensure compliance with
+the ‘Implementation of Security Council Resolution on Democratic People’s
+Republic of Korea Order, 2017’, as amended from time to time by the Central
+Government.
+j. In addition to the above, REs shall take into account – (a) other UNSCRs and
+(b) lists in the first schedule and the fourth schedule of UAPA, 1967 and any
+amendments to the same for compliance with the Government orders on
+Page 34 of 44 Classification: Internal
+Document Classification : Confidential
+implementation of Section 51A of the UAPA and Section 12A of the WMD Act.
+k. REs shall undertake countermeasures when called upon to do so by any
+international or intergovernmental organisation of which India is a member and
+accepted by the Central Government.
+25. Obligations under the Unlawful Activities (Prevention) (UAPA) Act, 1967:
+All offices shall ensure that in terms of Section 51A of the Unlawful Activities (Prevention) (UAPA)
+Act, 1967 and amendments thereto, they do not have any account in the name of individuals / entities
+appearing in the lists of individuals and entities, suspected of having terrorist links, which are
+approved by and periodically circulated by the United Nations Security Council (UNSC). The details
+of the two lists are as under:
+(a) The "ISIL (Da'esh) & Al-Qaida Sanctions List", established and maintained pursuant to Security
+Council resolutions 1267/1989/2253, which includes names of individuals and entities associated with
+the Al-Qaida is available at
+https://scsanctions.un.org/fop/fopxml=htdocs/resources/xml/en/consolidated.xml&xslt=htdocs/resou
+rces/xsl/en/al-qaida-r.xsl
+(b) The"Taliban Sanctions List”, established and maintained pursuant to Security Council resolution
+1988 (2011), which includes names of individuals and entities associated with the Taliban is available
+at
+https://scsanctions.un.org/fop/fopxml=htdocs/resources/xml/en/consolidated.xml&xslt=htdocs/resou
+rces/xsl/en/taliban-r.xsl.
+All offices shall also ensure to refer to the lists as available in the Schedules to the Prevention and
+Suppression of Terrorism (Implementation of Security Council Resolutions) Order, 2007, as amended
+from time to time. The aforementioned lists, i.e., UNSC Sanctions Lists and lists as available in the
+Schedules to the Prevention and Suppression of Terrorism (Implementation of Security Council
+Resolutions) Order, 2007, as amended from time to time, shall be verified on daily basis and any
+modifications to the lists in terms of additions, deletions or other changes shall be taken into account
+by all the offices for meticulous compliance.
+Details of accounts resembling any of the individuals/entities in the lists shall be reported to FIU-IND
+apart from advising Ministry of Home Affairs (MHA) as required under UAPA notification dated
+February 2, 2021 (Annex II of (Annex II of Master Direction - Know Your Customer (KYC) Direction,
+2016 (Updated as on January 04, 2024).
+Freezing of Assets under Section 51A of UAPA, 1967: The procedure laid down in the UAPA
+Order dated February 2, 2021 (Annex II of Master Direction - Know Your Customer (KYC) Direction,
+2016 (Updated as on January 04, 2024), shall be strictly followed and meticulous compliance with
+the Order issued by the Government shall be ensured. The list of Nodal Officers for UAPA is available
+on the website of MHA.
+Page 35 of 44 Classification: Internal
+Document Classification : Confidential
+Annexure I
+CDD & OFFICIALLY VALID DOCUMENTS (OVD)
+1. INDIVIDUALS
+Officially Valid Documents (OVD) means the passport, the driving license, proof of
+possession of Aadhaar number, the voters identity card issued by the election
+commission of India, job card issued by NREGA duly signed by an Officer of the state
+government and letter issued by the National Population Register containing details of
+name and address.
+Provided that,
+a. where the Customer submits his proof of possession of Aadhaar number as an
+OVD, he may submit it in such form as are issued by the Unique Identification
+Authority of India.
+b. where the OVD furnished by the Customer does not have updated address, the
+following documents shall be deemed to be OVDs for the limited purpose of proof of
+address:-
+i. utility bill which is not more than two months old of any service provider (electricity,
+telephone, post-paid mobile phone, piped gas, water bill).
+ii. property or Municipal tax receipt.
+iii. pension or family pension payment orders (PPOs) issued to retired employees by
+Government Departments or Public Sector Undertakings if they contain the
+address.
+iv. letter of allotment of accommodation from employer issued by State Government
+or Central Government Departments, statutory or regulatory bodies, public sector
+undertakings, scheduled commercial banks, financial institutions and listed
+companies and leave and license agreements with such employers allotting
+official accommodation.
+c. the Customer shall submit OVD with current address within a period of three months
+of submitting deemed OVDs
+d. where the OVD presented by a foreign national does not contain the details of
+address, in such case the documents issued by the Government departments of
+foreign jurisdictions and letter issued by the Foreign Embassy or Mission in India
+shall be accepted as proof of address.
+2. NON-INDIVIDUALS (Companies, Firms, Trusts etc.)
+KYC norms are applicable to non-individuals also. The requirements are as under.
+Certified copies of each of the following documents shall be obtained:
+a) Certificate of incorporation with Memorandum & Articles of
+Association
+b) Resolution of Board of Directors for opening the account and
+Legal entities
+Power of Attorney / authorization of persons to operate the
+(Companies)
+account on its behalf
+c) PAN allotment letter/ PAN of the Company
+d) Documents as specified in para 1 above of the individuals holding
+attorney /authorisation to transact on company’s behalf.
+e) CDD of the Individual beneficial owner as detailed in para 6.3
+Page 36 of 44 Classification: Internal
+Document Classification : Confidential
+f) the names of the relevant persons holding senior management
+position; and
+g) the registered office and the principal place of its business, if it is
+different.
+Certified copies of each of the following documents shall be obtained:
+a) Registration certificate.
+b) Partnership deed.
+c) PAN of the partnership firm
+Partnership d) Documents as specified in para 1 above of the individuals holding
+Firms attorney /authorisation to transact on its behalf.
+e) the names of all the partners and address of the registered office,
+and the principal place of its business, if it is different.
+For opening an account, CDD of the individual (proprietor) as
+mentioned in para 6.3 shall be carried out PLUS any two of the below
+mentioned documents,
+a) Registration certificate including Udyam Registration Certificate
+(URC)
+b) Certificate/License issued under Shops & Establishment Act
+c) GST and Income Tax returns
+d) GST registration certificate (provisional/ final)
+Proprietary firms
+e) Utility bills such as electricity, water, telephone bills etc.
+f) Complete Income Tax Return (not just the acknowledgement) in
+the name of the sole proprietor where the firm's income is reflected,
+duly authenticated/acknowledged by the Income Tax authorities.
+g) IEC (Import Export Code) issued to the proprietary concern by the
+office of DGFT or Licence/certificate of practice issued in the name
+of the proprietary concern by any professional body incorporated
+under a statute.
+In cases where the MAFIL is satisfied that it is not possible to furnish
+two such documents, MAFIL may, at its discretion, accept only one of
+those documents as proof of business/activity.
+Provided MAFIL shall undertake contact point verification and collect
+such other information and clarification as would be required to
+establish the existence of such firm, and shall confirm and satisfy itself
+that the business activity has been verified from the address of the
+proprietary concern.
+Page 37 of 44 Classification: Internal
+Document Classification : Confidential
+Certified copies of each of the following documents shall be obtained:
+a) Certificate of Registration;
+b) Trust Deed
+c) Power of Attorney authorizing a person to carry out transactions
+on behalf of the trust
+Trusts
+d) Permanent Account Number or Form No.60 of the trust; and
+e) such documents as are required for an individual under sub-rule
+(1) relating to beneficial owner, managers, officers or employees,
+as the case may be, holding an attorney to transact on its behalf
+f) the names of the beneficiaries, trustees, settlor, protector and
+authors of the trust and the address of the registered office of the
+trust; and
+list of trustees and documents as are required for individuals
+under sub-rule (4) for those discharging role as trustee and
+authorised to transact on behalf of the trust.
+For opening an account of an unincorporated association or a body
+of individuals, certified copies of each of the following documents
+shall be obtained:
+(a) Resolution of the managing body of such association or body of
+individuals
+Any
+(b) Permanent Account Number or Form No. 60 of the
+unincorporated
+association or unincorporated association or a body of individuals
+a body of (c) Power of attorney granted to transact on its behalf
+individuals
+(d) Documents, as specified in Para 1, of the person holding an
+attorney to transact on its behalf and
+(e) Such information as may be required by MAFIL to collectively
+establish the legal existence of such an association or body of
+individuals.
+Page 38 of 44 Classification: Internal
+Document Classification : Confidential
+For opening accounts of juridical persons not specifically covered in
+the earlier part, such as societies, universities and local bodies like
+Juridical
+village panchayats, certified copies of the following documents shall
+persons not
+specifically be obtained:
+covered in the (a) Document showing name of the person authorised to act on
+earlier part, behalf of the entity.
+such as
+(b) Documents, as specified in Para 1, of the individual holding an
+societies,
+attorney to transact on its behalf and
+universities, and
+(c) Such documents as may be required by MAFIL to establish the
+local bodies like
+village legal existence of such an entity/juridical person.
+panchayats
+Annexure II
+REGULATED ENTITIES:
+a. All Scheduled Commercial Banks (SCBs)/ Regional Rural Banks (RRBs)/ Local
+Area Banks (LABs)/ All Primary (Urban) Co-operative Banks (UCBs) /State and
+Central Co-operative Banks (StCBs / CCBs) and any other entity which has been
+licensed under Section 22 of Banking Regulation Act, 1949.
+b. All India Financial Institutions (AIFIs).
+c. All Non-Banking Finance Companies (NBFCs), Miscellaneous Non-Banking
+Companies (MNBCs) and Residuary Non-Banking Companies (RNBCs).
+d. All Payment System Providers (PSPs)/ System Participants (SPs) and Prepaid
+Payment Instrument Issuers (PPI Issuers)
+e. All authorized persons (APs) including those who are agents of Money Transfer
+Service Scheme (MTSS), regulated by the Regulator.
+f. Depository Participant (DP) service
+Page 39 of 44 Classification: Internal
+Document Classification : Confidential
+Annexure III
+ILLUSTRATIVE LIST OF SUSPICIOUS TRANSACTIONS
+Broad categories of reasons for suspicion and examples of suspicious transactions
+generally observed in Non- Banking Financial Companies are indicated as under:
+1. IDENTITY OF CLIENT:
+a) False identification documents
+b) Identification documents which could not be verified within reasonable time
+c) Accounts opened with names very close to other established business entities.
+2. BACKGROUND OF CLIENT:
+Suspicious background or links with known criminals.
+3. MULTIPLE ACCOUNTS:
+Large number of accounts having a common account holder, introducer, or authorized
+personnel.
+4. SIGNATORY WITH NO RATIONALE:
+a) Unexplained transfers between multiple accounts with no rationale.
+5. ACTIVITY IN ACCOUNTS:
+a) Unusual activity compared with past transactions- Sudden activity in dormant
+accounts;
+b) Activity inconsistent with what would be expected from declared business.
+6. NATURE OF TRANSACTIONS:
+a) Unusual or unjustified complexity.
+b) No economic rationale or bonafide purpose.
+c) Frequent cash transactions.
+d) Nature of transactions inconsistent with what would be expected from declared
+business.
+7. VALUE OF TRANSACTIONS:
+a) Value just under the reporting threshold amount in an apparent attempt to avoid
+reporting.
+b) Value inconsistent with the client’s apparent financial standing.
+Page 40 of 44 Classification: Internal
+Document Classification : Confidential
+8. INDICATORS OF SUSPICIOUS TRANSACTIONS:
+a) Reluctant to part with information, data, and documents.
+b) Submission of false documents, purpose of loan and detail of accounts.
+c) Reluctance to furnish details of source of funds.
+d) Reluctance to meet in person, representing through power of attorney.
+e) Approaching a distant branch away from own address.
+f) Maintaining multiple accounts without explanation.
+g) Payment of initial contribution through unrelated third-party account.
+h) Suggesting dubious means for sanction of loan.
+i) Where transactions do not make economic sense.
+j) Where doubt about beneficial ownership.
+k) Encashment of loan through a fictitious bank account.
+l) Sale consideration quoted higher or lower than prevailing prices.
+m) Request for payment in favor of third party with no relation to transaction.
+n) Usage of loan amount for purposes other than stipulated in connivance with
+vendors, or agent.
+o) Frequent request for change of address.
+p) Over-payment of instalments with a request to refund the overpaid amount
+Page 41 of 44 Classification: Internal
+Document Classification : Confidential
+Annexure IV
+CUSTOMERS OF SPECIAL CATEGORY (CSC):
+SPECIAL CATEGORY CUSTOMERS IDENTIFIABLE IN DP :-
+a. Non-Resident Customers
+b. High Net worth Customers,
+c. Trust, Charities, NGOs, and organizations receiving donations
+d. Companies having close family shareholdings or beneficial ownership
+e. Politically exposed persons (PEP) of foreign origin
+f. Current / Former Head of State, Current or Former Senior High-profile politicians and
+connected persons (immediate family, Close advisors and companies in which such
+individuals have interest or significant influence)
+g. Companies offering foreign exchange services.
+h. Customers in high risk countries (where existence / effectiveness of money
+laundering controls is suspect, where there is unusual banking secrecy, Countries
+active in narcotics production, Countries where corruption (as per Transparency
+International Corruption Perception Index) is highly prevalent, Countries against
+which government sanctions are applied, Countries reputed to be any of the following
+– Havens / sponsors of international terrorism, offshore financial centres, tax havens,
+countries where fraud is highly prevalent. ( In accordance with FATF list of high risk
+and monitored jurisdictions (https://www.fatf-gafi.org/countries/)
+i. Non face to face Customers.
+j. Customers with dubious reputation as per public information available etc. The
+above-mentioned list is only illustrative and not exclusive
+Page 42 of 44 Classification: Internal
+Document Classification : Confidential
+Annexure V
+DIGITAL KYC PROCESS (RBI GUIDELINES)
+A. The RE shall develop an application for digital KYC process which shall be made
+available at Customer touch points for undertaking KYC of their Customers and the
+KYC process shall be undertaken only through this authenticated application of the
+REs.
+B. The access of the Application shall be controlled by the REs and it should be ensured
+that the same is not used by unauthorized persons. The Application shall be accessed
+only through login-id and password or Live OTP or Time OTP controlled mechanism
+given by REs to its authorized officials. C. The Customer, for the purpose of KYC, shall
+visit the location of the authorized official of the RE or vice-versa. The original OVD shall
+be in possession of the Customer.
+C. The RE must ensure that the Live photograph of the Customer is taken by the authorized
+officer and the same photograph is embedded in the Customer Application Form (CAF).
+Further, the system Application of the RE shall put a water-mark in readable form having
+CAF number, GPS coordinates, authorized official’s name, unique employee Code
+(assigned by REs) and Date (DD:MM:YYYY) and time stamp (HH:MM:SS) on the
+captured live photograph of the Customer.
+D. The Application of the RE shall have the feature that only live photograph of the
+Customer is captured and no printed or video-graphed photograph of the Customer is
+captured. The background behind the Customer while capturing live photograph should
+be of white colour and no other person shall come into the frame while capturing the live
+photograph of the Customer.
+E. Similarly, the live photograph of the original OVD or proof of possession of Aadhaar
+where offline verification cannot be carried out (placed horizontally), shall be captured
+vertically from above and watermarking in readable form as mentioned above shall be
+done. No skew or tilt in the mobile device shall be there while capturing the live
+photograph of the original documents.
+F. The live photograph of the Customer and his original documents shall be captured in
+proper light so that they are clearly readable and identifiable.
+G. Thereafter, all the entries in the CAF shall be filled as per the documents and information
+furnished by the Customer. In those documents where Quick Response (QR) code is
+available, such details can be auto populated by scanning the QR code instead of
+manual filing the details. For example, in case of physical Aadhaar/e-Aadhaar
+downloaded from UIDAI where QR code is available, the details like name, gender, date
+of birth and address can be auto-populated by scanning the QR available on Aadhaar/e-
+Aadhaar.
+Once the above-mentioned process is completed, a One Time Password (OTP) message
+containing the text that ‘Please verify the details filled in form before sharing OTP’ shall be
+sent to Customer’s own mobile number. Upon successful validation of the OTP, it will be
+treated as Customer signature on CAF. However, if the Customer does not have his/her
+Page 43 of 44 Classification: Internal
+Document Classification : Confidential
+own mobile number, then mobile number of his/her family/relatives/known persons may be
+used for this purpose and be clearly mentioned in CAF. In any case, the mobile number of
+the authorized officer registered with the RE shall not be used for Customer signature. The
+RE must check that the mobile number used in Customer signature shall not be the mobile
+number of the authorized officer.
+H. The authorized officer shall provide a declaration about the capturing of the live
+photograph of Customer and the original document. For this purpose, the authorized
+official shall be verified with One Time Password (OTP) which will be sent to his mobile
+number registered with the RE. Upon successful OTP validation, it shall be treated as
+authorized officer’s signature on the declaration. The live photograph of the authorized
+official shall also be captured in this authorized officer’s declaration.
+I. After all these activities, the Application shall give information about the completion of
+the process and submission of activation request to activation officer of the RE and
+generate the transaction-id/reference-id number of the process. The authorized officer
+shall intimate the details regarding transaction-id/reference-id number to Customer for
+future reference.
+k) The authorized officer of the RE shall check and verify that:- (i) information available in
+the picture of document matches the information entered by authorized officer in CAF.
+(ii) live photograph of the Customer matches with the photo available in the document.;
+and (iii) all of the necessary details in CAF including mandatory field are filled properly.
+l) On Successful verification, the CAF shall be digitally signed by authorized officer of the
+RE who will take a print of CAF, get signatures/thumb-impression of Customer at
+appropriate place, then scan and upload the same in system. Original hard copy may be
+returned to the Customer.
+Page 44 of 44 Classification: Internal
+Document Classification : Confidential

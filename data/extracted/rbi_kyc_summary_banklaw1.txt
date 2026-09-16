@@ -1,0 +1,130 @@
+KYC under RBI Master Direction- Quick Summary for Common Situations
+Basis: RBI Master Direction- Know Your Customer (KYC) Direction, 2016- Updated- 6.11.2024
+By
+Pramod Khandelwal and Rajeev Dewal
+1. Objective: Know the customer, Monitor customer’s activity, Keep records, Report to FIU - To prevent money laundering.
+2. Applicable to: banks and other RBI regulated entities (RE).
+3. Covers: All customers (including walk-ins).
+4. Includes: (a) Customer Acceptance; (b) Risk Management; (c) Customer Identification; (d) Transaction Monitoring.
+5. Customer Acceptance is subject to Customer Due Diligence (CDD) that includes identifying & verifying customer.
+6. CDD is required for: (a) Establishing account- based relationship; (b) Carrying out transactions (viz. Domestic:
+remittances, sale of pre-paid instruments, third party product sales; International Money Transfers) for walk-in customers.
+7. Exemptions: (a) Small Accounts1: Simple identification procedure is allowed; (b) Domestic transactions: of less than
+₹50,000/- no identification required.
+8. CDD is required at customer level and not for every account.
+9. ‘Customer’ for CDD purpose includes: (a) Person for whom transaction executed/ account opened, (b) Authorised
+signatories, (c) PoA holders and (d) Beneficial owners2.
+10. CDD Documents comprise (a) Aadhaar number or Officially Valid Document (OVD) of the individual(s) in whose name the
+account stands/ individual(s) connected with the account; and (b) Other Documents related to the entity.
+11. OVDs are: (a) Passport; (b) Driving Licence; (c) Proof of possession of AADHAAR number; (c) Voter's Identity Card; (d)
+NREGA Job Card; and (e) Letter by National Population Register containing name and address.
+12. Certified copy/ e-document of OVD to be obtained.
+13. Certified copy means - RE official verifying (i) the hard copy with the original physical or (ii) the image (with geo-tagging and
+date/time stamp) by Digital KYC process (per Annexure- I to Master Direction).
+14. AADHAAR Number is compulsory for all DBT Accounts (except as exempted under Clause 16 of the Master Direction). In
+other cases, it is voluntary.
+15. AADHAAR Number should be verified using e-KYC authentication or offline verification provided by Unique Identification
+Authority of India (UIDAI).
+16. Video Based CDD (V- CIP) is allowed for: (a) individual customers, proprietor in case of proprietorship, authorised
+signatories, PoA holders and Beneficial Owners (BOs); (b) conversion of non- face- to face accounts opened (using
+AADHAAR OTP based e- KYC authentication) to regular accounts; and (c) KYC updating.
+17. For persons already customer of any FI to first ascertain KYC Identifier and retrieve KYC Records from CKYCR, and update
+it, if and as required.
+1
+Small Account is opened with the customer’s self- attested photo and attestation of customer’s signature/ thumb impression
+by bank official.
+Small Account is a savings bank account of an individual person with following conditions:
+- Maximum credits in a financial year is Rs. 1 lac (except Government grant/ benefit etc.);
+- Maximum debits in a month is ₹10,000/-;
+- Maximum balance ₹50,000/-; and
+- Requirements under Para 23 of the Master Direction.
+2
+Beneficial owner means an individual who ultimately owns or controls the customer or the person on whose behalf a transaction
+is being conducted and also a person who exercises ultimate effective control over a juridical person. Para 3(iv) of the Master
+Direction provides who is to be taken as beneficial owner for various types of non- individuals.
+Version- 14.5.2025 www.banklaw.in Page 1 of 3
+KYC under RBI Master Direction- Quick Summary for Common Situations
+Basis: RBI Master Direction- Know Your Customer (KYC) Direction, 2016- Updated- 6.11.2024
+By
+Pramod Khandelwal and Rajeev Dewal
+Table- 1: Account of individual(s) (i.e., in the name of single/ two or more individual persons): Obtain (A) below
+Obtain for Account Holder i.e., each person in whose name the account would stand, documents per A below
+(A) For DBT Accounts: AADHAAR and the customer’s declaration that the account is for DBT
+(A) For Non DBT Accounts:
+(i) KYC identifier with consent for downloading KYC Records from CKYCR, to seek document in cases
+specified in Para 56 (j) of Master Direction.
+OR
+(ii) Where customer is willing to submit AADHAAR voluntarily: AADHAAR and the
+customer’s declaration that AADHAAR is submitted voluntarily + PAN or Income Tax Form 60
+OR
+(iii) Any OVD with identity and address+ Photograph (if e-document not provided)+ PAN or Income Tax Form
+60
+Note: In addition to (A) above, documents for business/ activity/ financial status may be obtained by RE.
+Table- 2: Account of Proprietary Firm: Obtain (B) + (C) below
+(B) Obtain for the proprietor- documents under Table- 1 (A) above
+(C) Obtain any 2 of the following in the name of the Proprietary Firm: Alternate:
+(a) Registration Certificate (Including Udyam Registration Certificate) (URC)
+(b) Shop & Establishment Act Licence
+If 2 documents not
+(c) Sales Tax and Income Tax Returns
+available, to obtain 1
+(d) CST/ VAT/ GST Certificate
+and conduct contact
+(e) Sales Tax/ Service Tax/ Professional Tax Registration Certificate
+(f) Importer Exporter Code (IEC) point verification to
+(g) Licence/ Practice Certificate by Statutory Professional Body confirm existence and
+operations
+(h) Income Tax Return in the name of proprietor showing Proprietary Firm's income
+authenticated/ acknowledged by Income Tax Authority
+(i) Utility bills such as electricity, water, and landline telephone bill etc.
+Table- 3: Account of Company: Obtain (D) below
+(D) Obtain all the following documents/ information:
+(a) Certificate of incorporation of the Company,
+(b) Memorandum and Articles of Association of the Company
+(c) PAN of the Company
+(d) Board Resolution of the Company
+(e) PoA issued by the Company to the signatories
+(f) Names of senior management persons
+(g) Address of Registered Office and Principal Place of Business
+(h) Documents under Table- 1 (A) for each signatory, PoA holder, and Beneficial Owner
+Table- 4: Account of Registered Partnership Firm: Obtain (E) below
+(E) Obtain all the following documents/ information:
+(a) Registration Certificate
+(b) Partnership Deed
+(c) PAN of the Partnership Firm
+(d) Names of all Partners
+(e) Address of Registered Office and Principal Place of Business
+(f) Documents under Table- 1 (A) for each signatory, PoA holder and Beneficial Owner
+Table- 5: Account of Registered Trust: Obtain (F) below
+(F) Obtain all the following documents/ information:
+(a) Registration Certificate
+(b) Trust Deed
+(c) PAN or Form 60 of the Trust
+(d) Trustees’ Resolution (Advisable though not stated in Master Directions)
+(e) Declaration from each trustee about their status as trustee
+(f) Names of the beneficiaries, trustees, settlor, protector (if any) and authors of the trust
+(g)Address of the Registered Office of the Trust
+(e) Documents under Table- 1 (A) above for each Beneficial Owner, Trustee, Signatory and PoA holder
+Version- 14.5.2025 www.banklaw.in Page 2 of 3
+KYC under RBI Master Direction- Quick Summary for Common Situations
+Basis: RBI Master Direction- Know Your Customer (KYC) Direction, 2016- Updated- 6.11.2024
+By
+Pramod Khandelwal and Rajeev Dewal
+Table- 6: Account of Unincorporated/ Unregistered Entity
+(Association/ Body of Individuals/ Unregistered Society/ Unregistered Trust/ Unregistered Partnership Firm)
+Obtain (G) below
+(G) Obtain all the following documents/ information:
+(a) Constitution document of the Entity (Advisable though not required under the Master Direction)
+(b) Resolution of the Managing Body of the Entity.
+(c) PAN or Form 60 of the Entity
+(d) POA issued by the Entity to the signatories
+(e) Documents under Table- 1 (A) above for each signatory, PoA holder and Beneficial Owner
+(f) Information to collectively establish the legal existence of the Entity
+Table- 7: Account of Juridical Person as Entity (i.e. any Entity not covered under Table 1 to 6 above)
+Obtain (H) below
+(H) Obtain all the following documents/ information:
+(a) Document showing name of the person(s) authorised to act on behalf of the Entity
+(b) Documents to establish the legal existence of the Entity/ Juridical Person
+(c) Documents under Table- 1 (A) above for each signatory and PoA holder
+End
+Version- 14.5.2025 www.banklaw.in Page 3 of 3

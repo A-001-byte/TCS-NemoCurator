@@ -1,0 +1,186 @@
+RBI Revised Master Directions on
+Fraud Risk Management: July 2024
+Introduction
+The Reserve Bank of India (RBI) issued revised Master Directions on Fraud Risk Management in July 2024, superseding
+previous guidelines and consolidating 36 existing circulars. These comprehensive directions apply to a wide range of
+regulated entities, including commercial banks, cooperative banks, and non-banking finance companies.
+Purpose and Objective
+The Reserve Bank of India's Revised Master Directions on Fraud Risk Management, issued on July 15, 2024, aim to provide
+a robust framework for the prevention, early detection, and timely reporting of frauds in regulated entities (REs). The
+revised guidelines aim to strengthen the role of boards in overseeing fraud risk management, enhance internal audit and
+control frameworks and ensure compliance with principles of natural justice.
+Compliance with the Principles of Natural Justice before declaration of account as fraud
+The Master Directions now expressly require that the REs shall ensure compliance with the principles of natural justice in
+a time-bound manner before classifying Persons / Entities as fraudulent. It duly takes into account the Hon’ble Supreme
+Court Judgment dated March 27, 2023 (Civil Appeal No. 7300 of 2022 in the matter of State Bank of India & Ors. Vs. Rajesh
+Agarwal & Ors.). In this matter, the Supreme Court of India addressed the penal measures for fraudulent borrowers as
+stipulated under Clause 8.12 of the RBI's Master Directions on Frauds. The Court emphasized the application of penal
+provisions similar to those for wilful defaulters, extending the restrictions to promoters, directors and whole-time
+directors of the borrowing company.
+Notably, fraudulent borrowers are barred from availing bank finance from various financial institutions for five years from
+the date of full repayment of the defrauded amount. The Court also highlighted the significance of the principles of natural
+justice, asserting that borrowers must be given an opportunity to be heard before their accounts are classified as
+fraudulent. Consequently, the Court mandated that banks must serve a notice and provide a hearing to the borrowers
+before classifying their accounts as fraudulent, ensuring compliance with the principles of natural justice.
+Additionally,, the framework on Early Warning Signals (EWS) and Red Flagging of Accounts (RFA) has been further
+strengthened for early detection and prevention of frauds in the REs including timely reporting to Law Enforcement
+Agencies and Supervisors. Further, requirement for Data Analytics and Market Intelligence Unit for strengthening risk
+management systems have been mandated. These Directions have now been made applicable to Regional Rural Banks,
+Rural Cooperative Banks and Housing Finance Companies as well.The intent is to promote better fraud risk management
+systems and framework in such REs. With the issuance of these Master Directions, the existing 36 Circulars on the subject
+stand withdrawn.
+Following are the major requirements of the RBI Guidelines on fraud risk management
+Criteria for Classification of Accounts as Fraud
+▪ Early Warning Signals (EWS) and Red Flagging of Accounts (RFA):
+− EWS Framework: Banks must establish a framework for identifying early warning signals, integrating with Core
+Banking Solutions (CBS) for real-time monitoring (Clause 8.3).
+− Red-Flagged Account (RFA): An account with one or more EWS indicators that suggest fraudulent activity
+requires deeper investigation and preventive measures (Clause 8.3.1).
+© Economic Laws Practice 2024
+− Reporting: Accounts meeting the CRILC (Central Repository of Information on Large Credits. It is a Database
+maintained by Reserve Bank of India by collection of Loan and Investment data of borrowers from all Financial
+Institutions) threshold and identified as RFA must be reported to the RBI within seven days (Clause 8.3.3).
+▪ Independent Confirmation:
+− Banks must ensure third-party service providers involved in the fraud are held accountable, with their details
+reported to the Indian Banks' Association (IBA) (Clause 8.12.4).
+▪ Staff Accountability:
+− Banks must examine staff accountability in fraud cases promptly. For public sector banks (PSBs) and AIFIs, this
+includes referring cases to the Advisory Board for Banking and Financial Frauds (ABBFF) (Clause 8.10.1).
+▪ Penal Measures:
+− Persons/Entities classified as fraud by banks are debarred from accessing credit facilities for five years post-
+repayment or settlement (Clause 8.12.1).
+Reporting Mechanism
+▪ Reporting to Law Enforcement Agencies (LEAs):
+− Private Sector/Foreign Banks: Report frauds below INR 1 crore to State/UT Police; INR1 crore and above to
+SFIO and Police (Clause 8.11.1).
+− Public Sector Banks/RRBs: Report frauds below INR 6 crore to State/UT Police; INR 6 crore and above to CBI
+(Clause 8.11.1).
+▪ Reporting to RBI:
+− Fraud Monitoring Returns (FMRs): Banks must report individual fraud cases immediately but no later than 14
+days from classification (Clause 8.4.2).
+− Central Fraud Registry (CFR): Banks must utilize the CFR for effective fraud risk management (Clause 3.1).
+▪ Closure of Fraud Cases:
+− Fraud cases can be closed upon completion of LEA actions and staff accountability examination (Clause 5.1).
+− In this context, it is important to note the requirements of RBI Guidelines on settlement of fraud cases in the light
+of RBI Circular dated June 08, 2023.
+Gist of RBI Circular Dated June 8, 2023: Framework for Compromise Settlements and Technical Write-
+offs
+Compromise settlements are viewed as a viable resolution mechanism, ensuring early recoveries while maintaining
+ongoing legal actions against fraudulent or wilful defaulters.
+Compromise Settlement in Wilful Default and Fraud Cases: The RBI circular clarified that the provision allowing
+banks to enter into compromise settlements with borrowers classified as fraud or wilful defaulters was previously
+communicated in various guidelines, including the letter dated May 10, 2007, and the Master Circulars on Wilful
+Defaulters (July 1, 2015) and Frauds (July 1, 2016). The circular emphasizes that the penal measures applicable to
+wilful defaulters and fraudulent borrowers remain unchanged. These include restrictions on obtaining new credit
+and debarment from institutional finance for a specified period.
+The circular also clarified that the introduction of a minimum 12-month cooling period applies to general compromise
+settlements, not affecting the penal measures for wilful defaulters or fraudulent borrowers. These measures
+continue to restrict borrowing despite the cooling period. It further clarified that compromise settlements must be
+approved by the bank's Board and adhere to board-approved policies. Settlements involving fraud or wilful default
+must continue criminal proceedings and be subject to judicial consent if recovery proceedings are ongoing.
+© Economic Laws Practice 2024
+Filing of FIR and Other Legal Actions
+▪ FIR Filing: Banks must report fraud incidents to relevant LEAs and file FIRs promptly, ensuring coordination with LEAs
+for investigation and further legal action (Clause 8.11.1).
+Key Changes as compared to 2016 RBI Guidelines on the Issue
+Aspect 2016 Guidelines 2024 Revised Guidelines
+Governance Structure Basic Board oversight Enhanced Board roles, SCBMF, RMCB oversight
+Natural Justice Not explicitly required Mandatory compliance with natural justice principles
+EWS and RFA Basic EWS framework Comprehensive EWS integrated with CBS, RFA framework
+Data Analytics Not mandatory Required establishment of Data Analytics Units
+Reporting Mechanism Detailed FMR requirements Streamlined FMR, CFR, CPFIR reporting
+Penal Measures Standard penalties Five-year debarment post-repayment/settlement
+List of the Early Warning Signals (EWS)
+▪ Default in undisputed payment to the statutory bodies as declared in the Annual report.
+▪ Bouncing of high-value cheques.
+▪ Frequent change in the scope of the project to be undertaken by the borrower.
+▪ Delay observed in payment of outstanding dues.
+▪ Frequent invocation of BGs and devolvement of LCs.
+▪ Underinsured or overinsured inventory.
+▪ Invoices devoid of TAN and other details.
+▪ Dispute on the title of collateral securities.
+▪ Funds coming from other banks to liquidate the outstanding loan amount unless in normal course.
+▪ Request received from the borrower to postpone the inspection of the godown for flimsy reasons.
+▪ Funding of the interest by sanctioning additional facilities.
+▪ Exclusive collateral charged to several lenders without NOC of existing charge holders.
+▪ Concealment of certain vital documents like master agreement, insurance coverage.
+▪ Floating front/associate companies by investing borrowed money.
+▪ Critical issues highlighted in the stock audit report.
+▪ Liabilities appearing in ROC search report, not reported by the borrower in its annual report.
+▪ Frequent request for general-purpose loans.
+▪ Frequent ad hoc sanctions.
+▪ Non-routing of sales proceeds through consortium/member bank/lenders to the company.
+▪ LCs issued for local trade/related party transactions without underlying trade transaction.
+▪ High-value RTGS payment to unrelated parties.
+▪ Heavy cash withdrawal in loan accounts.
+▪ Non-production of original bills for verification upon request.
+▪ Significant movements in inventory, disproportionately differing vis-a-vis change in turnover.
+▪ Significant movements in receivables, disproportionately differing vis-a-vis change in turnover and/or increase
+in aging of the receivables.
+▪ Disproportionate change in other current assets.
+© Economic Laws Practice 2024
+▪ Significant increase in working capital borrowing as a percentage of turnover.
+▪ Increase in Fixed Assets, without corresponding increase in long-term sources (when project is implemented).
+▪ Increase in borrowings, despite huge cash and cash equivalents in the borrower's balance sheet.
+▪ Frequent change in accounting period and/or accounting policies.
+▪ Costing of the project which is in wide variance with the standard cost of installation of the project.
+▪ Claims not acknowledged as debt high.
+▪ Substantial increase in unbilled revenue year after year.
+▪ Large number of transactions with interconnected companies and large outstanding from such companies.
+▪ Substantial related party transactions.
+▪ Material discrepancies in the annual report.
+▪ Significant inconsistencies within the annual report (between various sections).
+▪ Poor disclosure of materially adverse information and no qualification by the statutory auditors.
+▪ Raid by Income tax/sales tax/central excise duty officials.
+▪ Significant reduction in the stake of promoter/director or increase in the encumbered shares of
+promoter/director.
+▪ Resignation of the key personnel and frequent changes in the management.
+What are the Compliance measures Regulated Entities can develop
+▪ Board-Approved Policy: Develop and periodically review a comprehensive fraud risk management policy (Clause
+2.1.3).
+▪ EWS and RFA Framework: Implement robust systems for early detection and red-flagging of suspicious accounts
+(Clause 8.3.1).
+▪ Data Analytics Units: Establish dedicated units for continuous monitoring and analysis of transactions (Clause 8.3.5).
+▪ Timely Reporting: Adhere to specified timelines for reporting frauds to RBI and LEAs (Clause 3.2.1).
+▪ Staff Accountability: Promptly investigate and conclude staff accountability in fraud cases (Clause 8.10.1).
+▪ Coordination with LEAs: Ensure effective coordination and follow-up with LEAs for fraud investigations (Clause
+8.11.2).
+Review and Reporting Requirements
+▪ Board Reports: All frauds of INR 0.1 million and above must be reported to the Board promptly upon detection (Clause
+4.1).
+▪ Quarterly Review: Information relating to frauds for each quarter must be placed before the Audit Committee of the
+Board (Clause 4.2.1).
+▪ Annual Review: An annual review of frauds must be conducted and presented to the Board before the end of the
+June quarter (Clause 4.3.1).
+Other Requirements
+▪ Legal Audit: Title deeds and other documents for all credit exposures of ₹5 crore and above must be subject to
+periodic legal audit (Clause 9.1.1).
+▪ Filing Complaints with LEAs: Banks must file complaints with LEAs promptly upon detection of fraud (Clause 8.11.1).
+▪ Penal Measures: Fraudulent borrowers are debarred from accessing credit facilities for five years from the date of
+full payment of the defrauded amount (Clause 8.12.1).
+© Economic Laws Practice 2024
+Summary of Key Reporting Mechanism
+Reporting Requirement Threshold/Details Timeframe
+Fraud Monitoring Returns All fraud cases Within 14 days of classification
+(FMRs)
+Central Fraud Registry (CFR) Utilization for effective fraud risk Ongoing
+management
+Flash Report (FR) Frauds involving ₹50 million and above Within one week of detection
+Monthly Certificate Confirmation of FMR submission Within seven days from the end of the
+month
+Fraud Reports to LEAs Private Banks: below ₹1 crore to Ongoing
+State/UT Police; above ₹1 crore to SFIO
+and Police
+Public Sector Banks/RRBs: below ₹6 Ongoing
+crore to State/UT Police; above ₹6 crore
+to CBI
+The revised RBI Master Directions on Fraud Risk Management issued in July 2024 is a significant step in enhancing the
+robustness of fraud prevention and control measures within India's financial sector. By emphasizing the principles of
+natural justice, the new guidelines ensure that the rights of all stakeholders are protected while maintaining the integrity
+of the financial system. The detailed requirements for reporting, audit, and compliance provide a clear framework for
+regulated entities to follow, promoting transparency and accountability.
+We hope you have found this information useful. For any queries/clarifications please write to us at insights@elp-in.com
+or write to our authors:
+Mukesh Chand, Senior Counsel – Email – MukeshChand@elp-in.com
+Disclaimer: The information provided in this update is intended for informational purposes only and does not constitute legal opinion or advice.
+© Economic Laws Practice 2024

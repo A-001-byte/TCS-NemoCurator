@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+*.pyc
+node_modules/
+dashboard/dist/
+nemo_curator_install.log
+spacy_model_dl.log
+.claude/scheduled_tasks.lock

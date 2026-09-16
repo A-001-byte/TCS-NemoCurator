@@ -1,0 +1,205 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #0f1115;
+  color: #e8e8ec;
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.app {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+.app-header h1 {
+  font-size: 26px;
+  margin-bottom: 4px;
+}
+
+.app-subtitle {
+  color: #a7abbd;
+  margin-top: 0;
+}
+
+.honesty-banner {
+  background: #1c1f2b;
+  border: 1px solid #3a3f55;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #c7cbe0;
+  line-height: 1.5;
+}
+
+.honesty-banner code {
+  background: #2a2e40;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.error-banner {
+  background: #3a1f22;
+  border: 1px solid #7a3038;
+  color: #ffb4bb;
+  padding: 14px 16px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.stat-card {
+  background: #171a23;
+  border: 1px solid #2a2e3d;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #7ee1a8;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #9498ab;
+  margin-top: 4px;
+}
+
+.panel {
+  background: #14161e;
+  border: 1px solid #262a38;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin: 20px 0;
+}
+
+.panel h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.panel-sub {
+  color: #9498ab;
+  font-size: 13px;
+}
+
+.funnel-stage {
+  margin-bottom: 16px;
+}
+
+.funnel-stage-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.funnel-stage-name {
+  font-weight: 600;
+}
+
+.funnel-stage-counts {
+  color: #a7abbd;
+  font-variant-numeric: tabular-nums;
+}
+
+.funnel-bar-track {
+  background: #1f2230;
+  border-radius: 6px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.funnel-bar-fill {
+  background: linear-gradient(90deg, #4f8cff, #7ee1a8);
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+.funnel-removed {
+  font-size: 12px;
+  color: #ff9d7a;
+  margin-top: 4px;
+}
+
+.funnel-reasons {
+  color: #7d8199;
+}
+
+.entity-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 16px;
+}
+
+.chip {
+  background: #232743;
+  border: 1px solid #3a3f66;
+  color: #b8c1ff;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.examples-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.example-card {
+  background: #191c27;
+  border: 1px solid #262a38;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.example-type {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #7ee1a8;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.label {
+  color: #7d8199;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.example-before mark {
+  background: #5a2530;
+  color: #ffb4bb;
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+
+.example-after .redacted-tag {
+  background: #1e4a30;
+  color: #7ee1a8;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.example-after {
+  margin-top: 4px;
+}
