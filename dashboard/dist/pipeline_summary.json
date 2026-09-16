@@ -1,0 +1,405 @@
+{
+  "stages": [
+    {
+      "stage": "extract",
+      "docs_in": 19,
+      "docs_out": 18,
+      "removed": 1,
+      "reason_counts": {
+        "extraction_failed": 1
+      },
+      "failures": [
+        {
+          "file": "bank_of_baroda_aml_questionnaire.pdf",
+          "error": "empty extraction"
+        }
+      ]
+    },
+    {
+      "stage": "clean_langid",
+      "docs_in": 18,
+      "docs_out": 18,
+      "removed": 0,
+      "reason_counts": {
+        "too_short": 0,
+        "non_english": 0
+      }
+    },
+    {
+      "stage": "dedup",
+      "docs_in": 2395,
+      "docs_out": 2247,
+      "removed": 148,
+      "reason_counts": {
+        "exact_duplicate": 1,
+        "fuzzy_duplicate": 147
+      }
+    },
+    {
+      "stage": "quality_filter",
+      "docs_in": 2247,
+      "docs_out": 2189,
+      "removed": 58,
+      "reason_counts": {
+        "low_alpha_ratio": 34,
+        "low_lexical_diversity": 24
+      }
+    },
+    {
+      "stage": "pii_redact",
+      "docs_in": 2189,
+      "docs_out": 2189,
+      "removed": 0,
+      "reason_counts": {},
+      "pii_entities_redacted": 285,
+      "entity_type_counts": {
+        "PINCODE": 241,
+        "EMAIL": 32,
+        "DATE": 4,
+        "ACCOUNT_NUMBER": 4,
+        "PHONE": 3,
+        "PERSON_NAME": 1
+      },
+      "chunks_with_pii": 249,
+      "name_detection_available": true
+    },
+    {
+      "stage": "output",
+      "docs_in": 2189,
+      "docs_out": 2189,
+      "removed": 0,
+      "reason_counts": {},
+      "total_chars": 2533821,
+      "output_path": "E:\\TCS Nemo Curator\\data\\output\\curated.jsonl"
+    }
+  ],
+  "duplicates_removed": 148,
+  "pii_entities_redacted": 285,
+  "pii_entity_type_counts": {
+    "PINCODE": 241,
+    "EMAIL": 32,
+    "DATE": 4,
+    "ACCOUNT_NUMBER": 4,
+    "PHONE": 3,
+    "PERSON_NAME": 1
+  },
+  "name_detection_available": true,
+  "pii_examples": [
+    {
+      "doc_id": "bank_of_baroda_kyc__0",
+      "entity_type": "PINCODE",
+      "before": "390006",
+      "context_before": "roda House, P.B No. 506, Mandvi,Baroda- ",
+      "context_after": ". Telephone Number Fax Number 0265-23167"
+    },
+    {
+      "doc_id": "bank_of_baroda_kyc__3",
+      "entity_type": "EMAIL",
+      "before": "gm.oQs.ho@bankofbaroda.com",
+      "context_before": "265-2316095. Fax Number Email Address : ",
+      "context_after": " Does your institution's AML/CFT program"
+    },
+    {
+      "doc_id": "bank_of_baroda_kyc__3",
+      "entity_type": "PINCODE",
+      "before": "390007",
+      "context_before": "roda Bhavan,Alkapuri,Vadodara, G ujarat-",
+      "context_after": " Telephone Number : 0265-2316095. Fax Nu"
+    },
+    {
+      "doc_id": "bank_of_baroda_kyc__7",
+      "entity_type": "DATE",
+      "before": "18/11/2019",
+      "context_before": " the Appellate Tribunal, PMLA. Also, on ",
+      "context_after": ", RBI had imposed penalty for not undert"
+    },
+    {
+      "doc_id": "bank_of_baroda_kyc__7",
+      "entity_type": "DATE",
+      "before": "20-07-2022",
+      "context_before": "gnatory) Location Vadodara,Gujarat Date ",
+      "context_after": ""
+    },
+    {
+      "doc_id": "bhiwani_dccb_kyc_aml_cft_2023_24__0",
+      "entity_type": "DATE",
+      "before": "15-01-2024",
+      "context_before": "YC-AML-CFT POLICY-2023-24 Updated as on ",
+      "context_after": " 1. Introduction Bank has in place a pol"
+    },
+    {
+      "doc_id": "bhiwani_dccb_kyc_aml_cft_2023_24__57",
+      "entity_type": "DATE",
+      "before": "23-10-2018",
+      "context_before": "C purpose. (As per UIDAI circular dated ",
+      "context_after": " based on the opinion received from the "
+    },
+    {
+      "doc_id": "bhiwani_dccb_kyc_aml_cft_2023_24__140",
+      "entity_type": "PINCODE",
+      "before": "110001",
+      "context_before": "Building, Connaught P lace New Delhi-",
+      "context_after": ". Website - http://fiuindia.gov.in/. b. "
+    },
+    {
+      "doc_id": "bhiwani_dccb_kyc_aml_cft_2023_24__187",
+      "entity_type": "ACCOUNT_NUMBER",
+      "before": "230923465",
+      "context_before": "dal Officer for the UAPA at Fax No. 011-",
+      "context_after": " and also convey over telephone on 011-2"
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2021__0",
+      "entity_type": "PINCODE",
+      "before": "400001",
+      "context_before": ", MMO Building, M.G. Road, Fort, Mumbai-",
+      "context_after": ". ______________________________________"
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2021__1",
+      "entity_type": "PINCODE",
+      "before": "400001",
+      "context_before": ", MMO Building, M.G. Road, Fort, Mumbai-",
+      "context_after": ". ______________________________________"
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2021__3",
+      "entity_type": "PINCODE",
+      "before": "400001",
+      "context_before": ", MMO Building, M.G. Road, Fort, Mumbai-",
+      "context_after": ". ______________________________________"
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2021__184",
+      "entity_type": "EMAIL",
+      "before": "jsctcr-mha@gov.in",
+      "context_before": "2548, 01123092551 (Fax), email address: ",
+      "context_after": "]. 3.2 The Ministry of External Affairs,"
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2021__184",
+      "entity_type": "ACCOUNT_NUMBER",
+      "before": "01123092551",
+      "context_before": "he UAPA[Telephone Number: 011-23092548, ",
+      "context_after": " (Fax), email address: jsctcr-mha@gov.in"
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2021__192",
+      "entity_type": "EMAIL",
+      "before": "jsctcr-mha@gov.in",
+      "context_before": "ld necessarily be conveyed on email id: ",
+      "context_after": " के वाय सी - ध शो नि कक्ष, केन्द्रीय काय"
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2024_25__216",
+      "entity_type": "EMAIL",
+      "before": "jsctcr-mha@gov.in",
+      "context_before": "456, 011-23092465 (Fax), email address: ",
+      "context_after": "]. 3.2 The Ministry of External Affairs,"
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2024_25__223",
+      "entity_type": "EMAIL",
+      "before": "jsctcr-mha@gov.in",
+      "context_before": "ld necessarily be conveyed on email id: ",
+      "context_after": " 6.3 The UAPA Nodal Officer of the State"
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2024_25__243",
+      "entity_type": "EMAIL",
+      "before": "dir@fiuindia.gov.in",
+      "context_before": "435, 011-23314459 (FAX), email address: ",
+      "context_after": "]. 1.2 Regulator under this order shall "
+    },
+    {
+      "doc_id": "nainital_bank_kyc_aml_policy__146",
+      "entity_type": "ACCOUNT_NUMBER",
+      "before": "230923465",
+      "context_before": "011-23092456, 011- ",
+      "context_after": " (Fax), email address: jsctcr-mha@gov.in"
+    },
+    {
+      "doc_id": "rbi_fraud_master_direction_pwc__15",
+      "entity_type": "PHONE",
+      "before": "+91 9820320181",
+      "context_before": "ices Leader Partner, Risk Consulting M: ",
+      "context_after": " M: +(91) 8130166550 E: puneet.garkhel@p"
+    },
+    {
+      "doc_id": "rbi_fraud_master_direction_pwc__15",
+      "entity_type": "PHONE",
+      "before": "8130166550",
+      "context_before": "k Consulting M: +91 9820320181 M: +(91) ",
+      "context_after": " E: puneet.garkhel@pwc.com E: dhruv.chaw"
+    },
+    {
+      "doc_id": "rbi_fraud_master_direction_pwc__15",
+      "entity_type": "PHONE",
+      "before": "9560833555",
+      "context_before": "ial Crime Compliance – Forensic Services",
+      "context_after": "9560833555 E: induvant.tomar@pwc.com pwc"
+    },
+    {
+      "doc_id": "rbi_kyc_ebixcash__112",
+      "entity_type": "ACCOUNT_NUMBER",
+      "before": "230923465",
+      "context_before": "A [Telephone Number: 011-23092456, 011- ",
+      "context_after": " (Fax), email address: jsctcr-mha@gov.in"
+    },
+    {
+      "doc_id": "bank_of_baroda_kyc__1",
+      "entity_type": "PERSON_NAME",
+      "before": "Pankaj Mittal",
+      "context_before": "rs and Directors Principal officer: Mr. ",
+      "context_after": ", General Manager 16. of your institutio"
+    }
+  ],
+  "final_output_chunks": 2189,
+  "final_output_chars": 2533821,
+  "documents": [
+    {
+      "doc_id": "bank_of_baroda_kyc",
+      "source_file": "bank_of_baroda_kyc.pdf",
+      "char_count": 9317,
+      "chunks_after_dedup": 8,
+      "chunks_after_quality_filter": 8,
+      "chunks_with_pii_redacted": 4
+    },
+    {
+      "doc_id": "bhiwani_dccb_kyc_aml_cft_2023_24",
+      "source_file": "bhiwani_dccb_kyc_aml_cft_2023_24.pdf",
+      "char_count": 231775,
+      "chunks_after_dedup": 201,
+      "chunks_after_quality_filter": 201,
+      "chunks_with_pii_redacted": 4
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2021",
+      "source_file": "central_bank_india_kyc_aml_2021.pdf",
+      "char_count": 279493,
+      "chunks_after_dedup": 229,
+      "chunks_after_quality_filter": 229,
+      "chunks_with_pii_redacted": 101
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2024_25",
+      "source_file": "central_bank_india_kyc_aml_2024_25.pdf",
+      "char_count": 334144,
+      "chunks_after_dedup": 274,
+      "chunks_after_quality_filter": 274,
+      "chunks_with_pii_redacted": 3
+    },
+    {
+      "doc_id": "central_bank_india_kyc_aml_2025_26",
+      "source_file": "central_bank_india_kyc_aml_2025_26.pdf",
+      "char_count": 368301,
+      "chunks_after_dedup": 250,
+      "chunks_after_quality_filter": 250,
+      "chunks_with_pii_redacted": 117
+    },
+    {
+      "doc_id": "fiu_india_aml_cft_guidelines_2023",
+      "source_file": "fiu_india_aml_cft_guidelines_2023.pdf",
+      "char_count": 30894,
+      "chunks_after_dedup": 24,
+      "chunks_after_quality_filter": 22,
+      "chunks_with_pii_redacted": 0
+    },
+    {
+      "doc_id": "fiu_india_brochure",
+      "source_file": "fiu_india_brochure.pdf",
+      "char_count": 11661,
+      "chunks_after_dedup": 10,
+      "chunks_after_quality_filter": 10,
+      "chunks_with_pii_redacted": 1
+    },
+    {
+      "doc_id": "fiu_india_reporting_format",
+      "source_file": "fiu_india_reporting_format.pdf",
+      "char_count": 754610,
+      "chunks_after_dedup": 635,
+      "chunks_after_quality_filter": 601,
+      "chunks_with_pii_redacted": 0
+    },
+    {
+      "doc_id": "manappuram_kyc_policy",
+      "source_file": "manappuram_kyc_policy.pdf",
+      "char_count": 114066,
+      "chunks_after_dedup": 97,
+      "chunks_after_quality_filter": 97,
+      "chunks_with_pii_redacted": 0
+    },
+    {
+      "doc_id": "nainital_bank_kyc_aml_policy",
+      "source_file": "nainital_bank_kyc_aml_policy.pdf",
+      "char_count": 250465,
+      "chunks_after_dedup": 196,
+      "chunks_after_quality_filter": 196,
+      "chunks_with_pii_redacted": 7
+    },
+    {
+      "doc_id": "rbi_fraud_master_direction_elp",
+      "source_file": "rbi_fraud_master_direction_elp.pdf",
+      "char_count": 14103,
+      "chunks_after_dedup": 12,
+      "chunks_after_quality_filter": 12,
+      "chunks_with_pii_redacted": 1
+    },
+    {
+      "doc_id": "rbi_fraud_master_direction_pwc",
+      "source_file": "rbi_fraud_master_direction_pwc.pdf",
+      "char_count": 20176,
+      "chunks_after_dedup": 17,
+      "chunks_after_quality_filter": 17,
+      "chunks_with_pii_redacted": 1
+    },
+    {
+      "doc_id": "rbi_kyc_ebixcash",
+      "source_file": "rbi_kyc_ebixcash.pdf",
+      "char_count": 218971,
+      "chunks_after_dedup": 169,
+      "chunks_after_quality_filter": 155,
+      "chunks_with_pii_redacted": 5
+    },
+    {
+      "doc_id": "rbi_kyc_fidcindia_aug2025",
+      "source_file": "rbi_kyc_fidcindia_aug2025.pdf",
+      "char_count": 3054,
+      "chunks_after_dedup": 3,
+      "chunks_after_quality_filter": 3,
+      "chunks_with_pii_redacted": 0
+    },
+    {
+      "doc_id": "rbi_kyc_master_direction_slbc_mp",
+      "source_file": "rbi_kyc_master_direction_slbc_mp.pdf",
+      "char_count": 104278,
+      "chunks_after_dedup": 85,
+      "chunks_after_quality_filter": 77,
+      "chunks_with_pii_redacted": 5
+    },
+    {
+      "doc_id": "rbi_kyc_summary_banklaw1",
+      "source_file": "rbi_kyc_summary_banklaw1.pdf",
+      "char_count": 8348,
+      "chunks_after_dedup": 8,
+      "chunks_after_quality_filter": 8,
+      "chunks_with_pii_redacted": 0
+    },
+    {
+      "doc_id": "rbi_kyc_summary_banklaw2",
+      "source_file": "rbi_kyc_summary_banklaw2.pdf",
+      "char_count": 8005,
+      "chunks_after_dedup": 7,
+      "chunks_after_quality_filter": 7,
+      "chunks_with_pii_redacted": 0
+    },
+    {
+      "doc_id": "rbi_kyc_updated_aug2025_allinonebanking",
+      "source_file": "rbi_kyc_updated_aug2025_allinonebanking.pdf",
+      "char_count": 47350,
+      "chunks_after_dedup": 22,
+      "chunks_after_quality_filter": 22,
+      "chunks_with_pii_redacted": 0
+    }
+  ]
+}
