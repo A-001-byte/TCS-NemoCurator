@@ -4,15 +4,18 @@
   "docs_out": 2189,
   "removed": 0,
   "reason_counts": {},
-  "pii_entities_redacted": 285,
+  "pii_entities_redacted": 283,
   "entity_type_counts": {
     "PINCODE": 241,
     "EMAIL": 32,
     "DATE": 4,
-    "ACCOUNT_NUMBER": 4,
+    "CIN": 2,
     "PHONE": 3,
     "PERSON_NAME": 1
   },
-  "chunks_with_pii": 249,
-  "name_detection_available": true
+  "chunks_with_pii": 248,
+  "name_detection_available": true,
+  "account_numbers_suppressed": 4,
+  "account_numbers_needs_review": 0,
+  "chunks_needing_review": 0
 }

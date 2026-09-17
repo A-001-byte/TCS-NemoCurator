@@ -51,17 +51,20 @@
       "docs_out": 2189,
       "removed": 0,
       "reason_counts": {},
-      "pii_entities_redacted": 285,
+      "pii_entities_redacted": 283,
       "entity_type_counts": {
         "PINCODE": 241,
         "EMAIL": 32,
         "DATE": 4,
-        "ACCOUNT_NUMBER": 4,
+        "CIN": 2,
         "PHONE": 3,
         "PERSON_NAME": 1
       },
-      "chunks_with_pii": 249,
-      "name_detection_available": true
+      "chunks_with_pii": 248,
+      "name_detection_available": true,
+      "account_numbers_suppressed": 4,
+      "account_numbers_needs_review": 0,
+      "chunks_needing_review": 0
     },
     {
       "stage": "output",
@@ -69,17 +72,17 @@
       "docs_out": 2189,
       "removed": 0,
       "reason_counts": {},
-      "total_chars": 2533821,
+      "total_chars": 2533745,
       "output_path": "E:\\TCS Nemo Curator\\data\\output\\curated.jsonl"
     }
   ],
   "duplicates_removed": 148,
-  "pii_entities_redacted": 285,
+  "pii_entities_redacted": 283,
   "pii_entity_type_counts": {
     "PINCODE": 241,
     "EMAIL": 32,
     "DATE": 4,
-    "ACCOUNT_NUMBER": 4,
+    "CIN": 2,
     "PHONE": 3,
     "PERSON_NAME": 1
   },
@@ -143,7 +146,7 @@
     },
     {
       "doc_id": "bhiwani_dccb_kyc_aml_cft_2023_24__187",
-      "entity_type": "ACCOUNT_NUMBER",
+      "entity_type": "ACCOUNT_NUMBER_SUPPRESSED",
       "before": "230923465",
       "context_before": "dal Officer for the UAPA at Fax No. 011-",
       "context_after": " and also convey over telephone on 011-2"
@@ -178,10 +181,10 @@
     },
     {
       "doc_id": "central_bank_india_kyc_aml_2021__184",
-      "entity_type": "ACCOUNT_NUMBER",
+      "entity_type": "ACCOUNT_NUMBER_SUPPRESSED",
       "before": "01123092551",
       "context_before": "he UAPA[Telephone Number: 011-23092548, ",
-      "context_after": " (Fax), email address: jsctcr-mha@gov.in"
+      "context_after": " (Fax), email address: [REDACTED_EMAIL]]"
     },
     {
       "doc_id": "central_bank_india_kyc_aml_2021__192",
@@ -212,39 +215,53 @@
       "context_after": "]. 1.2 Regulator under this order shall "
     },
     {
+      "doc_id": "nainital_bank_kyc_aml_policy__0",
+      "entity_type": "CIN",
+      "before": "U65923UR1922PLC000234",
+      "context_before": "Uttarakhand-[REDACTED_PINCODE]] CIN No. ",
+      "context_after": ", website: www.nainitalbank.co.in e-mail"
+    },
+    {
       "doc_id": "nainital_bank_kyc_aml_policy__146",
-      "entity_type": "ACCOUNT_NUMBER",
+      "entity_type": "ACCOUNT_NUMBER_SUPPRESSED",
       "before": "230923465",
       "context_before": "011-23092456, 011- ",
-      "context_after": " (Fax), email address: jsctcr-mha@gov.in"
+      "context_after": " (Fax), email address: [REDACTED_EMAIL]]"
     },
     {
       "doc_id": "rbi_fraud_master_direction_pwc__15",
       "entity_type": "PHONE",
       "before": "+91 9820320181",
       "context_before": "ices Leader Partner, Risk Consulting M: ",
-      "context_after": " M: +(91) 8130166550 E: puneet.garkhel@p"
+      "context_after": " M: +(91) 8130166550 E: [REDACTED_EMAIL]"
     },
     {
       "doc_id": "rbi_fraud_master_direction_pwc__15",
       "entity_type": "PHONE",
       "before": "8130166550",
       "context_before": "k Consulting M: +91 9820320181 M: +(91) ",
-      "context_after": " E: puneet.garkhel@pwc.com E: dhruv.chaw"
+      "context_after": " E: [REDACTED_EMAIL] E: [REDACTED_EMAIL]"
     },
     {
       "doc_id": "rbi_fraud_master_direction_pwc__15",
       "entity_type": "PHONE",
       "before": "9560833555",
-      "context_before": "ial Crime Compliance – Forensic Services",
-      "context_after": "9560833555 E: induvant.tomar@pwc.com pwc"
+      "context_before": "Compliance – Forensic Services M: +(91) ",
+      "context_after": " E: [REDACTED_EMAIL] pwc.in Data Classif"
+    },
+    {
+      "doc_id": "rbi_fraud_master_direction_pwc__15",
+      "entity_type": "CIN",
+      "before": "U74140WB1983PTC036093",
+      "context_before": "ving Corporate Identity Number or CIN : ",
+      "context_after": "), which is a member firm of Pricewaterh"
     },
     {
       "doc_id": "rbi_kyc_ebixcash__112",
-      "entity_type": "ACCOUNT_NUMBER",
+      "entity_type": "ACCOUNT_NUMBER_SUPPRESSED",
       "before": "230923465",
       "context_before": "A [Telephone Number: 011-23092456, 011- ",
-      "context_after": " (Fax), email address: jsctcr-mha@gov.in"
+      "context_after": " (Fax), email address: [REDACTED_EMAIL]]"
     },
     {
       "doc_id": "bank_of_baroda_kyc__1",
@@ -255,7 +272,7 @@
     }
   ],
   "final_output_chunks": 2189,
-  "final_output_chars": 2533821,
+  "final_output_chars": 2533745,
   "documents": [
     {
       "doc_id": "bank_of_baroda_kyc",
@@ -271,7 +288,7 @@
       "char_count": 231775,
       "chunks_after_dedup": 201,
       "chunks_after_quality_filter": 201,
-      "chunks_with_pii_redacted": 4
+      "chunks_with_pii_redacted": 3
     },
     {
       "doc_id": "central_bank_india_kyc_aml_2021",

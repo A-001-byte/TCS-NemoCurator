@@ -6,7 +6,8 @@ content hashes, and redacting first would corrupt those hashes inconsistently).
 Detects and redacts, on real extracted Indian KYC/regulatory text:
   - PAN numbers (AAAAA9999A format)
   - Aadhaar-style 12-digit numbers
-  - Bank account numbers (9-18 digit runs in account-like context)
+  - CIN, Corporate Identity Number (21-char MCA format, e.g. U65923UR1922PLC000234)
+  - Bank account numbers (9-18 digit runs, gated by cross-field context validation)
   - Phone numbers (Indian mobile / STD formats)
   - Email addresses
   - Dates of birth / dates (DD/MM/YYYY, DD-MM-YYYY)
@@ -17,6 +18,12 @@ Detects and redacts, on real extracted Indian KYC/regulatory text:
     text makes small NER models mistag generic capitalized phrases ("Gazette
     Notification") as PERSON; this filter trades recall for precision so every
     reported name redaction is real, never a false positive presented as PII.)
+
+Cross-field validation (Stream C): an account-number-shaped span is only redacted as
+ACCOUNT_NUMBER once its SURROUNDING CONTEXT agrees. On the real 19-document corpus every
+single 9-18 digit run the bare regex matched was actually a fax or telephone number from
+a published RBI/MHA circular, not a bank account. Pattern-in-isolation cannot tell those
+apart; pattern-plus-context can. See `_account_number_verdict`.
 
 Equivalent-logic stage: NVIDIA's shipped PII path uses GLiNER-PII
 (gliner_pii_redaction.ipynb in the Curator repo). We use spaCy NER + regex here.
@@ -45,8 +52,43 @@ PATTERNS = [
     # context (e.g. proximity to "DOB"/"Date of Birth"), so this is labeled generically.
     ("DATE", re.compile(r"\b(0[1-9]|[12]\d|3[01])[/-](0[1-9]|1[0-2])[/-](19|20)\d{2}\b")),
     ("PINCODE", re.compile(r"\b[1-9]\d{5}\b")),
+    # CIN: MCA Corporate Identity Number. Listed/Unlisted + 5-digit industry code +
+    # 2-letter state + 4-digit year + 3-letter ownership + 6-digit registration number.
+    # Runs before ACCOUNT_NUMBER so a CIN's digit runs are never mistaken for one.
+    ("CIN", re.compile(r"\b[LU]\d{5}[A-Z]{2}\d{4}[A-Z]{3}\d{6}\b")),
     ("ACCOUNT_NUMBER", re.compile(r"\b\d{9,18}\b")),
 ]
+
+# --- Cross-field validation for ACCOUNT_NUMBER -------------------------------
+# A bare 9-18 digit run is the weakest pattern here: Indian landline+STD strings,
+# fax numbers and concatenated helpline numbers all match it. Deciding by pattern
+# alone mislabels published contact numbers as customer bank accounts.
+ACCOUNT_CONTEXT_WINDOW = 90
+TELECOM_CUE_RE = re.compile(
+    r"(fax|tele\s?phone|phone|mobile|helpline|contact\s+(no|number)|\bM\s*:|\bTel\b|\bSTD\b)",
+    re.IGNORECASE,
+)
+BANK_ACCOUNT_CUE_RE = re.compile(
+    r"(a/c|account\s*(no|number|#)|bank\s+account|savings\s+account|current\s+account"
+    r"|credited\s+to|debited\s+from|beneficiary\s+account|\bIFSC\b)",
+    re.IGNORECASE,
+)
+
+
+def _account_number_verdict(text: str, start: int, end: int) -> str:
+    """Decide what an account-number-shaped span actually is, from its neighbours.
+
+    Returns 'suppress' (telecom context -> not an account number at all),
+    'confident' (explicit bank-account context), or 'needs_review' (no context
+    either way -> still redacted, but flagged so a human can check).
+    """
+    window = text[max(0, start - ACCOUNT_CONTEXT_WINDOW) : end + ACCOUNT_CONTEXT_WINDOW]
+    if TELECOM_CUE_RE.search(window):
+        return "suppress"
+    if BANK_ACCOUNT_CUE_RE.search(window):
+        return "confident"
+    return "needs_review"
+
 
 _NLP = None
 _SPACY_AVAILABLE = False
@@ -128,19 +170,36 @@ def _record_example(examples: list, label: str, doc_id: str, before: str, contex
         )
 
 
-def redact_regex(text: str, entity_counts: dict, examples: list, doc_id: str):
+def redact_regex(text: str, entity_counts: dict, examples: list, doc_id: str, validation: dict):
     redacted = text
     for label, pattern in PATTERNS:
         def _sub(match, label=label):
+            # match.string is the text actually being scanned this pass, so context
+            # windows stay correct even after earlier patterns changed span lengths.
+            scanned = match.string
+            context_before = scanned[max(0, match.start() - 40) : match.start()]
+            context_after = scanned[match.end() : match.end() + 40]
+
+            if label == "ACCOUNT_NUMBER":
+                verdict = _account_number_verdict(scanned, match.start(), match.end())
+                if verdict == "suppress":
+                    validation["account_suppressed"] = validation.get("account_suppressed", 0) + 1
+                    _record_example(
+                        examples,
+                        "ACCOUNT_NUMBER_SUPPRESSED",
+                        doc_id,
+                        match.group(0),
+                        context_before,
+                        context_after,
+                    )
+                    return match.group(0)
+                if verdict == "needs_review":
+                    validation["account_needs_review"] = (
+                        validation.get("account_needs_review", 0) + 1
+                    )
+
             entity_counts[label] = entity_counts.get(label, 0) + 1
-            _record_example(
-                examples,
-                label,
-                doc_id,
-                match.group(0),
-                text[max(0, match.start() - 40) : match.start()],
-                text[match.end() : match.end() + 40],
-            )
+            _record_example(examples, label, doc_id, match.group(0), context_before, context_after)
             return f"[REDACTED_{label}]"
 
         redacted = pattern.sub(_sub, redacted)
@@ -192,6 +251,7 @@ def main():
 
     entity_counts = {}
     examples = []
+    validation_totals = {}
     chunks_in = 0
     out_chunks = []
 
@@ -202,7 +262,17 @@ def main():
                 continue
             chunk = json.loads(line)
             chunks_in += 1
-            chunk["text"] = redact_regex(chunk["text"], entity_counts, examples, chunk["chunk_id"])
+            chunk_validation = {}
+            chunk["text"] = redact_regex(
+                chunk["text"], entity_counts, examples, chunk["chunk_id"], chunk_validation
+            )
+            # Additive field per the frozen chunk contract: "needs_review" means PII was
+            # redacted but its surrounding context didn't confirm the entity type.
+            chunk["validation_flag"] = (
+                "needs_review" if chunk_validation.get("account_needs_review") else "confident"
+            )
+            for key, count in chunk_validation.items():
+                validation_totals[key] = validation_totals.get(key, 0) + count
             out_chunks.append(chunk)
 
     texts = [c["text"] for c in out_chunks]
@@ -234,6 +304,12 @@ def main():
         "entity_type_counts": entity_counts,
         "chunks_with_pii": chunks_with_pii,
         "name_detection_available": _SPACY_AVAILABLE,
+        # Cross-field validation outcomes (Stream C)
+        "account_numbers_suppressed": validation_totals.get("account_suppressed", 0),
+        "account_numbers_needs_review": validation_totals.get("account_needs_review", 0),
+        "chunks_needing_review": sum(
+            1 for c in out_chunks if c.get("validation_flag") == "needs_review"
+        ),
     }
     STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
     print(json.dumps(record, indent=2))
