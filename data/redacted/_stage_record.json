@@ -19,5 +19,7 @@
   "account_numbers_suppressed": 4,
   "account_numbers_needs_review": 0,
   "swift_candidates_rejected_no_cue": 153,
+  "documents_with_pii": 11,
+  "validation_report_path": "E:\\TCS Nemo Curator\\data\\redacted\\validation_report.json",
   "chunks_needing_review": 0
 }

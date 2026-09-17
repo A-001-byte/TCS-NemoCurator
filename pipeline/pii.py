@@ -26,6 +26,10 @@ single 9-18 digit run the bare regex matched was actually a fax or telephone num
 a published RBI/MHA circular, not a bank account. Pattern-in-isolation cannot tell those
 apart; pattern-plus-context can. See `_account_number_verdict`.
 
+Document-level validation report (Stream C): alongside per-entity redaction, writes
+`data/redacted/validation_report.json` -- one row per source document with entity counts
+by type and how many chunks a human should re-check, ordered most-exposed first.
+
 Equivalent-logic stage: NVIDIA's shipped PII path uses GLiNER-PII
 (gliner_pii_redaction.ipynb in the Curator repo). We use spaCy NER + regex here.
 Labelled as such in the dashboard/README.
@@ -39,6 +43,7 @@ FILTERED_DIR = Path(__file__).resolve().parent.parent / "data" / "filtered"
 REDACTED_DIR = Path(__file__).resolve().parent.parent / "data" / "redacted"
 STAGE_RECORD_PATH = REDACTED_DIR / "_stage_record.json"
 EXAMPLES_PATH = REDACTED_DIR / "pii_examples.json"
+VALIDATION_REPORT_PATH = REDACTED_DIR / "validation_report.json"
 IN_PATH = FILTERED_DIR / "chunks.jsonl"
 OUT_PATH = REDACTED_DIR / "chunks.jsonl"
 
@@ -106,6 +111,47 @@ SWIFT_CUE_RE = re.compile(r"(SWIFT\s*(Address|Code|BIC)?|\bBIC\b)")
 
 def _has_swift_cue(text: str, start: int) -> bool:
     return bool(SWIFT_CUE_RE.search(text[max(0, start - SWIFT_CUE_WINDOW) : start]))
+
+
+# --- Document-level validation report ----------------------------------------
+# Per-entity redaction answers "what was hidden"; a compliance reviewer also needs
+# "which documents carried the most exposure, and where should a human look first".
+# Counted from the placeholders left in the final text: each redaction writes exactly
+# one, so this stays correct without threading extra state through the redaction loop.
+REDACTION_PLACEHOLDER_RE = re.compile(r"\[REDACTED_([A-Z_]+)\]")
+
+
+def build_validation_report(chunks: list) -> list:
+    """Per-document PII summary, ordered most-exposed first."""
+    docs = {}
+    for chunk in chunks:
+        doc = docs.setdefault(
+            chunk["doc_id"],
+            {
+                "doc_id": chunk["doc_id"],
+                "source_file": chunk["source_file"],
+                "chunks": 0,
+                "chunks_with_pii": 0,
+                "chunks_flagged_for_review": 0,
+                "pii_entities": 0,
+                "entity_types": {},
+            },
+        )
+        doc["chunks"] += 1
+        if chunk.get("pii_redacted"):
+            doc["chunks_with_pii"] += 1
+        if chunk.get("validation_flag") == "needs_review":
+            doc["chunks_flagged_for_review"] += 1
+        for entity_type in REDACTION_PLACEHOLDER_RE.findall(chunk["text"]):
+            doc["entity_types"][entity_type] = doc["entity_types"].get(entity_type, 0) + 1
+            doc["pii_entities"] += 1
+
+    report = []
+    for doc in docs.values():
+        doc["distinct_entity_types"] = len(doc["entity_types"])
+        report.append(doc)
+    report.sort(key=lambda d: (-d["pii_entities"], d["doc_id"]))
+    return report
 
 
 _NLP = None
@@ -315,6 +361,11 @@ def main():
 
     EXAMPLES_PATH.write_text(json.dumps(examples, indent=2, ensure_ascii=False), encoding="utf-8")
 
+    validation_report = build_validation_report(out_chunks)
+    VALIDATION_REPORT_PATH.write_text(
+        json.dumps(validation_report, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+
     total_entities = sum(entity_counts.values())
     record = {
         "stage": "pii_redact",
@@ -330,6 +381,8 @@ def main():
         "account_numbers_suppressed": validation_totals.get("account_suppressed", 0),
         "account_numbers_needs_review": validation_totals.get("account_needs_review", 0),
         "swift_candidates_rejected_no_cue": validation_totals.get("swift_no_cue", 0),
+        "documents_with_pii": sum(1 for d in validation_report if d["pii_entities"]),
+        "validation_report_path": str(VALIDATION_REPORT_PATH),
         "chunks_needing_review": sum(
             1 for c in out_chunks if c.get("validation_flag") == "needs_review"
         ),
