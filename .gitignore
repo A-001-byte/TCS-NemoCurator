@@ -1,0 +1,25 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Node / React
+dashboard/node_modules/
+dashboard/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Logs (nemo_curator_install.log / spacy_model_dl.log in logs/ are kept
+# as tracked evidence of the documented install failure -- see README)
+logs/*.log
+
+# Local harness/session state (not project-relevant, churns per session)
+.claude/scheduled_tasks.lock
