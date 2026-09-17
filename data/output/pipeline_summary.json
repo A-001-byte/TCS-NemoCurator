@@ -51,9 +51,10 @@
       "docs_out": 2189,
       "removed": 0,
       "reason_counts": {},
-      "pii_entities_redacted": 283,
+      "pii_entities_redacted": 284,
       "entity_type_counts": {
         "PINCODE": 241,
+        "SWIFT_BIC": 1,
         "EMAIL": 32,
         "DATE": 4,
         "CIN": 2,
@@ -64,6 +65,7 @@
       "name_detection_available": true,
       "account_numbers_suppressed": 4,
       "account_numbers_needs_review": 0,
+      "swift_candidates_rejected_no_cue": 153,
       "chunks_needing_review": 0
     },
     {
@@ -72,14 +74,15 @@
       "docs_out": 2189,
       "removed": 0,
       "reason_counts": {},
-      "total_chars": 2533745,
+      "total_chars": 2533754,
       "output_path": "E:\\TCS Nemo Curator\\data\\output\\curated.jsonl"
     }
   ],
   "duplicates_removed": 148,
-  "pii_entities_redacted": 283,
+  "pii_entities_redacted": 284,
   "pii_entity_type_counts": {
     "PINCODE": 241,
+    "SWIFT_BIC": 1,
     "EMAIL": 32,
     "DATE": 4,
     "CIN": 2,
@@ -94,6 +97,13 @@
       "before": "390006",
       "context_before": "roda House, P.B No. 506, Mandvi,Baroda- ",
       "context_after": ". Telephone Number Fax Number 0265-23167"
+    },
+    {
+      "doc_id": "bank_of_baroda_kyc__0",
+      "entity_type": "SWIFT_BIC",
+      "before": "BARBINBBXXX",
+      "context_before": " SWIFT Address of Financial Institution ",
+      "context_after": " 4 Full Address of the registered office"
     },
     {
       "doc_id": "bank_of_baroda_kyc__3",
@@ -272,7 +282,7 @@
     }
   ],
   "final_output_chunks": 2189,
-  "final_output_chars": 2533745,
+  "final_output_chars": 2533754,
   "documents": [
     {
       "doc_id": "bank_of_baroda_kyc",

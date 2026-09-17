@@ -7,6 +7,13 @@
     "context_after": ". Telephone Number Fax Number 0265-23167"
   },
   {
+    "doc_id": "bank_of_baroda_kyc__0",
+    "entity_type": "SWIFT_BIC",
+    "before": "BARBINBBXXX",
+    "context_before": " SWIFT Address of Financial Institution ",
+    "context_after": " 4 Full Address of the registered office"
+  },
+  {
     "doc_id": "bank_of_baroda_kyc__3",
     "entity_type": "EMAIL",
     "before": "gm.oQs.ho@bankofbaroda.com",

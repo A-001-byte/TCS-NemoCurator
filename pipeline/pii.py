@@ -7,6 +7,7 @@ Detects and redacts, on real extracted Indian KYC/regulatory text:
   - PAN numbers (AAAAA9999A format)
   - Aadhaar-style 12-digit numbers
   - CIN, Corporate Identity Number (21-char MCA format, e.g. U65923UR1922PLC000234)
+  - SWIFT/BIC codes (shape + required "SWIFT"/"BIC" cue, e.g. BARBINBBXXX)
   - Bank account numbers (9-18 digit runs, gated by cross-field context validation)
   - Phone numbers (Indian mobile / STD formats)
   - Email addresses
@@ -56,6 +57,10 @@ PATTERNS = [
     # 2-letter state + 4-digit year + 3-letter ownership + 6-digit registration number.
     # Runs before ACCOUNT_NUMBER so a CIN's digit runs are never mistaken for one.
     ("CIN", re.compile(r"\b[LU]\d{5}[A-Z]{2}\d{4}[A-Z]{3}\d{6}\b")),
+    # SWIFT/BIC: 4-char bank + 2-char country + 2-char location + optional 3-char branch.
+    # Shape alone is far too loose -- plain uppercase words ("ACCOUNTS", "ANNEXURE") match
+    # it -- so a cue is REQUIRED before redacting. See _has_swift_cue.
+    ("SWIFT_BIC", re.compile(r"\b[A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?\b")),
     ("ACCOUNT_NUMBER", re.compile(r"\b\d{9,18}\b")),
 ]
 
@@ -88,6 +93,19 @@ def _account_number_verdict(text: str, start: int, end: int) -> str:
     if BANK_ACCOUNT_CUE_RE.search(window):
         return "confident"
     return "needs_review"
+
+
+# --- Cue requirement for SWIFT_BIC -------------------------------------------
+# Same precision-first discipline as PERSON_NAME: the shape is too permissive on its
+# own (any 8-letter uppercase word matches), so an explicit label must precede it.
+# Case-sensitive on purpose -- lowercase "swiftly" is ordinary prose, and \bBIC\b
+# keeps "CBIC" (Central Board of Indirect Taxes and Customs) from qualifying.
+SWIFT_CUE_WINDOW = 60
+SWIFT_CUE_RE = re.compile(r"(SWIFT\s*(Address|Code|BIC)?|\bBIC\b)")
+
+
+def _has_swift_cue(text: str, start: int) -> bool:
+    return bool(SWIFT_CUE_RE.search(text[max(0, start - SWIFT_CUE_WINDOW) : start]))
 
 
 _NLP = None
@@ -198,6 +216,10 @@ def redact_regex(text: str, entity_counts: dict, examples: list, doc_id: str, va
                         validation.get("account_needs_review", 0) + 1
                     )
 
+            elif label == "SWIFT_BIC" and not _has_swift_cue(scanned, match.start()):
+                validation["swift_no_cue"] = validation.get("swift_no_cue", 0) + 1
+                return match.group(0)
+
             entity_counts[label] = entity_counts.get(label, 0) + 1
             _record_example(examples, label, doc_id, match.group(0), context_before, context_after)
             return f"[REDACTED_{label}]"
@@ -307,6 +329,7 @@ def main():
         # Cross-field validation outcomes (Stream C)
         "account_numbers_suppressed": validation_totals.get("account_suppressed", 0),
         "account_numbers_needs_review": validation_totals.get("account_needs_review", 0),
+        "swift_candidates_rejected_no_cue": validation_totals.get("swift_no_cue", 0),
         "chunks_needing_review": sum(
             1 for c in out_chunks if c.get("validation_flag") == "needs_review"
         ),

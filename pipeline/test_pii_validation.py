@@ -4,10 +4,17 @@ Run: python -m pipeline.test_pii_validation
 Strings below are real spans from the corpus (public RBI/MHA circulars and bank policy
 PDFs), plus synthetic account-context cases the corpus does not contain.
 """
-from pipeline.pii import PATTERNS, _account_number_verdict
+from pipeline.pii import PATTERNS, _account_number_verdict, _has_swift_cue
 
 CIN_RE = dict(PATTERNS)["CIN"]
 ACCOUNT_RE = dict(PATTERNS)["ACCOUNT_NUMBER"]
+SWIFT_RE = dict(PATTERNS)["SWIFT_BIC"]
+
+
+def _swift_accepted(text: str) -> bool:
+    """True if the first SWIFT-shaped span in `text` would actually be redacted."""
+    match = SWIFT_RE.search(text)
+    return bool(match) and _has_swift_cue(text, match.start())
 
 
 def _verdict(text: str) -> str:
@@ -36,7 +43,17 @@ def main():
     # No context either way -> still redacted, but flagged for a human.
     assert _verdict("reference 456789123456 appears in the annexure") == "needs_review"
 
-    print("ok: CIN detection + account cross-field validation behave as expected")
+    # SWIFT/BIC: the real corpus hit is accepted only because of its label.
+    assert _swift_accepted("3 SWIFT Address of Financial Institution BARBINBBXXX 4 Full")
+    assert not _swift_accepted("BARBINBBXXX appears with no label nearby")
+    # Plain uppercase words match the shape but must never be redacted.
+    assert not _swift_accepted("see ANNEXURE II for the list")
+    assert not _swift_accepted("monitoring of ACCOUNTS held by the customer")
+    # Lowercase prose and CBIC must not count as cues.
+    assert not _swift_accepted("allow swift identification of ANNEXURE records")
+    assert not _swift_accepted("the CBIC shall advise ANNEXURE dealers")
+
+    print("ok: CIN + SWIFT cue + account cross-field validation behave as expected")
 
 
 if __name__ == "__main__":
