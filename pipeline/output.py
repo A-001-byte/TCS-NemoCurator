@@ -37,6 +37,10 @@ def main():
                     "doc_id": chunk["doc_id"],
                     "source_file": chunk["source_file"],
                     "pii_redacted": chunk.get("pii_redacted", False),
+                    # Stream B: regulatory tagging fields
+                    "regulatory_tagged": chunk.get("regulatory_tagged", False),
+                    "regulatory_keywords_found": chunk.get("regulatory_keywords_found", []),
+                    "regulatory_density_score": chunk.get("regulatory_density_score", 0.0),
                 },
             }
             f_out.write(json.dumps(record, ensure_ascii=False) + "\n")

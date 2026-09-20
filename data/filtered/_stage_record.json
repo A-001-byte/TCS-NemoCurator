@@ -6,5 +6,8 @@
   "reason_counts": {
     "low_alpha_ratio": 34,
     "low_lexical_diversity": 24
-  }
+  },
+  "regulatory_tagged_count": 2019,
+  "regulatory_untagged_count": 170,
+  "high_density_count": 631
 }
