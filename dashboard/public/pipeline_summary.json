@@ -32,7 +32,8 @@
       "removed": 148,
       "reason_counts": {
         "exact_duplicate": 1,
-        "fuzzy_duplicate": 147
+        "cross_doc_boilerplate": 122,
+        "intra_doc_near_duplicate": 25
       }
     },
     {
@@ -43,7 +44,10 @@
       "reason_counts": {
         "low_alpha_ratio": 34,
         "low_lexical_diversity": 24
-      }
+      },
+      "regulatory_tagged_count": 2019,
+      "regulatory_untagged_count": 170,
+      "high_density_count": 631
     },
     {
       "stage": "pii_redact",
@@ -70,10 +74,12 @@
       "removed": 0,
       "reason_counts": {},
       "total_chars": 2533821,
-      "output_path": "E:\\TCS Nemo Curator\\data\\output\\curated.jsonl"
+      "output_path": "D:\\TCS-NemoCurator\\data\\output\\curated.jsonl"
     }
   ],
   "duplicates_removed": 148,
+  "cross_doc_boilerplate_removed": 122,
+  "intra_doc_near_duplicate_removed": 25,
   "pii_entities_redacted": 285,
   "pii_entity_type_counts": {
     "PINCODE": 241,
@@ -254,6 +260,9 @@
       "context_after": ", General Manager 16. of your institutio"
     }
   ],
+  "regulatory_tagged_count": 2019,
+  "regulatory_untagged_count": 170,
+  "high_density_count": 631,
   "final_output_chunks": 2189,
   "final_output_chars": 2533821,
   "documents": [

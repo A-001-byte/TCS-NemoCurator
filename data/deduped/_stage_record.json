@@ -5,6 +5,7 @@
   "removed": 148,
   "reason_counts": {
     "exact_duplicate": 1,
-    "fuzzy_duplicate": 147
+    "cross_doc_boilerplate": 122,
+    "intra_doc_near_duplicate": 25
   }
 }

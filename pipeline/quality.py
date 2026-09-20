@@ -1,13 +1,46 @@
-"""Stage 4: heuristic quality filtering over deduped chunks.
+"""
+pipeline/quality.py  —  Stage 4: heuristic quality filtering + Stream B additions
+==================================================================================
 Reads data/deduped/chunks.jsonl, writes surviving chunks to data/filtered/chunks.jsonl.
 
-This is an equivalent-logic heuristic filter, not the NeMo Curator DeBERTa quality
-classifier (nvidia/quality-classifier-deberta). Labelled as such in the dashboard/README.
+Original heuristic quality filter (word count, alpha ratio, symbol ratio,
+lexical diversity) is preserved unchanged below the "EXISTING LOGIC" marker.
+
+Stream B adds TWO domain-specific custom rules on top:
+
+  Rule 1 — Regulatory-keyword routing  (B0.1-B0.4)
+    Tags every surviving chunk with whether it contains >=1 BFSI/regulatory
+    keyword (KYC, AML, STR, PEP, UBO, CDD, EDD, etc.). This is an ADDITIVE
+    field (regulatory_tagged, regulatory_keywords_found,
+    regulatory_density_score) — it never removes chunks and never touches
+    existing fields.
+
+  Rule 2 — Regulatory-density score  (B1.1)
+    What fraction of a chunk's words are regulatory-keyword-bearing. Stored
+    as regulatory_density_score (float 0.0-1.0). Useful as a signal for
+    Stream D's pattern-matching work.
+
+WHY these rules are BFSI-specific, not generic NLP hygiene:
+  - The keyword list maps to specific Indian regulatory regimes (RBI, FIU-IND,
+    PMLA 2002, FATF guidelines). None of these terms appear in generic text
+    quality filters. A chunk that passes all generic quality checks but
+    contains zero regulatory terms is not the type of content this corpus is
+    being curated to train on.
+  - The density score distinguishes a chunk that's mostly procedural KYC
+    obligation text from one that merely mentions "KYC" once in a header.
+    Both pass generic quality filters; only one is genuinely useful training
+    signal for a BFSI-domain LLM.
+
+NeMo-Curator-equivalent stage, library integration pending (Stream A).
 """
 import json
 import re
 import sys
 from pathlib import Path
+
+# ---------------------------------------------------------------------------
+# PATHS (match existing codebase convention)
+# ---------------------------------------------------------------------------
 
 DEDUPED_DIR = Path(__file__).resolve().parent.parent / "data" / "deduped"
 FILTERED_DIR = Path(__file__).resolve().parent.parent / "data" / "filtered"
@@ -15,14 +48,148 @@ STAGE_RECORD_PATH = FILTERED_DIR / "_stage_record.json"
 IN_PATH = DEDUPED_DIR / "chunks.jsonl"
 OUT_PATH = FILTERED_DIR / "chunks.jsonl"
 
+# ---------------------------------------------------------------------------
+# TUNABLE CONSTANTS — change these, not the logic  (B1.2)
+# ---------------------------------------------------------------------------
+
+# Existing heuristic thresholds (preserved from v1)
 MIN_WORDS = 15
 MAX_SYMBOL_RATIO = 0.3
 MIN_ALPHA_RATIO = 0.5
+MIN_LEXICAL_DIVERSITY = 0.30
 WORD_RE = re.compile(r"\w+")
 ALPHA_RE = re.compile(r"[A-Za-z]")
 
+# Stream B — regulatory keyword routing thresholds
+MIN_KEYWORD_MATCHES_FOR_TAG = 1
+HIGH_DENSITY_THRESHOLD = 0.05   # 5% of words are regulatory-keyword-bearing
+
+# ---------------------------------------------------------------------------
+# REGULATORY KEYWORD LIST  (B0.1)
+# Covers Indian BFSI regulatory vocabulary: RBI Master Directions, PMLA 2002,
+# FATF recommendations, FIU-IND reporting, SEBI AML, IBA guidelines.
+# ---------------------------------------------------------------------------
+
+REGULATORY_KEYWORDS = {
+    # Core KYC/AML programme terms
+    "kyc", "aml", "cft", "aml/cft", "anti-money laundering",
+    "counter financing of terrorism", "counter-terrorism financing",
+    "know your customer",
+
+    # Reporting instrument types
+    "str", "ctr", "sar", "suspicious transaction report",
+    "cash transaction report", "suspicious activity report",
+    "ntr", "ccr", "rtr",
+
+    # Customer due diligence tiers
+    "cdd", "edd", "sdd", "customer due diligence",
+    "enhanced due diligence", "simplified due diligence",
+
+    # Beneficial ownership & political exposure
+    "ubo", "beneficial owner", "beneficial ownership",
+    "pep", "politically exposed person",
+    "close associate", "family member of pep",
+
+    # Watchlist / sanctions
+    "sanctions", "sanctioned", "ofac", "un sanctions",
+    "fatf", "blacklist", "grey list",
+    "designated entity", "designated individual",
+
+    # Indian regulatory bodies & instruments
+    "rbi", "fiu-ind", "fiu", "pmla", "prevention of money laundering",
+    "sebi", "irdai", "pfrda",
+    "master direction", "master circular", "rbi circular",
+    "gazette notification",
+
+    # Account & transaction surveillance
+    "high risk", "high-risk", "risk categorisation", "risk category",
+    "risk based approach", "risk profile",
+    "unusual transaction", "suspicious transaction",
+    "large cash transaction", "structuring",
+    "smurfing", "layering", "placement", "integration",
+
+    # Identity document types (Indian)
+    "aadhaar", "pan card", "passport", "voter id", "driving licence",
+    "ckycr", "ckyc", "central kyc",
+
+    # Customer categories with elevated scrutiny
+    "nri", "foreign national", "non-resident", "correspondent banking",
+    "shell company", "shell bank", "nominee director",
+    "trust", "foundation", "ngo",
+
+    # Process / compliance terms
+    "onboarding", "re-kyc", "re kyc", "periodic review", "periodic updation",
+    "account opening", "due diligence",
+    "customer identification", "customer identification procedure", "cip",
+    "record keeping", "record retention",
+    "training and awareness", "compliance officer",
+    "internal audit", "concurrent audit",
+    "reporting entity", "principal officer",
+    "designated director",
+}
+
+# Pre-compile patterns for keyword matching
+_SINGLE_TOKEN_KW = {kw for kw in REGULATORY_KEYWORDS if " " not in kw and "/" not in kw}
+_MULTI_TOKEN_KW  = REGULATORY_KEYWORDS - _SINGLE_TOKEN_KW
+
+_SINGLE_PATTERN = re.compile(
+    r'\b(' + '|'.join(re.escape(kw) for kw in sorted(_SINGLE_TOKEN_KW, key=len, reverse=True)) + r')\b',
+    re.IGNORECASE,
+)
+_MULTI_PATTERN = re.compile(
+    '(' + '|'.join(re.escape(kw) for kw in sorted(_MULTI_TOKEN_KW, key=len, reverse=True)) + ')',
+    re.IGNORECASE,
+)
+
+
+# ---------------------------------------------------------------------------
+# RULE 1 — Regulatory-keyword tagger  (B0.1-B0.4)
+# RULE 2 — Regulatory-density score   (B1.1)
+# ---------------------------------------------------------------------------
+
+def tag_regulatory_keywords(text: str) -> dict:
+    """
+    Return a dict of tagging metadata for one chunk's text.
+
+    Fields returned (all ADDITIVE — never shadow existing chunk fields):
+      regulatory_tagged         bool   True if >= MIN_KEYWORD_MATCHES_FOR_TAG hits
+      regulatory_keywords_found list   Sorted unique matched keywords (lowercased)
+      regulatory_density_score  float  Fraction of words that are keyword-bearing
+    """
+    text_lower = text.lower()
+    matched = set()
+
+    for m in _SINGLE_PATTERN.finditer(text_lower):
+        matched.add(m.group(0).lower())
+    for m in _MULTI_PATTERN.finditer(text_lower):
+        matched.add(m.group(0).lower())
+
+    # Density score: count word-tokens covered by any keyword match
+    words = text_lower.split()
+    word_count = len(words) if words else 1
+    kw_bearing_token_count = 0
+    all_matches_text = list(_SINGLE_PATTERN.finditer(text_lower)) + list(_MULTI_PATTERN.finditer(text_lower))
+    for m in all_matches_text:
+        kw_bearing_token_count += len(m.group(0).split())
+
+    density = min(1.0, kw_bearing_token_count / word_count)
+
+    return {
+        "regulatory_tagged": len(matched) >= MIN_KEYWORD_MATCHES_FOR_TAG,
+        "regulatory_keywords_found": sorted(matched),
+        "regulatory_density_score": round(density, 4),
+    }
+
+
+# ---------------------------------------------------------------------------
+# EXISTING HEURISTIC QUALITY FILTER (v1, preserved unchanged)
+# ---------------------------------------------------------------------------
 
 def quality_reason(text: str):
+    """
+    Returns rejection reason string, or None if chunk passes.
+    Reasons map to the existing stage-record reason_counts keys.
+    """
     words = WORD_RE.findall(text)
     if len(words) < MIN_WORDS:
         return "too_few_words"
@@ -36,11 +203,15 @@ def quality_reason(text: str):
         return "high_symbol_ratio"
 
     unique_words = set(w.lower() for w in words)
-    if len(unique_words) / len(words) < 0.3:
+    if len(unique_words) / len(words) < MIN_LEXICAL_DIVERSITY:
         return "low_lexical_diversity"
 
     return None
 
+
+# ---------------------------------------------------------------------------
+# MAIN ENTRY POINT (called by pipeline/run.py)
+# ---------------------------------------------------------------------------
 
 def main():
     FILTERED_DIR.mkdir(parents=True, exist_ok=True)
@@ -51,6 +222,9 @@ def main():
     chunks_in = 0
     survivors = []
     reason_counts = {}
+    regulatory_tagged_count = 0
+    regulatory_untagged_count = 0
+    high_density_count = 0
 
     with IN_PATH.open(encoding="utf-8") as f:
         for line in f:
@@ -59,10 +233,27 @@ def main():
                 continue
             chunk = json.loads(line)
             chunks_in += 1
+
+            # --- Existing heuristic filter ---
             reason = quality_reason(chunk["text"])
             if reason:
                 reason_counts[reason] = reason_counts.get(reason, 0) + 1
                 continue
+
+            # --- Stream B: regulatory keyword tagging (additive fields only) ---
+            tag_info = tag_regulatory_keywords(chunk["text"])
+            chunk["regulatory_tagged"]         = tag_info["regulatory_tagged"]
+            chunk["regulatory_keywords_found"] = tag_info["regulatory_keywords_found"]
+            chunk["regulatory_density_score"]  = tag_info["regulatory_density_score"]
+
+            if tag_info["regulatory_tagged"]:
+                regulatory_tagged_count += 1
+            else:
+                regulatory_untagged_count += 1
+
+            if tag_info["regulatory_density_score"] >= HIGH_DENSITY_THRESHOLD:
+                high_density_count += 1
+
             survivors.append(chunk)
 
     with OUT_PATH.open("w", encoding="utf-8") as f:
@@ -75,6 +266,10 @@ def main():
         "docs_out": len(survivors),
         "removed": chunks_in - len(survivors),
         "reason_counts": reason_counts,
+        # Stream B additive fields (B0.3)
+        "regulatory_tagged_count": regulatory_tagged_count,
+        "regulatory_untagged_count": regulatory_untagged_count,
+        "high_density_count": high_density_count,
     }
     STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
     print(json.dumps(record, indent=2))

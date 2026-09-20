@@ -109,15 +109,23 @@ def main():
 
     pii_stage = next((s for s in stage_results if s["stage"] == "pii_redact"), {})
     dedup_stage = next((s for s in stage_results if s["stage"] == "dedup"), {})
+    quality_stage = next((s for s in stage_results if s["stage"] == "quality_filter"), {})
     output_stage = next((s for s in stage_results if s["stage"] == "output"), {})
 
     summary = {
         "stages": stage_results,
         "duplicates_removed": dedup_stage.get("removed", 0),
+        # Stream B: boilerplate breakdown
+        "cross_doc_boilerplate_removed": dedup_stage.get("reason_counts", {}).get("cross_doc_boilerplate", 0),
+        "intra_doc_near_duplicate_removed": dedup_stage.get("reason_counts", {}).get("intra_doc_near_duplicate", 0),
         "pii_entities_redacted": pii_stage.get("pii_entities_redacted", 0),
         "pii_entity_type_counts": pii_stage.get("entity_type_counts", {}),
         "name_detection_available": pii_stage.get("name_detection_available", False),
         "pii_examples": pii_examples,
+        # Stream B: regulatory tagging stats
+        "regulatory_tagged_count": quality_stage.get("regulatory_tagged_count", 0),
+        "regulatory_untagged_count": quality_stage.get("regulatory_untagged_count", 0),
+        "high_density_count": quality_stage.get("high_density_count", 0),
         "final_output_chunks": output_stage.get("docs_out", 0),
         "final_output_chars": output_stage.get("total_chars", 0),
         "documents": build_document_drilldown(),
