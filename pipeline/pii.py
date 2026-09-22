@@ -382,7 +382,7 @@ def main():
         "account_numbers_needs_review": validation_totals.get("account_needs_review", 0),
         "swift_candidates_rejected_no_cue": validation_totals.get("swift_no_cue", 0),
         "documents_with_pii": sum(1 for d in validation_report if d["pii_entities"]),
-        "validation_report_path": str(VALIDATION_REPORT_PATH),
+        "validation_report_path": VALIDATION_REPORT_PATH.relative_to(REDACTED_DIR.parent.parent).as_posix(),
         "chunks_needing_review": sum(
             1 for c in out_chunks if c.get("validation_flag") == "needs_review"
         ),

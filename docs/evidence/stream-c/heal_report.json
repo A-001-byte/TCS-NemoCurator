@@ -1,0 +1,256 @@
+{
+  "before": {
+    "chunks": 2395,
+    "chunks_with_devanagari": 242,
+    "chunks_with_page_marker": 637,
+    "pincode_spans": 252,
+    "duplicate_chunks": 148,
+    "total_chars": 2809011
+  },
+  "after": {
+    "chunks": 2284,
+    "chunks_with_devanagari": 0,
+    "chunks_with_page_marker": 7,
+    "pincode_spans": 24,
+    "duplicate_chunks": 200,
+    "total_chars": 2660576
+  },
+  "documents": {
+    "bank_of_baroda_kyc": {
+      "furniture_lines_removed": 0,
+      "furniture": {},
+      "ocr_repairs": []
+    },
+    "bhiwani_dccb_kyc_aml_cft_2023_24": {
+      "furniture_lines_removed": 0,
+      "furniture": {},
+      "ocr_repairs": [
+        "f inancial -> financial",
+        "p rovided -> provided",
+        "o pened -> opened",
+        "s uch -> such",
+        "r elatives -> relatives",
+        "i ntermediaries -> intermediaries",
+        "a ddress -> address",
+        "t ransaction -> transaction",
+        "d esignated -> designated",
+        "t hat -> that",
+        "P lace -> Place",
+        "F ORMAT -> FORMAT",
+        "m anner -> manner",
+        "r elationship -> relationship",
+        "f urnished -> furnished"
+      ]
+    },
+    "central_bank_india_kyc_aml_2021": {
+      "furniture_lines_removed": 396,
+      "furniture": {
+        "__________________________________________________________________________________________________": {
+          "occurrences": 99,
+          "gap_cv": 0.212,
+          "mean_gap_lines": 39.0,
+          "span": 0.989
+        },
+        "के वाय सी - ध शो नि कक्ष, केन्द्रीय कायाालय,अिुपालि नवभाग़, मुम्बई": {
+          "occurrences": 99,
+          "gap_cv": 0.197,
+          "mean_gap_lines": 39.3,
+          "span": 0.997
+        },
+        "kyc - aml cell, planning, development & operations department, central office, #nd floor, mmo building,": {
+          "occurrences": 99,
+          "gap_cv": 0.197,
+          "mean_gap_lines": 39.3,
+          "span": 0.997
+        },
+        "m.g. road, fort, mumbai-#.": {
+          "occurrences": 99,
+          "gap_cv": 0.197,
+          "mean_gap_lines": 39.3,
+          "span": 0.997
+        }
+      },
+      "ocr_repairs": [
+        "M andatory -> Mandatory"
+      ]
+    },
+    "central_bank_india_kyc_aml_2024_25": {
+      "furniture_lines_removed": 126,
+      "furniture": {
+        "customer care department, central office m g road, fort mumbai": {
+          "occurrences": 126,
+          "gap_cv": 0.277,
+          "mean_gap_lines": 36.8,
+          "span": 0.994
+        }
+      },
+      "ocr_repairs": [
+        "data base -> database",
+        "Mandat ory -> Mandatory"
+      ]
+    },
+    "central_bank_india_kyc_aml_2025_26": {
+      "furniture_lines_removed": 516,
+      "furniture": {
+        "__________________________________________________________________________________________________": {
+          "occurrences": 129,
+          "gap_cv": 0.21,
+          "mean_gap_lines": 39.1,
+          "span": 0.992
+        },
+        "के वाय सी - ध शो नि कक्ष, केन्द्रीय कायाालय,अिुपालि नवभाग़, मुम्बई": {
+          "occurrences": 129,
+          "gap_cv": 0.201,
+          "mean_gap_lines": 39.3,
+          "span": 0.997
+        },
+        "kyc - aml cell, planning, development & operations department, central office, #nd floor, mmo building,": {
+          "occurrences": 129,
+          "gap_cv": 0.201,
+          "mean_gap_lines": 39.3,
+          "span": 0.997
+        },
+        "m.g. road, fort, mumbai-#.": {
+          "occurrences": 129,
+          "gap_cv": 0.201,
+          "mean_gap_lines": 39.3,
+          "span": 0.997
+        }
+      },
+      "ocr_repairs": [
+        "data base -> database",
+        "Mandat ory -> Mandatory"
+      ]
+    },
+    "fiu_india_aml_cft_guidelines_2023": {
+      "furniture_lines_removed": 15,
+      "furniture": {
+        "confidential": {
+          "occurrences": 15,
+          "gap_cv": 0.253,
+          "mean_gap_lines": 30.8,
+          "span": 0.941
+        }
+      },
+      "ocr_repairs": []
+    },
+    "fiu_india_brochure": {
+      "furniture_lines_removed": 0,
+      "furniture": {},
+      "ocr_repairs": []
+    },
+    "fiu_india_reporting_format": {
+      "furniture_lines_removed": 1076,
+      "furniture": {
+        "reporting format - introduction version #.#": {
+          "occurrences": 538,
+          "gap_cv": 0.123,
+          "mean_gap_lines": 42.8,
+          "span": 0.999
+        },
+        "financial intelligence unit – india (fiu-ind) p age | #": {
+          "occurrences": 538,
+          "gap_cv": 0.122,
+          "mean_gap_lines": 42.8,
+          "span": 0.999
+        }
+      },
+      "ocr_repairs": []
+    },
+    "manappuram_kyc_policy": {
+      "furniture_lines_removed": 88,
+      "furniture": {
+        "page # of # classification: internal": {
+          "occurrences": 44,
+          "gap_cv": 0.214,
+          "mean_gap_lines": 40.7,
+          "span": 0.981
+        },
+        "document classification : confidential": {
+          "occurrences": 44,
+          "gap_cv": 0.214,
+          "mean_gap_lines": 40.7,
+          "span": 0.981
+        }
+      },
+      "ocr_repairs": []
+    },
+    "nainital_bank_kyc_aml_policy": {
+      "furniture_lines_removed": 308,
+      "furniture": {
+        "document name kyc aml policy document number orpkyc": {
+          "occurrences": 79,
+          "gap_cv": 0.248,
+          "mean_gap_lines": 40.3,
+          "span": 0.995
+        },
+        "security classification public document status under revie": {
+          "occurrences": 79,
+          "gap_cv": 0.248,
+          "mean_gap_lines": 40.3,
+          "span": 0.995
+        },
+        "date of release version number": {
+          "occurrences": 79,
+          "gap_cv": 0.248,
+          "mean_gap_lines": 40.3,
+          "span": 0.995
+        },
+        "page # of #": {
+          "occurrences": 71,
+          "gap_cv": 0.261,
+          "mean_gap_lines": 40.1,
+          "span": 0.889
+        }
+      },
+      "ocr_repairs": []
+    },
+    "rbi_fraud_master_direction_elp": {
+      "furniture_lines_removed": 0,
+      "furniture": {},
+      "ocr_repairs": []
+    },
+    "rbi_fraud_master_direction_pwc": {
+      "furniture_lines_removed": 11,
+      "furniture": {
+        "# pwc | rbi’s master direction on fraud risk management in banks": {
+          "occurrences": 11,
+          "gap_cv": 0.415,
+          "mean_gap_lines": 35.2,
+          "span": 0.887
+        }
+      },
+      "ocr_repairs": []
+    },
+    "rbi_kyc_ebixcash": {
+      "furniture_lines_removed": 0,
+      "furniture": {},
+      "ocr_repairs": []
+    },
+    "rbi_kyc_fidcindia_aug2025": {
+      "furniture_lines_removed": 0,
+      "furniture": {},
+      "ocr_repairs": []
+    },
+    "rbi_kyc_master_direction_slbc_mp": {
+      "furniture_lines_removed": 0,
+      "furniture": {},
+      "ocr_repairs": []
+    },
+    "rbi_kyc_summary_banklaw1": {
+      "furniture_lines_removed": 0,
+      "furniture": {},
+      "ocr_repairs": []
+    },
+    "rbi_kyc_summary_banklaw2": {
+      "furniture_lines_removed": 0,
+      "furniture": {},
+      "ocr_repairs": []
+    },
+    "rbi_kyc_updated_aug2025_allinonebanking": {
+      "furniture_lines_removed": 0,
+      "furniture": {},
+      "ocr_repairs": []
+    }
+  }
+}
