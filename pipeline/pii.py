@@ -6,7 +6,9 @@ content hashes, and redacting first would corrupt those hashes inconsistently).
 Detects and redacts, on real extracted Indian KYC/regulatory text:
   - PAN numbers (AAAAA9999A format)
   - Aadhaar-style 12-digit numbers
-  - Bank account numbers (9-18 digit runs in account-like context)
+  - CIN, Corporate Identity Number (21-char MCA format, e.g. U65923UR1922PLC000234)
+  - SWIFT/BIC codes (shape + required "SWIFT"/"BIC" cue, e.g. BARBINBBXXX)
+  - Bank account numbers (9-18 digit runs, gated by cross-field context validation)
   - Phone numbers (Indian mobile / STD formats)
   - Email addresses
   - Dates of birth / dates (DD/MM/YYYY, DD-MM-YYYY)
@@ -17,6 +19,16 @@ Detects and redacts, on real extracted Indian KYC/regulatory text:
     text makes small NER models mistag generic capitalized phrases ("Gazette
     Notification") as PERSON; this filter trades recall for precision so every
     reported name redaction is real, never a false positive presented as PII.)
+
+Cross-field validation (Stream C): an account-number-shaped span is only redacted as
+ACCOUNT_NUMBER once its SURROUNDING CONTEXT agrees. On the real 19-document corpus every
+single 9-18 digit run the bare regex matched was actually a fax or telephone number from
+a published RBI/MHA circular, not a bank account. Pattern-in-isolation cannot tell those
+apart; pattern-plus-context can. See `_account_number_verdict`.
+
+Document-level validation report (Stream C): alongside per-entity redaction, writes
+`data/redacted/validation_report.json` -- one row per source document with entity counts
+by type and how many chunks a human should re-check, ordered most-exposed first.
 
 Equivalent-logic stage: NVIDIA's shipped PII path uses GLiNER-PII
 (gliner_pii_redaction.ipynb in the Curator repo). We use spaCy NER + regex here.
@@ -31,6 +43,7 @@ FILTERED_DIR = Path(__file__).resolve().parent.parent / "data" / "filtered"
 REDACTED_DIR = Path(__file__).resolve().parent.parent / "data" / "redacted"
 STAGE_RECORD_PATH = REDACTED_DIR / "_stage_record.json"
 EXAMPLES_PATH = REDACTED_DIR / "pii_examples.json"
+VALIDATION_REPORT_PATH = REDACTED_DIR / "validation_report.json"
 IN_PATH = FILTERED_DIR / "chunks.jsonl"
 OUT_PATH = REDACTED_DIR / "chunks.jsonl"
 
@@ -45,8 +58,101 @@ PATTERNS = [
     # context (e.g. proximity to "DOB"/"Date of Birth"), so this is labeled generically.
     ("DATE", re.compile(r"\b(0[1-9]|[12]\d|3[01])[/-](0[1-9]|1[0-2])[/-](19|20)\d{2}\b")),
     ("PINCODE", re.compile(r"\b[1-9]\d{5}\b")),
+    # CIN: MCA Corporate Identity Number. Listed/Unlisted + 5-digit industry code +
+    # 2-letter state + 4-digit year + 3-letter ownership + 6-digit registration number.
+    # Runs before ACCOUNT_NUMBER so a CIN's digit runs are never mistaken for one.
+    ("CIN", re.compile(r"\b[LU]\d{5}[A-Z]{2}\d{4}[A-Z]{3}\d{6}\b")),
+    # SWIFT/BIC: 4-char bank + 2-char country + 2-char location + optional 3-char branch.
+    # Shape alone is far too loose -- plain uppercase words ("ACCOUNTS", "ANNEXURE") match
+    # it -- so a cue is REQUIRED before redacting. See _has_swift_cue.
+    ("SWIFT_BIC", re.compile(r"\b[A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?\b")),
     ("ACCOUNT_NUMBER", re.compile(r"\b\d{9,18}\b")),
 ]
+
+# --- Cross-field validation for ACCOUNT_NUMBER -------------------------------
+# A bare 9-18 digit run is the weakest pattern here: Indian landline+STD strings,
+# fax numbers and concatenated helpline numbers all match it. Deciding by pattern
+# alone mislabels published contact numbers as customer bank accounts.
+ACCOUNT_CONTEXT_WINDOW = 90
+TELECOM_CUE_RE = re.compile(
+    r"(fax|tele\s?phone|phone|mobile|helpline|contact\s+(no|number)|\bM\s*:|\bTel\b|\bSTD\b)",
+    re.IGNORECASE,
+)
+BANK_ACCOUNT_CUE_RE = re.compile(
+    r"(a/c|account\s*(no|number|#)|bank\s+account|savings\s+account|current\s+account"
+    r"|credited\s+to|debited\s+from|beneficiary\s+account|\bIFSC\b)",
+    re.IGNORECASE,
+)
+
+
+def _account_number_verdict(text: str, start: int, end: int) -> str:
+    """Decide what an account-number-shaped span actually is, from its neighbours.
+
+    Returns 'suppress' (telecom context -> not an account number at all),
+    'confident' (explicit bank-account context), or 'needs_review' (no context
+    either way -> still redacted, but flagged so a human can check).
+    """
+    window = text[max(0, start - ACCOUNT_CONTEXT_WINDOW) : end + ACCOUNT_CONTEXT_WINDOW]
+    if TELECOM_CUE_RE.search(window):
+        return "suppress"
+    if BANK_ACCOUNT_CUE_RE.search(window):
+        return "confident"
+    return "needs_review"
+
+
+# --- Cue requirement for SWIFT_BIC -------------------------------------------
+# Same precision-first discipline as PERSON_NAME: the shape is too permissive on its
+# own (any 8-letter uppercase word matches), so an explicit label must precede it.
+# Case-sensitive on purpose -- lowercase "swiftly" is ordinary prose, and \bBIC\b
+# keeps "CBIC" (Central Board of Indirect Taxes and Customs) from qualifying.
+SWIFT_CUE_WINDOW = 60
+SWIFT_CUE_RE = re.compile(r"(SWIFT\s*(Address|Code|BIC)?|\bBIC\b)")
+
+
+def _has_swift_cue(text: str, start: int) -> bool:
+    return bool(SWIFT_CUE_RE.search(text[max(0, start - SWIFT_CUE_WINDOW) : start]))
+
+
+# --- Document-level validation report ----------------------------------------
+# Per-entity redaction answers "what was hidden"; a compliance reviewer also needs
+# "which documents carried the most exposure, and where should a human look first".
+# Counted from the placeholders left in the final text: each redaction writes exactly
+# one, so this stays correct without threading extra state through the redaction loop.
+REDACTION_PLACEHOLDER_RE = re.compile(r"\[REDACTED_([A-Z_]+)\]")
+
+
+def build_validation_report(chunks: list) -> list:
+    """Per-document PII summary, ordered most-exposed first."""
+    docs = {}
+    for chunk in chunks:
+        doc = docs.setdefault(
+            chunk["doc_id"],
+            {
+                "doc_id": chunk["doc_id"],
+                "source_file": chunk["source_file"],
+                "chunks": 0,
+                "chunks_with_pii": 0,
+                "chunks_flagged_for_review": 0,
+                "pii_entities": 0,
+                "entity_types": {},
+            },
+        )
+        doc["chunks"] += 1
+        if chunk.get("pii_redacted"):
+            doc["chunks_with_pii"] += 1
+        if chunk.get("validation_flag") == "needs_review":
+            doc["chunks_flagged_for_review"] += 1
+        for entity_type in REDACTION_PLACEHOLDER_RE.findall(chunk["text"]):
+            doc["entity_types"][entity_type] = doc["entity_types"].get(entity_type, 0) + 1
+            doc["pii_entities"] += 1
+
+    report = []
+    for doc in docs.values():
+        doc["distinct_entity_types"] = len(doc["entity_types"])
+        report.append(doc)
+    report.sort(key=lambda d: (-d["pii_entities"], d["doc_id"]))
+    return report
+
 
 _NLP = None
 _SPACY_AVAILABLE = False
@@ -128,19 +234,40 @@ def _record_example(examples: list, label: str, doc_id: str, before: str, contex
         )
 
 
-def redact_regex(text: str, entity_counts: dict, examples: list, doc_id: str):
+def redact_regex(text: str, entity_counts: dict, examples: list, doc_id: str, validation: dict):
     redacted = text
     for label, pattern in PATTERNS:
         def _sub(match, label=label):
+            # match.string is the text actually being scanned this pass, so context
+            # windows stay correct even after earlier patterns changed span lengths.
+            scanned = match.string
+            context_before = scanned[max(0, match.start() - 40) : match.start()]
+            context_after = scanned[match.end() : match.end() + 40]
+
+            if label == "ACCOUNT_NUMBER":
+                verdict = _account_number_verdict(scanned, match.start(), match.end())
+                if verdict == "suppress":
+                    validation["account_suppressed"] = validation.get("account_suppressed", 0) + 1
+                    _record_example(
+                        examples,
+                        "ACCOUNT_NUMBER_SUPPRESSED",
+                        doc_id,
+                        match.group(0),
+                        context_before,
+                        context_after,
+                    )
+                    return match.group(0)
+                if verdict == "needs_review":
+                    validation["account_needs_review"] = (
+                        validation.get("account_needs_review", 0) + 1
+                    )
+
+            elif label == "SWIFT_BIC" and not _has_swift_cue(scanned, match.start()):
+                validation["swift_no_cue"] = validation.get("swift_no_cue", 0) + 1
+                return match.group(0)
+
             entity_counts[label] = entity_counts.get(label, 0) + 1
-            _record_example(
-                examples,
-                label,
-                doc_id,
-                match.group(0),
-                text[max(0, match.start() - 40) : match.start()],
-                text[match.end() : match.end() + 40],
-            )
+            _record_example(examples, label, doc_id, match.group(0), context_before, context_after)
             return f"[REDACTED_{label}]"
 
         redacted = pattern.sub(_sub, redacted)
@@ -192,6 +319,7 @@ def main():
 
     entity_counts = {}
     examples = []
+    validation_totals = {}
     chunks_in = 0
     out_chunks = []
 
@@ -202,7 +330,17 @@ def main():
                 continue
             chunk = json.loads(line)
             chunks_in += 1
-            chunk["text"] = redact_regex(chunk["text"], entity_counts, examples, chunk["chunk_id"])
+            chunk_validation = {}
+            chunk["text"] = redact_regex(
+                chunk["text"], entity_counts, examples, chunk["chunk_id"], chunk_validation
+            )
+            # Additive field per the frozen chunk contract: "needs_review" means PII was
+            # redacted but its surrounding context didn't confirm the entity type.
+            chunk["validation_flag"] = (
+                "needs_review" if chunk_validation.get("account_needs_review") else "confident"
+            )
+            for key, count in chunk_validation.items():
+                validation_totals[key] = validation_totals.get(key, 0) + count
             out_chunks.append(chunk)
 
     texts = [c["text"] for c in out_chunks]
@@ -223,6 +361,11 @@ def main():
 
     EXAMPLES_PATH.write_text(json.dumps(examples, indent=2, ensure_ascii=False), encoding="utf-8")
 
+    validation_report = build_validation_report(out_chunks)
+    VALIDATION_REPORT_PATH.write_text(
+        json.dumps(validation_report, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+
     total_entities = sum(entity_counts.values())
     record = {
         "stage": "pii_redact",
@@ -234,6 +377,15 @@ def main():
         "entity_type_counts": entity_counts,
         "chunks_with_pii": chunks_with_pii,
         "name_detection_available": _SPACY_AVAILABLE,
+        # Cross-field validation outcomes (Stream C)
+        "account_numbers_suppressed": validation_totals.get("account_suppressed", 0),
+        "account_numbers_needs_review": validation_totals.get("account_needs_review", 0),
+        "swift_candidates_rejected_no_cue": validation_totals.get("swift_no_cue", 0),
+        "documents_with_pii": sum(1 for d in validation_report if d["pii_entities"]),
+        "validation_report_path": VALIDATION_REPORT_PATH.relative_to(REDACTED_DIR.parent.parent).as_posix(),
+        "chunks_needing_review": sum(
+            1 for c in out_chunks if c.get("validation_flag") == "needs_review"
+        ),
     }
     STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
     print(json.dumps(record, indent=2))
