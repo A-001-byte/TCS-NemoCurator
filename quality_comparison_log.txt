@@ -1,0 +1,27 @@
+nohup: ignoring input
+/home/kali/TCS-NemoCurator/venv-curator/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+0/2247  (4s elapsed)
+100/2247  (71s elapsed)
+200/2247  (158s elapsed)
+300/2247  (275s elapsed)
+400/2247  (357s elapsed)
+500/2247  (441s elapsed)
+600/2247  (547s elapsed)
+700/2247  (792s elapsed)
+800/2247  (884s elapsed)
+900/2247  (1013s elapsed)
+1000/2247  (1134s elapsed)
+1100/2247  (1366s elapsed)
+1200/2247  (1522s elapsed)
+1300/2247  (1631s elapsed)
+1400/2247  (1712s elapsed)
+1500/2247  (1851s elapsed)
+1600/2247  (2101s elapsed)
+1700/2247  (2287s elapsed)
+1800/2247  (2467s elapsed)
+1900/2247  (2594s elapsed)
+2000/2247  (2722s elapsed)
+2100/2247  (2834s elapsed)
+2200/2247  (2967s elapsed)
+DONE. 3028s total
