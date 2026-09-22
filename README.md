@@ -71,9 +71,12 @@ npm install
 npm run dev
 ```
 
-`pipeline/run.py` writes `data/output/pipeline_summary.json` and also copies it into
-`dashboard/public/pipeline_summary.json` so the dev server can read it directly — re-run
-the pipeline any time and refresh the dashboard to see updated numbers.
+`pipeline/run.py` writes `data/output/pipeline_summary.json`. Everything the pipeline
+writes under `data/` (except `data/raw/`) is untracked, so run it once after cloning.
+The dashboard reads its own committed snapshot, `dashboard/public/pipeline_summary.json`,
+which the pipeline no longer overwrites. To view your local numbers, copy
+`data/output/pipeline_summary.json` over it, but do not commit that change: refreshing
+the shared snapshot is a deliberate step owned by Stream D.
 
 ## Repository layout
 
