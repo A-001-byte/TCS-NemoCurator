@@ -8,6 +8,13 @@ comparison was started but does not complete within this work session
 (~8.5s/chunk, ~5hr total) -- findings below are from the completed
 249-chunk sample, a real and substantial dataset, not a full census.
 
+Note: this sample was drawn from an earlier pipeline run than the one
+reflected in the current `pipeline_summary.json` (`chunks_with_pii: 248`).
+The corpus and PII logic have both been extended since (CIN, SWIFT_BIC,
+cross-field account validation), so a like-for-like re-sample against the
+current run is needed before treating the 249 figure as reproducible
+against today's `main`.
+
 ## Finding 1 -- PERSON_NAME: real model is significantly noisier
 GLiNER fires PERSON_NAME on job titles and role references with no
 name-shaped span: "Managing Director", "Joint Secretary (IS.I)",

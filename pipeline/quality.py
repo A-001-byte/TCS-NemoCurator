@@ -278,9 +278,6 @@ def main():
         sys.exit(1)
 
 
-if __name__ == "__main__":
-    main()
-
 
 # ---------------------------------------------------------------------------
 # STREAM A — Real quality classifier (nvidia/quality-classifier-deberta)
@@ -349,3 +346,7 @@ def quality_reason_curator(text: str):
     predicted_class = torch.argmax(outputs, dim=1).item()
     predicted_label = _classifier_config.id2label[predicted_class]
     return "low_quality_classifier" if predicted_label == "Low" else None
+
+
+if __name__ == "__main__":
+    main()

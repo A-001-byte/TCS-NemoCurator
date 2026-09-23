@@ -17,11 +17,17 @@ Real Curator dedup is not achievable on this CPU-only dev machine, for
 either exact or fuzzy phases -- not slow, a hard import failure.
 
 ## What we already have instead
-Our existing `pipeline/dedup.py` implements the same algorithmic approach
-Curator's GPU path uses: SHA-256 exact-hash matching, then MinHash/LSH
-fuzzy matching (same shingle-based technique). This is a genuine
-equivalent-logic implementation of the same method, not a different
-approach -- the gap here is compute (GPU vs CPU), not algorithm design.
+Our existing `pipeline/dedup.py` uses the same underlying primitive Curator's
+GPU path does -- SHA-256 exact-hash matching, then MinHash/LSH shingle-based
+similarity for the fuzzy phase -- but the two differ in resolution strategy,
+not just compute. Curator's fuzzy path builds a similarity graph and finds
+connected components (a global, transitive clustering: A~B~C get grouped even
+if only A~B and B~C are direct matches). Ours is a greedy sequential pass --
+each chunk is checked against already-kept chunks and dropped on first match,
+with no clustering step. These can disagree on which representative survives
+a near-duplicate cluster, and possibly on cluster membership itself for chains
+of pairwise-but-not-mutual similarity. Similar technique, different algorithm;
+GPU vs CPU is a separate, additional gap on top of that, not the only one.
 
 ## Recommendation
 Do not sink further time forcing cudf/RAPIDS onto CPU hardware for this
