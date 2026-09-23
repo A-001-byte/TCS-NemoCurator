@@ -4,7 +4,9 @@ Stage order is fixed: extract -> clean/langid -> dedup -> quality filter ->
 PII redact -> output. PII redact runs AFTER dedup, never before (dedup relies
 on stable content hashes; redacting first corrupts them).
 
-Writes data/output/pipeline_summary.json, the single file the React dashboard reads.
+Writes data/output/pipeline_summary.json. The dashboard reads its own committed
+snapshot (dashboard/public/pipeline_summary.json), which Stream D refreshes on
+purpose -- a pipeline run never overwrites it.
 """
 import json
 import sys
@@ -133,10 +135,6 @@ def main():
     SUMMARY_PATH.parent.mkdir(parents=True, exist_ok=True)
     summary_json = json.dumps(summary, indent=2, ensure_ascii=False)
     SUMMARY_PATH.write_text(summary_json, encoding="utf-8")
-
-    dashboard_public = ROOT / "dashboard" / "public"
-    if dashboard_public.is_dir():
-        (dashboard_public / "pipeline_summary.json").write_text(summary_json, encoding="utf-8")
 
     print(f"\nPipeline complete. Summary written to {SUMMARY_PATH}")
     print(f"duplicates_removed={summary['duplicates_removed']}")
