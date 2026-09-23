@@ -235,7 +235,7 @@ def main():
             chunks_in += 1
 
             # --- Existing heuristic filter ---
-            reason = quality_reason(chunk["text"])
+            reason = quality_reason_curator(chunk["text"]) if USE_REAL_QUALITY_CLASSIFIER else quality_reason(chunk["text"])
             if reason:
                 reason_counts[reason] = reason_counts.get(reason, 0) + 1
                 continue
@@ -276,6 +276,76 @@ def main():
 
     if len(survivors) == 0:
         sys.exit(1)
+
+
+
+# ---------------------------------------------------------------------------
+# STREAM A — Real quality classifier (nvidia/quality-classifier-deberta)
+#
+# Run via plain `transformers`, NOT via NeMo Curator's ProcessingStage /
+# DistributedDataClassifier. NVIDIA's own docs state that distributed
+# classification "requires GPU acceleration and is not supported for
+# CPU-only processing." This machine has no NVIDIA GPU. This is still the
+# real model and real weights -- just invoked directly instead of through
+# Curator's GPU-only wrapper. Documented in SETUP.md.
+# ---------------------------------------------------------------------------
+
+USE_REAL_QUALITY_CLASSIFIER = False  # flip True to use real model instead of heuristic
+
+_classifier_model = None
+_classifier_tokenizer = None
+_classifier_config = None
+_classifier_device = None
+
+
+def _load_quality_classifier():
+    global _classifier_model, _classifier_tokenizer, _classifier_config, _classifier_device
+    if _classifier_model is not None:
+        return
+    import torch
+    from torch import nn
+    from transformers import AutoModel, AutoTokenizer, AutoConfig
+    from huggingface_hub import PyTorchModelHubMixin
+
+    class QualityModel(nn.Module, PyTorchModelHubMixin):
+        def __init__(self, config):
+            super().__init__()
+            self.model = AutoModel.from_pretrained(config["base_model"])
+            self.dropout = nn.Dropout(config["fc_dropout"])
+            self.fc = nn.Linear(self.model.config.hidden_size, len(config["id2label"]))
+
+        def forward(self, input_ids, attention_mask):
+            features = self.model(input_ids=input_ids, attention_mask=attention_mask).last_hidden_state
+            dropped = self.dropout(features)
+            return torch.softmax(self.fc(dropped)[:, 0, :], dim=1)
+
+    _classifier_device = "cuda" if torch.cuda.is_available() else "cpu"
+    _classifier_config = AutoConfig.from_pretrained("nvidia/quality-classifier-deberta")
+    _classifier_tokenizer = AutoTokenizer.from_pretrained("nvidia/quality-classifier-deberta")
+    _classifier_model = QualityModel.from_pretrained("nvidia/quality-classifier-deberta").to(_classifier_device)
+    _classifier_model.eval()
+
+
+def quality_reason_curator(text: str):
+    """
+    Real nvidia/quality-classifier-deberta inference (CPU).
+    Maps 3-class output onto the reason_counts contract:
+      Low    -> "low_quality_classifier" (removed)
+      Medium, High -> passes
+    NOTE: treating "Low" as the removal threshold is a judgment call made
+    here, not a given from the model -- state this plainly when reporting
+    A1.4 comparison results.
+    """
+    import torch
+    _load_quality_classifier()
+    inputs = _classifier_tokenizer(
+        [text], return_tensors="pt", padding="longest", truncation=True
+    ).to(_classifier_device)
+    with torch.no_grad():
+        outputs = _classifier_model(inputs["input_ids"], inputs["attention_mask"])
+    predicted_class = torch.argmax(outputs, dim=1).item()
+    predicted_label = _classifier_config.id2label[predicted_class]
+    return "low_quality_classifier" if predicted_label == "Low" else None
 
 
 if __name__ == "__main__":

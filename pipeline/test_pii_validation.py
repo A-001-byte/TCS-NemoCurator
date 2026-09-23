@@ -7,6 +7,7 @@ PDFs), plus synthetic account-context cases the corpus does not contain.
 from pipeline.pii import (
     PATTERNS,
     _account_number_verdict,
+    _gliner_windows,
     _has_swift_cue,
     build_validation_report,
 )
@@ -72,6 +73,22 @@ def main():
     assert b["entity_types"] == {"PINCODE": 2, "EMAIL": 1}
     assert b["chunks_flagged_for_review"] == 1 and b["chunks_with_pii"] == 1
     assert a["pii_entities"] == 0 and a["entity_types"] == {} and a["chunks"] == 1
+
+    # --- GLiNER windowing: short text untouched, long text windowed with correct offsets ---
+    short = "a b c d e"
+    assert _gliner_windows(short) == [(short, 0)]
+
+    long_text = " ".join(f"w{i}" for i in range(500))
+    windows = _gliner_windows(long_text)
+    assert len(windows) > 1, "500 words must split into more than one window"
+    for window_text, offset in windows:
+        assert long_text[offset:offset + len(window_text)] == window_text, (
+            "window text must match the original text at its reported offset"
+        )
+    covered = set()
+    for window_text, _ in windows:
+        covered.update(window_text.split())
+    assert covered == set(long_text.split()), "no word may be silently dropped"
 
     print("ok: CIN + SWIFT cue + account validation + document report behave as expected")
 
