@@ -42,3 +42,17 @@ not GPU classifiers).
 wsl -d Ubuntu-22.04
 cd ~/TCS-NemoCurator
 source venv-curator/bin/activate
+
+## venv-pii torch pin (update)
+torch 2.14.0 (both default and +cpu build) has a genuine internal bug:
+  ValueError: Duplicate dispatch rule for <built-in function intern>
+Happens on gliner import regardless of transformers version (confirmed with
+both 4.55.0 and 5.16.1 -- ruled out transformers as the cause). Root cause
+is torch itself. Fix: pin torch==2.5.1 (CPU build via
+--index-url https://download.pytorch.org/whl/cpu, avoids pulling
+unnecessary CUDA toolkit packages on this GPU-less machine).
+
+venv-pii final known-good stack:
+  torch==2.5.1+cpu
+  transformers==4.55.0
+  gliner (installed --no-deps to avoid re-upgrading transformers)
