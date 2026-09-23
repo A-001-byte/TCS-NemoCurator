@@ -1,9 +1,0 @@
-{
-  "stage": "output",
-  "docs_in": 2189,
-  "docs_out": 2189,
-  "removed": 0,
-  "reason_counts": {},
-  "total_chars": 2533754,
-  "output_path": "/home/kali/TCS-NemoCurator/data/output/curated.jsonl"
-}
