@@ -396,3 +396,74 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# ---------------------------------------------------------------------------
+# STREAM A — Real GLiNER-PII (nvidia/gliner-PII)
+#
+# Zero-shot NER, single pass finds all entity types at once. CPU-friendly,
+# confirmed via model card (no GPU-only restriction like the quality
+# classifier had). Runs independently of Stream C's regex+cross-field-
+# validation pipeline below -- does NOT replicate C's telecom-vs-bank-account
+# or SWIFT-cue disambiguation logic. That's a known, deliberate gap to
+# report on, not a bug to silently patch.
+# ---------------------------------------------------------------------------
+
+USE_GLINER_PII = False  # flip True to use real GLiNER instead of regex+spaCy+validation
+
+_gliner_model = None
+
+# Covers every entity type currently in PATTERNS + spaCy PERSON, including
+# Stream C's CIN and SWIFT_BIC additions.
+GLINER_LABEL_MAP = {
+    "person": "PERSON_NAME",
+    "email address": "EMAIL",
+    "phone number": "PHONE",
+    "date of birth": "DATE",
+    "pan card number": "PAN",
+    "aadhaar number": "AADHAAR",
+    "pin code": "PINCODE",
+    "bank account number": "ACCOUNT_NUMBER",
+    "corporate identity number": "CIN",
+    "swift code": "SWIFT_BIC",
+}
+GLINER_LABELS = list(GLINER_LABEL_MAP.keys())
+GLINER_CONFIDENCE_THRESHOLD = 0.3  # NVIDIA's own eval used this threshold
+
+
+def _load_gliner():
+    global _gliner_model
+    if _gliner_model is not None:
+        return
+    from gliner import GLiNER
+    _gliner_model = GLiNER.from_pretrained("nvidia/gliner-PII")
+
+
+def redact_pii_gliner(text: str, entity_counts: dict, examples: list, doc_id: str):
+    """
+    Real GLiNER-PII redaction for one chunk. Returns (redacted_text, had_pii: bool).
+    NOTE: does not apply Stream C's cross-field validation (telecom-vs-account,
+    SWIFT cue requirement) -- this is GLiNER's own judgment only, unfiltered,
+    so the comparison shows what the real model does on its own.
+    """
+    _load_gliner()
+    entities = _gliner_model.predict_entities(
+        text, GLINER_LABELS, threshold=GLINER_CONFIDENCE_THRESHOLD
+    )
+    if not entities:
+        return text, False
+
+    entities.sort(key=lambda e: e["start"], reverse=True)
+    redacted = text
+    had_pii = False
+    for ent in entities:
+        contract_label = GLINER_LABEL_MAP.get(ent["label"], ent["label"].upper().replace(" ", "_"))
+        entity_counts[contract_label] = entity_counts.get(contract_label, 0) + 1
+        _record_example(
+            examples, contract_label, doc_id, ent["text"],
+            text[max(0, ent["start"] - 40):ent["start"]],
+            text[ent["end"]:ent["end"] + 40],
+        )
+        redacted = redacted[:ent["start"]] + f"[REDACTED_{contract_label}]" + redacted[ent["end"]:]
+        had_pii = True
+    return redacted, had_pii

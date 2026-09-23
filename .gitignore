@@ -26,3 +26,5 @@ logs/*.log
 # Local harness/session state (not project-relevant, churns per session)
 .claude/scheduled_tasks.lock
 venv-curator/
+venv-pii/
+venv-curator/
