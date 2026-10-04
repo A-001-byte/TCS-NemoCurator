@@ -2,10 +2,14 @@
 
 Run: python -m pipeline.test_heal_changelog
 """
+import json
+import tempfile
 from collections import Counter
+from pathlib import Path
 
+from pipeline import dedup
 from pipeline.changelog import classify_edit, diff_versions, find_families
-from pipeline.heal import find_furniture, remove_furniture, repair_ocr_splits
+from pipeline.heal import find_furniture, heal_documents, remove_furniture, repair_ocr_splits
 
 
 def _page(n: int, body: list) -> list:
@@ -87,7 +91,43 @@ def main():
     }
     assert find_families(docs) == [["policy_2024", "policy_2025"]], find_families(docs)
 
-    print("ok: furniture detection, OCR repair, edit classification, diff pairing, families")
+    # --- heal_documents: pure, in-memory, contract-valid stage record ------------------
+    def synthetic_doc(doc_id: str, topic: str) -> dict:
+        lines = []
+        for n in range(1, 13):
+            lines += _page(n, [f"{topic} clause {n}.{i} requires verification of identity." for i in range(30)])
+        text = "\n".join(lines)
+        return {"doc_id": doc_id, "source_file": f"{doc_id}.pdf", "text": text, "lang": "en", "char_count": len(text)}
+
+    originals = [synthetic_doc("doc_a", "Alpha"), synthetic_doc("doc_b", "Beta")]
+    snapshot = [dict(d) for d in originals]
+    healed_docs, stage, report = heal_documents(originals)
+
+    assert originals == snapshot, "heal_documents must not mutate its input"
+    assert [d["doc_id"] for d in healed_docs] == ["doc_a", "doc_b"]
+    assert set(healed_docs[0]) == set(originals[0]), "record shape unchanged"
+    assert stage["stage"] == "heal"
+    assert stage["docs_in"] == stage["docs_out"] == 2 and stage["removed"] == 0
+    assert stage["reason_counts"]["furniture_lines_removed"] == 24, "one footer per page, two docs"
+    assert set(stage["reason_counts"]) == {"furniture_lines_removed", "furniture_signatures", "ocr_splits_repaired"}
+    assert set(stage["before"]) == set(stage["after"]) and stage["before"]["total_chars"] > stage["after"]["total_chars"]
+    assert all("FIU-IND" not in d["text"] for d in healed_docs)
+    for after_doc in healed_docs:
+        assert after_doc["char_count"] == len(after_doc["text"])
+        assert after_doc["text"].count("requires verification") == 360, "no content line dropped"
+    assert set(report) == {"before", "after", "documents"} and set(report["documents"]) == {"doc_a", "doc_b"}
+
+    # --- dedup loads documents from data/healed, which also holds non-document JSON -----
+    with tempfile.TemporaryDirectory() as tmp:
+        folder = Path(tmp)
+        (folder / "doc_a.json").write_text(json.dumps(originals[0]), encoding="utf-8")
+        (folder / "heal_report.json").write_text(json.dumps(report), encoding="utf-8")
+        (folder / "regulatory_changelog.json").write_text("[]", encoding="utf-8")
+        (folder / "_stage_record.json").write_text(json.dumps(stage), encoding="utf-8")
+        loaded = dedup._load_documents(folder)
+    assert [d["doc_id"] for d in loaded] == ["doc_a"], "only real documents are loaded"
+
+    print("ok: furniture detection, OCR repair, edit classification, diff pairing, families, heal stage, dedup loader")
 
 
 if __name__ == "__main__":
