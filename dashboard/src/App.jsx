@@ -246,14 +246,14 @@ function Overview({ summary }) {
 
 /* ---------- pipeline ---------- */
 
-function ReasonList({ rows, total }) {
+function ReasonList({ rows, total, label = reasonLabel }) {
   const max = total ?? Math.max(...rows.map(([, v]) => v), 0);
   return (
     <ul className="reason-list">
       {rows.map(([key, count]) => (
         <li key={key}>
           <div className="reason-row">
-            <span>{reasonLabel(key)}</span>
+            <span>{label(key)}</span>
             <span className="num">
               {fmt(count)}
               {total ? <span className="muted"> · {pct(count, total)}</span> : null}
@@ -271,6 +271,23 @@ function StageDetail({ stage }) {
   const reasons = Object.entries(stage.reason_counts || {})
     .filter(([, v]) => v > 0)
     .sort((a, b) => b[1] - a[1]);
+  // Redaction rewrites text instead of removing chunks, so show what it changed.
+  const entities = stage.entity_type_counts
+    ? Object.entries(stage.entity_type_counts).sort((a, b) => b[1] - a[1])
+    : null;
+  const figures = entities
+    ? [
+        ["Chunks in / out", `${fmt(stage.docs_in)} / ${fmt(stage.docs_out)}`],
+        ["Entities redacted", fmt(stage.pii_entities_redacted)],
+        ["Chunks modified", fmt(stage.chunks_with_pii)],
+        ["Documents with PII", fmt(stage.documents_with_pii)],
+      ]
+    : [
+        ["In", fmt(stage.docs_in)],
+        ["Out", fmt(stage.docs_out)],
+        ["Removed", fmt(stage.removed)],
+        ["Kept", pct(stage.docs_out, stage.docs_in)],
+      ];
 
   return (
     <div className="card stage-detail">
@@ -280,12 +297,7 @@ function StageDetail({ stage }) {
         <p className="body">{info.detail}</p>
 
         <dl className="kv-row">
-          {[
-            ["In", fmt(stage.docs_in)],
-            ["Out", fmt(stage.docs_out)],
-            ["Removed", fmt(stage.removed)],
-            ["Kept", pct(stage.docs_out, stage.docs_in)],
-          ].map(([k, v]) => (
+          {figures.map(([k, v]) => (
             <div key={k}>
               <dt>{k}</dt>
               <dd>{v}</dd>
@@ -295,11 +307,22 @@ function StageDetail({ stage }) {
       </div>
 
       <div className="stage-side">
-        <p className="label">Removal reasons</p>
-        {reasons.length === 0 ? (
-          <p className="muted small">Nothing is removed at this stage; every {info.unit} passes through.</p>
+        {entities ? (
+          <>
+            <p className="label">Entities redacted by type</p>
+            <ReasonList rows={entities} label={entityLabel} />
+          </>
         ) : (
-          <ReasonList rows={reasons} />
+          <>
+            <p className="label">Removal reasons</p>
+            {reasons.length === 0 ? (
+              <p className="muted small">
+                Nothing is removed at this stage; every {info.unit.replace(/s$/, "")} passes through.
+              </p>
+            ) : (
+              <ReasonList rows={reasons} />
+            )}
+          </>
         )}
 
         {stage.failures?.length > 0 && (
@@ -355,6 +378,9 @@ function Pipeline({ stages }) {
                     <span className="muted">{info.unit}</span>
                     {stage.removed > 0 && (
                       <span className="badge badge-primary">−{fmt(stage.removed)}</span>
+                    )}
+                    {stage.pii_entities_redacted > 0 && (
+                      <span className="badge badge-success">{fmt(stage.pii_entities_redacted)} redacted</span>
                     )}
                   </span>
                 </button>
