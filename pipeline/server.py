@@ -18,14 +18,14 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from pipeline import clean, dedup, extract, output, pii, quality, run
+from pipeline import clean, dedup, extract, heal, output, pii, quality, run
 
 HOST, PORT = "127.0.0.1", 8000
 MAX_FILES = 10
 MAX_TOTAL_BYTES = 30 * 1024 * 1024
 DATA_DIR = run.ROOT / "data"
-STAGE_DIRS = ("raw", "extracted", "cleaned", "deduped", "filtered", "redacted", "output")
-MODULES = (extract, clean, dedup, quality, pii, output, run)
+STAGE_DIRS = ("raw", "extracted", "cleaned", "healed", "deduped", "filtered", "redacted", "output")
+MODULES = (extract, clean, heal, dedup, quality, pii, output, run)
 
 # ponytail: one run at a time, because runs patch module globals; a job queue if this ever serves more than one user.
 RUN_LOCK = threading.Lock()

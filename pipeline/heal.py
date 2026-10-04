@@ -23,9 +23,10 @@ Second pass, corpus-consensus OCR repair: kerning splits ("f inancial", "Mandat 
 merged when the joined word occurs intact elsewhere in the corpus and a fragment does
 not. The corpus is its own dictionary -- no wordlist, no model.
 
-Standalone for now (reads data/cleaned, writes data/healed): run.py is unchanged until
-Stream B agrees, because healing shifts every downstream count.
-Run: python -m pipeline.heal
+Runs inside the main pipeline between clean_langid and dedup (reads data/cleaned, writes
+data/healed, which dedup reads). Set HEAL_ENABLED = False to reproduce the pre-heal
+numbers: run.py then skips this stage and dedup reads data/cleaned.
+Standalone: python -m pipeline.heal
 """
 import json
 import re
@@ -44,6 +45,10 @@ CLEANED_DIR = ROOT / "data" / "cleaned"
 HEALED_DIR = ROOT / "data" / "healed"
 STAGE_RECORD_PATH = HEALED_DIR / "_stage_record.json"
 REPORT_PATH = HEALED_DIR / "heal_report.json"
+# Files that share data/healed with the healed documents but are not documents.
+OTHER_OUTPUTS = {"_stage_record.json", "heal_report.json", "regulatory_changelog.json"}
+
+HEAL_ENABLED = True
 
 # Tuned on the real corpus. True furniture: >=15 occurrences, span >=0.89, gap CV <=0.28,
 # mean gap 31-43 lines. Nearest look-alike content (FIU schema rows reused per report
@@ -153,6 +158,44 @@ def purity_metrics(docs: dict) -> dict:
     }
 
 
+def heal_documents(records: list) -> tuple:
+    """Heal in-memory cleaned-doc records. Pure: no file reads or writes.
+
+    Returns (healed_records, stage_record, report). Every input document comes back
+    (docs_in == docs_out, removed == 0); only furniture lines are deleted from the text.
+    """
+    healed, per_doc = {}, {}
+    for rec in records:
+        text, furniture, removed = remove_furniture(rec["text"])
+        healed[rec["doc_id"]] = text
+        per_doc[rec["doc_id"]] = {"furniture_lines_removed": removed, "furniture": furniture}
+
+    vocab = Counter(w.lower() for t in healed.values() for w in WORD_RE.findall(t))
+    healed_records = []
+    for rec in records:
+        text, repairs = repair_ocr_splits(healed[rec["doc_id"]], vocab)
+        healed[rec["doc_id"]] = text
+        per_doc[rec["doc_id"]]["ocr_repairs"] = repairs
+        healed_records.append({**rec, "text": text, "char_count": len(text)})
+
+    before = purity_metrics({r["doc_id"]: r["text"] for r in records})
+    after = purity_metrics(healed)
+    stage_record = {
+        "stage": "heal",
+        "docs_in": len(records),
+        "docs_out": len(healed_records),
+        "removed": 0,
+        "reason_counts": {
+            "furniture_lines_removed": sum(d["furniture_lines_removed"] for d in per_doc.values()),
+            "furniture_signatures": sum(len(d["furniture"]) for d in per_doc.values()),
+            "ocr_splits_repaired": sum(len(d["ocr_repairs"]) for d in per_doc.values()),
+        },
+        "before": before,
+        "after": after,
+    }
+    return healed_records, stage_record, {"before": before, "after": after, "documents": per_doc}
+
+
 def main():
     HEALED_DIR.mkdir(parents=True, exist_ok=True)
     records = [
@@ -164,42 +207,20 @@ def main():
         print(json.dumps({"stage": "heal", "error": "no cleaned documents"}))
         sys.exit(1)
 
-    healed, per_doc = {}, {}
-    for rec in records:
-        text, furniture, removed = remove_furniture(rec["text"])
-        healed[rec["doc_id"]] = text
-        per_doc[rec["doc_id"]] = {"furniture_lines_removed": removed, "furniture": furniture}
+    healed_records, record, report = heal_documents(records)
 
-    vocab = Counter(w.lower() for t in healed.values() for w in WORD_RE.findall(t))
-    for rec in records:
-        text, repairs = repair_ocr_splits(healed[rec["doc_id"]], vocab)
-        healed[rec["doc_id"]] = text
-        per_doc[rec["doc_id"]]["ocr_repairs"] = repairs
-        out = {**rec, "text": text, "char_count": len(text)}
+    # Drop documents left by an earlier run (a PDF removed since) so dedup never reads them.
+    keep = {f"{r['doc_id']}.json" for r in healed_records} | OTHER_OUTPUTS
+    for stale in HEALED_DIR.glob("*.json"):
+        if stale.name not in keep:
+            stale.unlink()
+    for rec in healed_records:
         (HEALED_DIR / f"{rec['doc_id']}.json").write_text(
-            json.dumps(out, ensure_ascii=False), encoding="utf-8"
+            json.dumps(rec, ensure_ascii=False), encoding="utf-8"
         )
 
-    before = purity_metrics({r["doc_id"]: r["text"] for r in records})
-    after = purity_metrics(healed)
-    record = {
-        "stage": "heal",
-        "docs_in": len(records),
-        "docs_out": len(records),
-        "removed": 0,
-        "reason_counts": {
-            "furniture_lines_removed": sum(d["furniture_lines_removed"] for d in per_doc.values()),
-            "furniture_signatures": sum(len(d["furniture"]) for d in per_doc.values()),
-            "ocr_splits_repaired": sum(len(d["ocr_repairs"]) for d in per_doc.values()),
-        },
-        "before": before,
-        "after": after,
-    }
     STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
-    REPORT_PATH.write_text(
-        json.dumps({"before": before, "after": after, "documents": per_doc}, indent=2, ensure_ascii=False),
-        encoding="utf-8",
-    )
+    REPORT_PATH.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     print(json.dumps(record, indent=2))
 
 
