@@ -18,6 +18,8 @@ import re
 from collections import Counter
 from pathlib import Path
 
+from pipeline.versioning import version_year
+
 ROOT = Path(__file__).resolve().parent.parent
 CLEANED_DIR = ROOT / "data" / "cleaned"
 HEALED_DIR = ROOT / "data" / "healed"
@@ -34,7 +36,6 @@ MODIFIED_SIMILARITY = 0.5  # word-set Jaccard for treating a removed+added pair 
 PAGINATION_MAX_WORDS = 10
 MAX_PAGE_SHIFT = 5
 COSMETIC_KINDS = ("typography", "pagination")
-YEAR_RE = re.compile(r"\b(20[0-3]\d)\b")
 SENTENCE_SPLIT_RE = re.compile(r"(?<=[.;:])\s+(?=[A-Z(\d])")
 
 
@@ -76,12 +77,6 @@ def find_families(docs: dict) -> list:
     for d in ids:
         groups.setdefault(root(d), []).append(d)
     return [g for g in groups.values() if len(g) > 1]
-
-
-def version_year(text: str) -> int:
-    """Latest year a document mentions -- a document can't cite what came after it."""
-    years = [int(y) for y in YEAR_RE.findall(text)]
-    return max(years) if years else 0
 
 
 def _sentences(text: str) -> list:
