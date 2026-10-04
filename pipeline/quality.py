@@ -56,7 +56,11 @@ OUT_PATH = FILTERED_DIR / "chunks.jsonl"
 MIN_WORDS = 15
 MAX_SYMBOL_RATIO = 0.3
 MIN_ALPHA_RATIO = 0.5
-MIN_LEXICAL_DIVERSITY = 0.30
+# Was 0.30. That value only passed form tables (FIU reporting formats) because every page
+# footer added ~a dozen "unique" words; once page-splice healing removed the footers, 166
+# valid form chunks fell below it. 0.20 still removes stutter/loop/menu-spam junk (scores
+# <= 0.06) and small-vocabulary junk down to ~0.17 (tested on synthetic junk).
+MIN_LEXICAL_DIVERSITY = 0.20
 WORD_RE = re.compile(r"\w+")
 ALPHA_RE = re.compile(r"[A-Za-z]")
 
