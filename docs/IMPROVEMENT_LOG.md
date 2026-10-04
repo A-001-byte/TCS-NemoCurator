@@ -211,3 +211,61 @@ New `pipeline/test_dedup_versions.py`: filename/FY-pair parsing, text fallback a
 and two synthetic versions `policy_2021` / `policy_2025` sharing a chunk: the surviving copy is `policy_2025__0`, whichever order the input
 arrives in, and results are deterministic. Mutation-checked: it fails when dedup is switched back to filename order.
 All four tests pass; `pipeline.changelog` still exits 0.
+
+## Phase 3: PII precision rules (2026-10-04)
+
+Branch `fix/p3-pii-rules` (stacked on Phase 2). All in `pipeline/pii.py` (Stream C). New tests: `test_pii_rules.py`,
+`test_pii_gliner.py`, `test_pii_names.py`.
+
+### What the real data showed before any rule changed
+The 24 PIN codes still redacted after healing were: **6 genuine address PINs** (Nainital 263001, New Delhi 110001 x3,
+Baroda 390006/390007), **17 money amounts** from a Central Bank threshold table ("Urban 150000 ..."), and **1 phone-number tail**
+(`Phone: 05942-233739`). All 4 DATE hits were public regulatory/form-signature dates, none a date of birth. The corpus contains
+no Aadhaar numbers, so that rule is only exercised by synthetic tests.
+
+### Rules
+| Rule | Change |
+|---|---|
+| 3a DATE | Redact only after a DOB cue (`DOB`, `D.O.B`, `date of birth`, `born`) within 30 chars on the same line. Matcher accepts `/ - .` separators and 1-2 digit day/month. |
+| 3b PINCODE | Accept only with a PIN label right before it, or directly after a place name + hyphen/comma/dash (`Mumbai-400001`, `New Delhi - 110001`). Reject right after a money word (`Rs`, `INR`, `amount`, `above`, `exceeding`, `threshold`, `of`) and prefixes below 11. The PINCODE *shape* regex is unchanged, because `heal.py` counts PIN-shaped spans with it. |
+| 3c AADHAAR | First digit 2-9; separators space/hyphen only (no newline); Verhoeff checksum (own implementation, checked against the standard vector 2363). Valid: redact. Invalid + Aadhaar/UID label within 60 chars: redact and count `aadhaar_needs_review`. Otherwise: left alone, counted in `aadhaar_candidates_rejected`. |
+| 3d GLiNER | Block moved above `main()`; `main()` now calls it when `USE_GLINER_PII` is True (default False). Overlaps resolved by score, then length, then position, then applied from the end (the old code could corrupt text when different labels overlapped). Lazy import with a clear `RuntimeError` if `gliner` is missing, no silent fallback. `GLINER_PERSON_GUARD = True` keeps the title-cue + name-shape test on GLiNER PERSON spans; `GLINER_ENABLED_TYPES` can restrict GLiNER to e.g. PHONE/EMAIL. |
+| 3e PERSON_NAME | New narrow rule: initials+surname or 2+ ALL-CAPS words, only directly after Shri/Smt/Mr/Mrs/Ms/Dr; job titles and common words blocked. Labelled set: 8 positives found, 17 negatives untouched. |
+
+### Deviations from the brief (code wins, per rule 10)
+- PIN money cue is anchored to the number (`... of 100000`, `Rs. 500000`) instead of "anywhere within ~15 chars", because "of" in
+  `Bank of Baroda-390006` would have rejected a real address.
+- Prefix rule rejects `10xxxx` (no such PIN range); `00xxxx` cannot match the shape in the first place.
+- With the spaCy model unavailable, the title-gated name rule still runs (it needs no model); `name_detection_available` still reports spaCy only.
+- A checksum-failing Aadhaar-shaped number written with NO separators and no label is still caught by the later 9-18 digit
+  ACCOUNT_NUMBER rule (as `needs_review`); spaced forms are not.
+
+### Before -> After (full corpus, real run)
+| | Phase 2 | Phase 3 |
+|---|---|---|
+| PII entities | 65 | **43** |
+| PINCODE | 24 | **6** (the six real address PINs) |
+| DATE | 4 | **0** (48 date-shaped candidates rejected, incl. dd.mm.yyyy) |
+| EMAIL / PHONE / CIN / SWIFT_BIC / PERSON_NAME | 30 / 3 / 2 / 1 / 1 | 30 / 3 / 2 / 1 / 1 |
+| Chunks with PII | 34 | 30 |
+| PIN candidates rejected (no cue / money or prefix) | n/a | 13 / 5 |
+| Aadhaar candidates / needs_review | n/a | 0 / 0 |
+| Title-gated name matches in the real corpus | n/a | 0 |
+| Final chunks | 2047 | 2047 |
+
+Versus the Phase 0 baseline: PII entities 284 -> 43; PINCODE 241 -> 6.
+The 30 remaining emails are public contact addresses (nodal officers, bank offices); not changed.
+
+### Honest limits
+- The Aadhaar rule and the new name rule found nothing in the real corpus; they are validated on synthetic and labelled strings only.
+- The new PIN rule keeps only what it can tie to a place name or label. A real PIN written as bare "Mumbai 400001" (no hyphen/comma, no label) would now be missed; none exist in this corpus.
+- Remaining PIN codes are institutional office addresses in public regulatory documents, not personal data. They are still redacted
+  (cheap and safe) but the dashboard now calls them "Address PIN code".
+
+### Evidence
+`docs/evidence/stream-c/` regenerated (`pii_stage_record.json`, `validation_report.json` changed; heal and changelog files came out identical).
+`pii_examples.json` is deliberately not copied (raw values).
+
+### Not done / still pending
+- `dashboard/public/*` snapshots not refreshed (Phase 8); `App.jsx` does not yet show the new rejection counters (Phase 8, with the refresh).
+- Tests: all seven scripts pass; `pytest` conversion is Phase 9.
