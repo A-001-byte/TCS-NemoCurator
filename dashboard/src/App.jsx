@@ -266,6 +266,13 @@ function ReasonList({ rows, total, label = reasonLabel }) {
   );
 }
 
+const PURITY_METRICS = [
+  ["chunks_with_devanagari", "Chunks with Hindi letterhead text"],
+  ["chunks_with_page_marker", "Chunks with “Page n” markers"],
+  ["pincode_spans", "PIN-code-shaped numbers"],
+  ["duplicate_chunks", "Duplicate chunks"],
+];
+
 function StageDetail({ stage }) {
   const info = STAGES[stage.stage] || { title: stage.stage, detail: "", unit: "items" };
   const reasons = Object.entries(stage.reason_counts || {})
@@ -275,7 +282,17 @@ function StageDetail({ stage }) {
   const entities = stage.entity_type_counts
     ? Object.entries(stage.entity_type_counts).sort((a, b) => b[1] - a[1])
     : null;
-  const figures = entities
+  // Healing deletes page-furniture lines, not documents or chunks: show purity before/after.
+  const purity = stage.before && stage.after ? PURITY_METRICS : null;
+  const healed = stage.reason_counts || {};
+  const figures = purity
+    ? [
+        ["Documents in / out", `${fmt(stage.docs_in)} / ${fmt(stage.docs_out)}`],
+        ["Furniture lines deleted", fmt(healed.furniture_lines_removed)],
+        ["Kerning splits repaired", fmt(healed.ocr_splits_repaired)],
+        ["Documents dropped", fmt(stage.removed)],
+      ]
+    : entities
     ? [
         ["Chunks in / out", `${fmt(stage.docs_in)} / ${fmt(stage.docs_out)}`],
         ["Entities redacted", fmt(stage.pii_entities_redacted)],
@@ -307,7 +324,24 @@ function StageDetail({ stage }) {
       </div>
 
       <div className="stage-side">
-        {entities ? (
+        {purity ? (
+          <>
+            <p className="label">Corpus purity, before → after</p>
+            <ul className="reason-list">
+              {purity.map(([key, label]) => (
+                <li key={key}>
+                  <div className="reason-row">
+                    <span>{label}</span>
+                    <span className="num">
+                      {fmt(stage.before[key])} <span className="muted">→</span> {fmt(stage.after[key])}
+                    </span>
+                  </div>
+                  <Bar value={stage.after[key]} max={stage.before[key]} />
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : entities ? (
           <>
             <p className="label">Entities redacted by type</p>
             <ReasonList rows={entities} label={entityLabel} />
@@ -348,7 +382,7 @@ function Pipeline({ stages }) {
     <section id="pipeline" className="section">
       <SectionHeader
         title="How the pipeline works"
-        description="Six stages run in a fixed order. Select a stage to see what it does and what it removed."
+        description={`${stages.length} stages run in a fixed order. Select a stage to see what it does and what it changed.`}
       />
 
       <div className="flow-canvas">
@@ -1248,7 +1282,7 @@ function RunPipeline() {
     <section id="run" className="section">
       <SectionHeader
         title="Process new documents"
-        description="Upload KYC / AML PDFs and run them through the same six stages. Nothing is added to the curated corpus above; the output is yours to download."
+        description="Upload KYC / AML PDFs and run them through the same stages as the corpus above. Nothing is added to the curated corpus above; the output is yours to download."
       />
 
       <article className="card">

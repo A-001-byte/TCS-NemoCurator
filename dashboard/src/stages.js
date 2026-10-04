@@ -6,6 +6,7 @@
 import {
   FileText,
   Sparkles,
+  Eraser,
   Copy,
   Filter,
   ShieldCheck,
@@ -28,6 +29,14 @@ export const STAGES = {
     summary: "Normalises text and keeps only substantive English documents.",
     detail:
       "Strips control characters and bare page-number lines, collapses whitespace, then runs language detection on each document. Documents that are too short to be useful or not in English are removed before any chunking happens.",
+  },
+  heal: {
+    title: "Page-splice healing",
+    icon: Eraser,
+    unit: "documents",
+    summary: "Removes page headers and footers that split sentences.",
+    detail:
+      "PDF page furniture (letterheads, running footers, page numbers) is extracted in the middle of sentences at every page break. This stage finds lines that repeat about once per page, evenly spaced across the whole document, and deletes only those lines so the text on either side of each page break joins back up. It also repairs kerning splits such as “f inancial” when the corpus spells the word intact elsewhere. No document and no content line is dropped. Without it, one bank's letterhead address repeats on every page and accounts for most of the PIN-code redactions.",
   },
   dedup: {
     title: "Deduplication",
@@ -65,6 +74,9 @@ export const STAGES = {
 
 export const REASONS = {
   extraction_failed: "No text layer (scanned PDF)",
+  furniture_lines_removed: "Page furniture lines deleted",
+  furniture_signatures: "Distinct furniture patterns found",
+  ocr_splits_repaired: "Kerning splits repaired",
   too_short: "Too short",
   non_english: "Not English",
   exact_duplicate: "Exact duplicate",
