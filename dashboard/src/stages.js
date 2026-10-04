@@ -60,7 +60,7 @@ export const STAGES = {
     unit: "chunks",
     summary: "Replaces personal and institutional identifiers with typed placeholders.",
     detail:
-      "Runs after deduplication, never before, because dedup depends on stable content hashes. Pattern matchers find PAN, Aadhaar, email, phone, PIN code, date, CIN, SWIFT/BIC and account numbers; spaCy NER finds person names next to a personal title such as “Mr.” or “Name:”. Ambiguous matches are checked against surrounding context: a digit run next to “Fax” or “Tel” is kept as a phone number, and a SWIFT-shaped word is redacted only when a SWIFT/BIC label is nearby.",
+      "Runs after deduplication, never before, because dedup depends on stable content hashes. Pattern matchers find PAN, Aadhaar, email, phone, PIN code, date of birth, CIN, SWIFT/BIC and account numbers; spaCy NER finds person names next to a personal title such as “Mr.” or “Name:”. A pattern match alone is not enough, so each ambiguous one is checked against its context: a digit run next to “Fax” or “Tel” is kept as a phone number; a SWIFT-shaped word is redacted only next to a SWIFT/BIC label; a date only after a date-of-birth cue, so public dates like “circular dated 23-10-2018” stay; a six-digit number only as a PIN code when labelled or after a place name, so an amount like “Urban 150000” stays; and a twelve-digit number as Aadhaar only if its checksum is valid or it sits next to an Aadhaar label.",
   },
   output: {
     title: "JSONL output",
@@ -90,15 +90,15 @@ export const REASONS = {
 };
 
 export const ENTITIES = {
-  PINCODE: { label: "PIN code", note: "Six-digit Indian postal code" },
+  PINCODE: { label: "Address PIN code", note: "Institutional office address in a public document" },
   EMAIL: { label: "Email address", note: "Personal or officer email" },
-  DATE: { label: "Date", note: "DD/MM/YYYY or DD-MM-YYYY" },
+  DATE: { label: "Date of birth", note: "Only after a DOB cue; public dates are kept" },
   PHONE: { label: "Phone number", note: "Indian mobile, with or without +91" },
   CIN: { label: "Corporate Identity Number", note: "21-character MCA company ID" },
   SWIFT_BIC: { label: "SWIFT / BIC code", note: "Redacted only when labelled" },
   PERSON_NAME: { label: "Person name", note: "spaCy NER, title-gated" },
   PAN: { label: "PAN", note: "Income-tax permanent account number" },
-  AADHAAR: { label: "Aadhaar number", note: "12-digit UIDAI number" },
+  AADHAAR: { label: "Aadhaar number", note: "12 digits; checksum-validated" },
   ACCOUNT_NUMBER: { label: "Account number", note: "Only with banking context" },
   ACCOUNT_NUMBER_SUPPRESSED: {
     label: "Kept: phone or fax number",
