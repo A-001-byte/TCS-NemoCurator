@@ -99,12 +99,13 @@ These match `docs/evidence/stream-c/heal_stage_record.json`.
 
 ### Surprising: the quality filter now removes 200 chunks, not 58 (NOT changed, needs a decision)
 `low_lexical_diversity` jumped 24 -> 166. 176 of the 200 removed chunks are from `fiu_india_reporting_format`
-(34 removed before). That document is a form schema made of repeated field names. Before healing, every chunk also
-carried the footer "Financial Intelligence Unit - India (FIU-IND) Page | n", whose extra unique words kept the chunk above
-`MIN_LEXICAL_DIVERSITY = 0.30`. With the footer gone, the real content falls below the threshold.
+(34 removed before). That document is a form schema made of repeated field names. Before healing, every page also carried
+two header/footer lines ("Reporting Format - Introduction Version 1.0" and "Financial Intelligence Unit - India (FIU-IND)
+Page | n"; 538 pages each, 1,076 lines removed by healing). Their ~dozen extra unique words kept each chunk above
+`MIN_LEXICAL_DIVERSITY = 0.30`. With the lines gone, the real content falls below the threshold.
 `docs/A1_4_quality_classifier_comparison.md` already argued that this kind of structured form content is valuable to keep.
 `quality.py` is Stream B's file and the threshold is theirs, so this phase leaves it alone.
-Options: lower the threshold for form-structured documents, exempt them, or accept the loss. Needs a user decision.
+Options were: lower the threshold, exempt form documents, or accept the loss. **Resolved in Phase 1b below (cutoff 0.20).**
 
 ### Checks
 - Stage-record contract asserted on all 7 stages (keys `stage, docs_in, docs_out, removed, reason_counts`; `removed == docs_in - docs_out`): OK.
@@ -118,3 +119,49 @@ Options: lower the threshold for form-structured documents, exempt them, or acce
   the Curator VM because its input chunks changed. The new heal panel was checked by temporarily serving the new summary
   (restored afterwards; nothing committed).
 - Correct changelog baseline: `changelog.py` is unchanged and still works (heal writes `data/healed`, raw text from `data/cleaned`).
+
+## Phase 1b: lexical-diversity cutoff 0.30 -> 0.20 (2026-10-04)
+
+Branch `fix/p1b-diversity-threshold` (stacked on Phase 1). One constant in `pipeline/quality.py` (Stream B's file).
+
+### Why 0.20
+Measured on the 2084 post-dedup healed chunks (and 2247 unhealed), quality filter removals by cutoff:
+
+| Cutoff | Removed, unhealed | Removed, healed | FIU form chunks kept (healed) |
+|---|---|---|---|
+| 0.30 | 58 | 200 | 400 / 576 |
+| 0.25 | 38 | 51 | 549 / 576 |
+| **0.20** | **34** | **35** | **561 / 576** |
+| 0.15 | 34 | 34 | 562 / 576 |
+| 0.10 | 34 | 34 | 562 / 576 |
+
+Chunks between 0.20 and 0.30 (177 healed: FIU form 161, ebixcash 11, slbc 5) were read by hand: field definitions,
+address-validation rules, lists of circular numbers. All valid content.
+
+Synthetic junk test (180-word chunks, real `quality_reason`): stutter, repeated line, OCR loop, header spam and menu spam
+(scores 0.01-0.06) are removed at every cutoff down to 0.10. Random text from a small vocabulary is caught only above its
+own score: 20-word vocabulary (0.11) down to 0.15, 30-word (0.17) down to 0.20, 40-word (0.23) down to 0.25. No cutoff
+separates the middle zone perfectly (a real FIU table chunk scores 0.19, below the 0.23 junk). 0.20 was chosen over 0.15
+because 0.15 misses the 30-word-vocabulary junk, at the cost of one valid chunk (`fiu_india_reporting_format__540`, 0.19).
+The small-vocabulary junk is synthetic and probably rare; this is a judgment call, not a proof.
+
+### The 33 alpha-ratio removals (read in full, NOT changed)
+17 tables of contents / cover pages (dot leaders count as non-letters; includes one revision-history chunk,
+`reporting_format__2`, and `ebixcash__0`, which mixes a title block with a TOC), 15 lists of superseded circular numbers
+and dates (`ebixcash` 8, `slbc_mp` 7), and 1 real prose chunk (`slbc_mp__77`, alpha 0.46 vs cutoff 0.50). Same content types
+with or without healing. Judged mostly correct removals (navigation / bibliography). Lowering the alpha cutoff to 0.45
+would rescue `slbc_mp__77` but also admit a TOC (`fiu_india_aml_cft_guidelines_2023__1`, 0.45), so it was left alone.
+Correction to an earlier statement: the FIU chunks removed by alpha ratio are tables of contents, not form tables.
+
+### Result (full corpus, real run, exit 0)
+
+| | Phase 0 (no heal) | Phase 1, cutoff 0.30 | Phase 1b, cutoff 0.20 |
+|---|---|---|---|
+| Quality filter removed | 58 (diversity 24) | 200 (diversity 166) | **35 (diversity 1)** |
+| Final chunks | 2189 | 1884 | **2049** |
+| Final characters | 2,533,754 | 2,162,849 | 2,350,012 |
+| FIU reporting-format chunks kept | 601 | 400 | 561 |
+| PII entities | 284 | 65 | 65 |
+| Regulatory tagged / untagged / high-density | 2019 / 170 / 631 | 1648 / 236 / 586 | 1781 / 268 / 596 |
+
+Stage-record contract OK on all 7 stages; output chunks with Devanagari 0, with a page marker 7; the three tests pass.
