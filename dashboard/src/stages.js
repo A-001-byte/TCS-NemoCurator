@@ -52,7 +52,7 @@ export const STAGES = {
     unit: "chunks",
     summary: "Drops noisy chunks and tags regulatory content.",
     detail:
-      "Heuristic filters remove chunks that are mostly numbers or symbols, too short, or highly repetitive. Surviving chunks are tagged with the BFSI regulatory terms they contain (KYC, AML, CDD, PEP, STR and others) and a density score, so training can weight substantive regulatory text over passing mentions.",
+      "Heuristic filters remove chunks that are mostly numbers or symbols, too short, or highly repetitive. Surviving chunks are tagged with the BFSI regulatory terms they contain (KYC, AML, CDD, PEP, STR and others) and a density score, so training can weight substantive regulatory text over passing mentions. NVIDIA's quality classifier (DeBERTa) was tested and rejected as a filter: it flagged 45% of this corpus, including 97% of the FIU reporting formats, because it judges web-text fluency rather than regulatory value. It exists only as an optional label that never removes a chunk.",
   },
   pii_redact: {
     title: "PII redaction",

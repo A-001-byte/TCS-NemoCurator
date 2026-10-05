@@ -269,3 +269,108 @@ The 30 remaining emails are public contact addresses (nodal officers, bank offic
 ### Not done / still pending
 - `dashboard/public/*` snapshots not refreshed (Phase 8); `App.jsx` does not yet show the new rejection counters (Phase 8, with the refresh).
 - Tests: all seven scripts pass; `pytest` conversion is Phase 9.
+
+## Phase 4: regulatory tags and the classifier as a signal (2026-10-05)
+
+Branch `fix/p4-quality-tags` (from `main` after the Phase 1-3 stack merged). All in `pipeline/quality.py` (Stream B's file),
+plus one additive line in `output.py`.
+
+### 4a: before removing anything, how many chunks did each prune candidate alone cause to be tagged?
+Measured on the 2047 output chunks (87.0% tagged at the time):
+
+| Keyword | Chunks containing it | Chunks it ALONE tagged |
+|---|---|---|
+| passport | 79 | 8 |
+| trust | 94 | 5 |
+| foundation | 5 | 1 |
+| structuring | 27 | 1 |
+| integration | 3 | 0 |
+| gazette notification | 19 | 0 |
+| placement | 0 | 0 |
+| layering | 0 | 0 |
+
+The eight keywords the brief lists together tagged only **15 chunks** on their own, so pruning them barely moves the tag rate.
+The real drivers are different: **`fiu` alone tags 210 chunks** (it appears in 349; mostly the FIU reporting form, where "FIU" is in
+every field description), `kyc` 69, `designated individual` 49, `aadhaar` 27, `rbi` 19. I pruned exactly the eight listed and did
+NOT touch these (they are genuine regulatory terms); whether `fiu` should count as a signal inside FIU's own forms is a judgment call
+for the owner.
+
+Other 4a changes: the matcher is one pattern with word boundaries on every keyword (the multi-word pattern had none, so
+"foggrey listing" matched "grey list"); overlapping matches are resolved with the longest winning, so "aml/cft" counts once (was
+`aml` + `aml/cft`, density 1.0, now 0.5), "customer due diligence" no longer also counts "due diligence", and "re-kyc" no longer
+also counts "kyc". Density is computed on the non-overlapping matches. The stale docstring ("NeMo-Curator-equivalent stage,
+library integration pending") now says what the stage is. Tagging 2047 chunks takes 0.43 s.
+
+### Tag distribution after 4a (NOT tuned, needs the owner's pick)
+Distinct regulatory keywords per chunk, 2047 output chunks:
+
+| Keywords in chunk | Chunks | Share |
+|---|---|---|
+| 0 | 312 | 15.2% |
+| 1 | 578 | 28.2% |
+| 2 | 371 | 18.1% |
+| 3 | 320 | 15.6% |
+| 4 | 188 | 9.2% |
+| 5 | 128 | 6.3% |
+| 6 | 78 | 3.8% |
+| 7+ | 72 | 3.5% |
+
+Tag threshold `MIN_KEYWORD_MATCHES_FOR_TAG` (currently 1): tagged chunks if it were N: **N=1: 1735 (84.8%)**, N=2: 1157 (56.5%),
+N=3: 786 (38.4%), N=4: 466 (22.8%), N=5: 278 (13.6%). Density score: median 0.022, p75 0.044, p90 0.078, max 0.172;
+`HIGH_DENSITY_THRESHOLD` 0.05 marks 493 chunks (24.1%). The tag is still skewed at N=1 (it still barely separates chunks), so per the
+brief the threshold was left at 1 and the choice is the owner's. Lowest per-document tag rates: `rbi_fraud_master_direction_pwc` 69%,
+`rbi_kyc_summary_banklaw1` 75%, `rbi_fraud_master_direction_elp` 75%, `fiu_india_reporting_format` 82%.
+
+### 4b: the DeBERTa classifier as a signal, never a filter
+- New metadata field `quality_classifier_label` ("Low"/"Medium"/"High", or null). Additive in the output record; null when not computed.
+- `QUALITY_SIGNAL_MODE`: `"off"` (default: nothing read, nothing loaded, null labels), `"cache"` (labels only from the cache, the model is
+  never loaded), `"model"` (cache first, then the model for misses; if torch/transformers/weights are unavailable it logs once,
+  records `quality_signal_model_error` in the stage record and carries on cache-only). `USE_REAL_QUALITY_CLASSIFIER = False` (hard filter) is unchanged.
+- Cache: `data/quality_signal_cache.json`, SHA-256(chunk text) -> label, saved every 100 new labels and at the end (a full pass is ~50 min).
+- The model call is now one function (`_classifier_label`) shared by the signal and the (off) hard-filter wrapper.
+- The earlier comparison file (`data/quality_comparison.json`) only holds "Low or not" per old chunk id, no text hash and no 3-class labels,
+  so it could not seed the cache. **The model was NOT run** on the corpus (about 50 min of CPU): needs the owner's go-ahead.
+- Default `python -m pipeline.run` takes 197 s end to end (signal off); output records are a superset of the old ones.
+- Docs/dashboard: `A1_4` has a status note; the quality-filter description says "tested, rejected as a filter, optional label".
+
+### Result (full corpus, real run, exit 0)
+| | Phase 3 | Phase 4 |
+|---|---|---|
+| Final chunks | 2047 | 2047 |
+| Regulatory tagged / untagged | 1780 / 267 | 1735 / 312 |
+| High-density chunks | 593 | 493 |
+| `quality_classifier_label` | n/a | null (signal off) |
+
+The drop in tagged chunks (45) is the pruning plus overlap-free matching; the drop in high-density (100) is mostly the density no longer
+counting a word twice.
+
+### Tests
+New `test_quality_tags.py` (pruned keywords stay pruned, overlap cases, word boundaries, a real boilerplate chunk is untagged,
+the threshold knob works) and `test_quality_signal.py` (stub scorer: off by default and never creates the cache, "Low" never removes a
+chunk, SHA-256 cache keys, second run is all cache hits, cache mode never calls the model, an unavailable model is tried once).
+Both mutation-checked. All nine test scripts pass; stage-record contract OK on 7 stages.
+
+### Housekeeping
+The Phase 1-3 merges rewrote commit hashes; `docs/evidence/stream-c/README.md` now cites `d437462` (was the stale `3cef5c8`).
+
+### Decisions that were needed from the owner (answered in "Phase 4 decision" below)
+1. Tag threshold `MIN_KEYWORD_MATCHES_FOR_TAG` (1 / 2 / 3 ...; see the table above).
+2. Should the `fiu` keyword count as a regulatory signal in FIU's own reporting forms?
+3. Run the DeBERTa pass now (~50 min CPU) to fill the signal cache, or leave it off?
+
+### Phase 4 decision (2026-10-05): tag threshold = 2
+The owner set `MIN_KEYWORD_MATCHES_FOR_TAG = 2` (a chunk needs 2 distinct keywords; repeats of one keyword count once).
+Open and still unanswered: the `fiu` keyword question (left as is) and whether to run the DeBERTa pass (not run).
+
+| | Threshold 1 | **Threshold 2** |
+|---|---|---|
+| Tagged / untagged | 1735 / 312 (84.8%) | **1157 / 890 (56.5%)** |
+| High-density chunks | 493 | 493 (density does not depend on the threshold) |
+| Final chunks | 2047 | 2047 (the tag never removes a chunk) |
+
+Per-document tagged share at threshold 2, lowest first: `rbi_fraud_master_direction_elp` 2/12 (17%), `fiu_india_reporting_format` 165/561 (29%),
+`rbi_fraud_master_direction_pwc` 6/16 (38%), `rbi_kyc_ebixcash` 71/128 (55%); highest: `bank_of_baroda_kyc` 7/8, `rbi_kyc_summary_banklaw2` 6/7,
+`fiu_india_aml_cft_guidelines_2023` 18/21 (86%). The FIU form drops from 82% to 29% tagged, as expected: a lone "FIU" in a field description no longer counts.
+Verified on the real run: `regulatory_tagged` is true exactly when a chunk has at least 2 distinct keywords, for all 2047 chunks.
+`test_quality_tags.py` was fixed to check the found keywords rather than assuming a threshold of 1, and now also pins the default to 2 and checks repeats count once.
+The tag is still only a label; nothing in the pipeline filters on it (see the explanation in Phase 4).

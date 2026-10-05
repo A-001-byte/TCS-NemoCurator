@@ -1,8 +1,8 @@
 # Stream C evidence (Ankit)
 
 Snapshot of a full pipeline run, copied here on purpose; pipeline runs never write
-to docs/. Produced from commit `3cef5c8` (branch `fix/p3-pii-rules`: healing in the pipeline,
-newest-version dedup, Phase 3 PII rules) on 2026-10-04. Previously `2f284f8` on 2026-09-23;
+to docs/. Produced from commit `d437462` on `main` (healing in the pipeline, newest-version dedup, Phase 3
+PII rules; it was `3cef5c8` on the branch before the rebase-merge rewrote the hash) on 2026-10-04. Previously `2f284f8` on 2026-09-23;
 `heal_*` and `regulatory_changelog.json` came out identical, `pii_stage_record.json` and
 `validation_report.json` changed (PII entities 284 -> 43, address PIN codes 241 -> 6).
 
