@@ -165,3 +165,49 @@ Correction to an earlier statement: the FIU chunks removed by alpha ratio are ta
 | Regulatory tagged / untagged / high-density | 2019 / 170 / 631 | 1648 / 236 / 586 | 1781 / 268 / 596 |
 
 Stage-record contract OK on all 7 stages; output chunks with Devanagari 0, with a page marker 7; the three tests pass.
+
+## Phase 2: dedup keeps the NEWEST policy version (2026-10-04)
+
+Branch `fix/p2-dedup-newest` (stacked on Phase 1b). New `pipeline/versioning.py` (shared by `dedup.py` and `changelog.py`, no import cycle);
+`dedup.build_chunks()` now visits documents newest first, so the first (surviving) copy of a shared chunk belongs to the latest version.
+
+Year source: (1) filename/doc_id (`2024_25` -> 2025, `2021`, `aug2025`), (2) `version_year(text)` = latest year mentioned in the text, (3) 0.
+Ties broken by doc_id. Caveat (also in the helper's docstring): the text fallback takes the MAX year, so a document citing a future
+deadline is mis-ordered, which is why the filename wins. Visible here: `nainital_bank_kyc_aml_policy` gets 2026 from its text.
+That only reorders ties between different banks' documents, not versions of one policy.
+`changelog.py` imports `version_year` from the new module; its behaviour and ordering are unchanged.
+
+### Per-document chunks surviving dedup (before -> after)
+
+| Document | Before | After |
+|---|---|---|
+| central_bank_india_kyc_aml_2021 (oldest) | 211 | 187 |
+| central_bank_india_kyc_aml_2024_25 | 266 | 191 |
+| central_bank_india_kyc_aml_2025_26 (newest) | 188 | **283** (of 283) |
+| rbi_kyc_updated_aug2025_allinonebanking | 22 | 40 |
+| rbi_kyc_ebixcash | 156 | 138 |
+| bhiwani / manappuram / nainital | 201 / 90 / 202 | 198 / 91 / 206 |
+| all other documents | unchanged | unchanged |
+
+Before this fix the OLDEST Central Bank policy kept every chunk (211 of 211) while the NEWEST lost 95 of 283.
+
+### Totals
+
+| | Phase 1b | Phase 2 |
+|---|---|---|
+| Dedup removed | 200 (exact 1, cross-doc 162, intra-doc 37) | 202 (exact 1, cross-doc 164, intra-doc 37) |
+| Chunks after dedup | 2084 | 2082 |
+| Quality removed | 35 | 35 |
+| Final chunks | 2049 | 2047 |
+| Final characters | 2,350,012 | 2,347,736 |
+| PII entities / PINCODE | 65 / 24 | 65 / 24 |
+| Regulatory tagged / untagged / high-density | 1781 / 268 / 596 | 1780 / 267 / 593 |
+
+Total duplicates barely move (as expected: ordering changes WHICH copy survives, not how many are copies). 123 chunk ids dropped out and
+121 new ones came in. Contract OK on all 7 stage records.
+
+### Tests
+New `pipeline/test_dedup_versions.py`: filename/FY-pair parsing, text fallback and its caveat, newest-first ordering and tie-break,
+and two synthetic versions `policy_2021` / `policy_2025` sharing a chunk: the surviving copy is `policy_2025__0`, whichever order the input
+arrives in, and results are deterministic. Mutation-checked: it fails when dedup is switched back to filename order.
+All four tests pass; `pipeline.changelog` still exits 0.

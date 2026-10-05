@@ -41,6 +41,8 @@ from pathlib import Path
 
 from datasketch import MinHash, MinHashLSH
 
+from pipeline.versioning import newest_first
+
 # ---------------------------------------------------------------------------
 # PATHS (match existing codebase convention)
 # ---------------------------------------------------------------------------
@@ -197,15 +199,16 @@ def _load_documents(directory: Path) -> list:
     return records
 
 
-def main():
-    DEDUPED_DIR.mkdir(parents=True, exist_ok=True)
-    # Standalone `python -m pipeline.dedup` without a prior heal run falls back to cleaned docs.
-    documents = _load_documents(INPUT_DIR) or _load_documents(CLEANED_DIR)
+def build_chunks(documents: list) -> list:
+    """Chunks of every document, visiting the NEWEST policy version first.
 
-    all_chunks = []
-    for record in documents:
+    Dedup keeps the first copy of a chunk it meets, so a clause shared by several
+    versions of one policy survives in the latest version, the one in force.
+    """
+    chunks = []
+    for record in newest_first(documents):
         for idx, chunk_text in enumerate(split_into_chunks(record["text"])):
-            all_chunks.append(
+            chunks.append(
                 {
                     "chunk_id": f"{record['doc_id']}__{idx}",
                     "doc_id": record["doc_id"],
@@ -213,6 +216,14 @@ def main():
                     "text": chunk_text,
                 }
             )
+    return chunks
+
+
+def main():
+    DEDUPED_DIR.mkdir(parents=True, exist_ok=True)
+    # Standalone `python -m pipeline.dedup` without a prior heal run falls back to cleaned docs.
+    documents = _load_documents(INPUT_DIR) or _load_documents(CLEANED_DIR)
+    all_chunks = build_chunks(documents)
 
     chunks_in = len(all_chunks)
 
