@@ -72,7 +72,10 @@ WORD_RE = re.compile(r"\w+")
 ALPHA_RE = re.compile(r"[A-Za-z]")
 
 # Stream B — regulatory keyword routing thresholds
-MIN_KEYWORD_MATCHES_FOR_TAG = 1
+# Distinct regulatory keywords a chunk needs to be tagged. Was 1, which tagged 84.8% of chunks
+# (a single "FIU" in a form field was enough). 2 tags 56.5%; chosen by the owner from the
+# distribution in docs/IMPROVEMENT_LOG.md (N=3 would be 38.4%).
+MIN_KEYWORD_MATCHES_FOR_TAG = 2
 HIGH_DENSITY_THRESHOLD = 0.05   # 5% of words are regulatory-keyword-bearing
 
 # ---------------------------------------------------------------------------

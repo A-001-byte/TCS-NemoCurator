@@ -353,7 +353,24 @@ Both mutation-checked. All nine test scripts pass; stage-record contract OK on 7
 ### Housekeeping
 The Phase 1-3 merges rewrote commit hashes; `docs/evidence/stream-c/README.md` now cites `d437462` (was the stale `3cef5c8`).
 
-### Decisions needed from the owner
+### Decisions that were needed from the owner (answered in "Phase 4 decision" below)
 1. Tag threshold `MIN_KEYWORD_MATCHES_FOR_TAG` (1 / 2 / 3 ...; see the table above).
 2. Should the `fiu` keyword count as a regulatory signal in FIU's own reporting forms?
 3. Run the DeBERTa pass now (~50 min CPU) to fill the signal cache, or leave it off?
+
+### Phase 4 decision (2026-10-05): tag threshold = 2
+The owner set `MIN_KEYWORD_MATCHES_FOR_TAG = 2` (a chunk needs 2 distinct keywords; repeats of one keyword count once).
+Open and still unanswered: the `fiu` keyword question (left as is) and whether to run the DeBERTa pass (not run).
+
+| | Threshold 1 | **Threshold 2** |
+|---|---|---|
+| Tagged / untagged | 1735 / 312 (84.8%) | **1157 / 890 (56.5%)** |
+| High-density chunks | 493 | 493 (density does not depend on the threshold) |
+| Final chunks | 2047 | 2047 (the tag never removes a chunk) |
+
+Per-document tagged share at threshold 2, lowest first: `rbi_fraud_master_direction_elp` 2/12 (17%), `fiu_india_reporting_format` 165/561 (29%),
+`rbi_fraud_master_direction_pwc` 6/16 (38%), `rbi_kyc_ebixcash` 71/128 (55%); highest: `bank_of_baroda_kyc` 7/8, `rbi_kyc_summary_banklaw2` 6/7,
+`fiu_india_aml_cft_guidelines_2023` 18/21 (86%). The FIU form drops from 82% to 29% tagged, as expected: a lone "FIU" in a field description no longer counts.
+Verified on the real run: `regulatory_tagged` is true exactly when a chunk has at least 2 distinct keywords, for all 2047 chunks.
+`test_quality_tags.py` was fixed to check the found keywords rather than assuming a threshold of 1, and now also pins the default to 2 and checks repeats count once.
+The tag is still only a label; nothing in the pipeline filters on it (see the explanation in Phase 4).

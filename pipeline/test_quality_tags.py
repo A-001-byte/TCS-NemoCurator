@@ -14,11 +14,11 @@ def main():
     assert not set(PRUNED) & REGULATORY_KEYWORDS
     for text in ("the trustee of the trust", "passport office placement and integration",
                  "a foundation for structuring layering", "per the gazette notification"):
-        assert not tag_regulatory_keywords(text)["regulatory_tagged"], text
+        assert tag_regulatory_keywords(text)["regulatory_keywords_found"] == [], text
     # Specific multi-word phrases survive
     for kept in ("beneficial owner", "anti-money laundering", "customer due diligence",
                  "suspicious transaction"):
-        assert tag_regulatory_keywords(f"the {kept} rules")["regulatory_tagged"], kept
+        assert tag_regulatory_keywords(f"the {kept} rules")["regulatory_keywords_found"] == [kept], kept
 
     # --- Overlaps: each word counted once, longest match wins -----------------------------
     tags = tag_regulatory_keywords("aml/cft framework")
@@ -45,14 +45,19 @@ def main():
         "provisioned for Indian and Non-Indian addresses Secondary Address State as part of address"
     )
     tags = tag_regulatory_keywords(boilerplate)
-    assert not tags["regulatory_tagged"] and tags["regulatory_density_score"] == 0.0
+    assert tags["regulatory_keywords_found"] == [] and not tags["regulatory_tagged"]
+    assert tags["regulatory_density_score"] == 0.0
 
-    # --- The tag threshold is a real knob (the owner picks it from the histogram) ---------
+    # --- The tag threshold: the owner chose 2 distinct keywords; repeats do not count ------
+    assert quality.MIN_KEYWORD_MATCHES_FOR_TAG == 2
+    assert not tag_regulatory_keywords("only kyc here")["regulatory_tagged"]
+    assert not tag_regulatory_keywords("kyc kyc kyc kyc")["regulatory_tagged"], "repeats are one keyword"
+    assert tag_regulatory_keywords("kyc and aml here")["regulatory_tagged"]
     saved = quality.MIN_KEYWORD_MATCHES_FOR_TAG
     try:
-        quality.MIN_KEYWORD_MATCHES_FOR_TAG = 2
-        assert not tag_regulatory_keywords("only kyc here")["regulatory_tagged"]
-        assert tag_regulatory_keywords("kyc and aml here")["regulatory_tagged"]
+        quality.MIN_KEYWORD_MATCHES_FOR_TAG = 3
+        assert not tag_regulatory_keywords("kyc and aml here")["regulatory_tagged"]
+        assert tag_regulatory_keywords("kyc and aml and cdd here")["regulatory_tagged"]
     finally:
         quality.MIN_KEYWORD_MATCHES_FOR_TAG = saved
 
