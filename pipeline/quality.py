@@ -31,11 +31,17 @@ WHY these rules are BFSI-specific, not generic NLP hygiene:
     Both pass generic quality filters; only one is genuinely useful training
     signal for a BFSI-domain LLM.
 
-NeMo-Curator-equivalent stage, library integration pending (Stream A).
+This stage is our own rule-based filter, not a NeMo Curator stage. Real NeMo Curator 1.3.0
+heuristic filters were run on this stage's input for comparison (pipeline/nemo_compare.py), and
+the real nvidia/quality-classifier-deberta was tested and rejected as a hard filter
+(docs/A1_4_quality_classifier_comparison.md); it is available only as an optional SIGNAL field
+(QUALITY_SIGNAL_MODE below), never as a filter.
 """
+import hashlib
 import json
 import re
 import sys
+from collections import Counter
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -47,6 +53,7 @@ FILTERED_DIR = Path(__file__).resolve().parent.parent / "data" / "filtered"
 STAGE_RECORD_PATH = FILTERED_DIR / "_stage_record.json"
 IN_PATH = DEDUPED_DIR / "chunks.jsonl"
 OUT_PATH = FILTERED_DIR / "chunks.jsonl"
+QUALITY_SIGNAL_CACHE_PATH = DEDUPED_DIR.parent / "quality_signal_cache.json"
 
 # ---------------------------------------------------------------------------
 # TUNABLE CONSTANTS — change these, not the logic  (B1.2)
@@ -74,6 +81,10 @@ HIGH_DENSITY_THRESHOLD = 0.05   # 5% of words are regulatory-keyword-bearing
 # FATF recommendations, FIU-IND reporting, SEBI AML, IBA guidelines.
 # ---------------------------------------------------------------------------
 
+# Pruned in Phase 4 because they are ordinary English/legal words in this corpus, not regulatory
+# signals: placement, integration, trust, foundation, structuring, layering, passport,
+# gazette notification. (Measured alone-tagging on 2047 chunks: passport 8, trust 5,
+# foundation 1, structuring 1, the rest 0; see docs/IMPROVEMENT_LOG.md.)
 REGULATORY_KEYWORDS = {
     # Core KYC/AML programme terms
     "kyc", "aml", "cft", "aml/cft", "anti-money laundering",
@@ -103,23 +114,22 @@ REGULATORY_KEYWORDS = {
     "rbi", "fiu-ind", "fiu", "pmla", "prevention of money laundering",
     "sebi", "irdai", "pfrda",
     "master direction", "master circular", "rbi circular",
-    "gazette notification",
 
     # Account & transaction surveillance
     "high risk", "high-risk", "risk categorisation", "risk category",
     "risk based approach", "risk profile",
     "unusual transaction", "suspicious transaction",
-    "large cash transaction", "structuring",
-    "smurfing", "layering", "placement", "integration",
+    "large cash transaction",
+    "smurfing",
 
     # Identity document types (Indian)
-    "aadhaar", "pan card", "passport", "voter id", "driving licence",
+    "aadhaar", "pan card", "voter id", "driving licence",
     "ckycr", "ckyc", "central kyc",
 
     # Customer categories with elevated scrutiny
     "nri", "foreign national", "non-resident", "correspondent banking",
     "shell company", "shell bank", "nominee director",
-    "trust", "foundation", "ngo",
+    "ngo",
 
     # Process / compliance terms
     "onboarding", "re-kyc", "re kyc", "periodic review", "periodic updation",
@@ -132,16 +142,13 @@ REGULATORY_KEYWORDS = {
     "designated director",
 }
 
-# Pre-compile patterns for keyword matching
-_SINGLE_TOKEN_KW = {kw for kw in REGULATORY_KEYWORDS if " " not in kw and "/" not in kw}
-_MULTI_TOKEN_KW  = REGULATORY_KEYWORDS - _SINGLE_TOKEN_KW
-
-_SINGLE_PATTERN = re.compile(
-    r'\b(' + '|'.join(re.escape(kw) for kw in sorted(_SINGLE_TOKEN_KW, key=len, reverse=True)) + r')\b',
-    re.IGNORECASE,
-)
-_MULTI_PATTERN = re.compile(
-    '(' + '|'.join(re.escape(kw) for kw in sorted(_MULTI_TOKEN_KW, key=len, reverse=True)) + ')',
+# One pattern for all keywords. Each candidate is the LONGEST keyword that starts at a position
+# and ends on a word boundary, found with a zero-width lookahead so candidates may overlap;
+# overlaps are then resolved in _keyword_spans (longest wins).
+_KEYWORD_PATTERN = re.compile(
+    r"(?<!\w)(?=("
+    + "|".join(re.escape(kw) for kw in sorted(REGULATORY_KEYWORDS, key=len, reverse=True))
+    + r")(?!\w))",
     re.IGNORECASE,
 )
 
@@ -151,37 +158,37 @@ _MULTI_PATTERN = re.compile(
 # RULE 2 — Regulatory-density score   (B1.1)
 # ---------------------------------------------------------------------------
 
+def _keyword_spans(text: str) -> list:
+    """Non-overlapping keyword matches as (start, end, keyword), longest match wins (earlier on
+    ties), ordered by start. So "aml/cft" counts once, not as "aml" plus "aml/cft", and
+    "customer due diligence" does not also count "due diligence"."""
+    candidates = [(m.start(1), m.end(1), m.group(1).lower()) for m in _KEYWORD_PATTERN.finditer(text)]
+    kept = []
+    for start, end, keyword in sorted(candidates, key=lambda c: (-(c[1] - c[0]), c[0])):
+        if all(end <= k_start or start >= k_end for k_start, k_end, _ in kept):
+            kept.append((start, end, keyword))
+    return sorted(kept)
+
+
 def tag_regulatory_keywords(text: str) -> dict:
     """
     Return a dict of tagging metadata for one chunk's text.
 
     Fields returned (all ADDITIVE — never shadow existing chunk fields):
-      regulatory_tagged         bool   True if >= MIN_KEYWORD_MATCHES_FOR_TAG hits
+      regulatory_tagged         bool   True if >= MIN_KEYWORD_MATCHES_FOR_TAG distinct keywords
       regulatory_keywords_found list   Sorted unique matched keywords (lowercased)
-      regulatory_density_score  float  Fraction of words that are keyword-bearing
+      regulatory_density_score  float  Fraction of words that are keyword-bearing, counted on
+                                       NON-overlapping matches so no word is counted twice
     """
-    text_lower = text.lower()
-    matched = set()
-
-    for m in _SINGLE_PATTERN.finditer(text_lower):
-        matched.add(m.group(0).lower())
-    for m in _MULTI_PATTERN.finditer(text_lower):
-        matched.add(m.group(0).lower())
-
-    # Density score: count word-tokens covered by any keyword match
-    words = text_lower.split()
-    word_count = len(words) if words else 1
-    kw_bearing_token_count = 0
-    all_matches_text = list(_SINGLE_PATTERN.finditer(text_lower)) + list(_MULTI_PATTERN.finditer(text_lower))
-    for m in all_matches_text:
-        kw_bearing_token_count += len(m.group(0).split())
-
-    density = min(1.0, kw_bearing_token_count / word_count)
+    spans = _keyword_spans(text)
+    matched = {keyword for _, _, keyword in spans}
+    word_count = len(text.split()) or 1
+    keyword_words = sum(len(keyword.split()) for _, _, keyword in spans)
 
     return {
         "regulatory_tagged": len(matched) >= MIN_KEYWORD_MATCHES_FOR_TAG,
         "regulatory_keywords_found": sorted(matched),
-        "regulatory_density_score": round(density, 4),
+        "regulatory_density_score": round(min(1.0, keyword_words / word_count), 4),
     }
 
 
@@ -229,6 +236,10 @@ def main():
     regulatory_tagged_count = 0
     regulatory_untagged_count = 0
     high_density_count = 0
+    signal_on = QUALITY_SIGNAL_MODE != "off"
+    signal_cache = _load_signal_cache() if signal_on else {}
+    signal_counts = Counter()
+    _SIGNAL_STATE.update(computed=0, model_error=None)
 
     with IN_PATH.open(encoding="utf-8") as f:
         for line in f:
@@ -258,7 +269,15 @@ def main():
             if tag_info["regulatory_density_score"] >= HIGH_DENSITY_THRESHOLD:
                 high_density_count += 1
 
+            # Phase 4: classifier as a signal only (additive field; null when off/unavailable)
+            chunk["quality_classifier_label"] = quality_signal_label(chunk["text"], signal_cache) if signal_on else None
+            if signal_on:
+                signal_counts[chunk["quality_classifier_label"] or "unavailable"] += 1
+
             survivors.append(chunk)
+
+    if signal_on and _SIGNAL_STATE["computed"]:
+        _save_signal_cache(signal_cache)
 
     with OUT_PATH.open("w", encoding="utf-8") as f:
         for chunk in survivors:
@@ -274,6 +293,10 @@ def main():
         "regulatory_tagged_count": regulatory_tagged_count,
         "regulatory_untagged_count": regulatory_untagged_count,
         "high_density_count": high_density_count,
+        # Phase 4 additive fields: the classifier is a signal, never a filter
+        "quality_signal_mode": QUALITY_SIGNAL_MODE,
+        "quality_signal_labels": dict(signal_counts),
+        "quality_signal_model_error": _SIGNAL_STATE["model_error"],
     }
     STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
     print(json.dumps(record, indent=2))
@@ -330,16 +353,9 @@ def _load_quality_classifier():
     _classifier_model.eval()
 
 
-def quality_reason_curator(text: str):
-    """
-    Real nvidia/quality-classifier-deberta inference (CPU).
-    Maps 3-class output onto the reason_counts contract:
-      Low    -> "low_quality_classifier" (removed)
-      Medium, High -> passes
-    NOTE: treating "Low" as the removal threshold is a judgment call made
-    here, not a given from the model -- state this plainly when reporting
-    A1.4 comparison results.
-    """
+def _classifier_label(text: str) -> str:
+    """Real nvidia/quality-classifier-deberta inference (CPU) for one chunk: 'Low', 'Medium'
+    or 'High'. The only place the model is called; needs torch + transformers + the weights."""
     import torch
     _load_quality_classifier()
     inputs = _classifier_tokenizer(
@@ -348,8 +364,71 @@ def quality_reason_curator(text: str):
     with torch.no_grad():
         outputs = _classifier_model(inputs["input_ids"], inputs["attention_mask"])
     predicted_class = torch.argmax(outputs, dim=1).item()
-    predicted_label = _classifier_config.id2label[predicted_class]
-    return "low_quality_classifier" if predicted_label == "Low" else None
+    return _classifier_config.id2label[predicted_class]
+
+
+def quality_reason_curator(text: str):
+    """
+    Hard-filter use of the classifier (USE_REAL_QUALITY_CLASSIFIER, off).
+    Maps 3-class output onto the reason_counts contract:
+      Low    -> "low_quality_classifier" (removed)
+      Medium, High -> passes
+    NOTE: treating "Low" as the removal threshold is a judgment call made
+    here, not a given from the model. docs/A1_4 found it removes 45% of this corpus
+    (97% of the FIU reporting formats), so it must NOT be used as a filter here.
+    """
+    return "low_quality_classifier" if _classifier_label(text) == "Low" else None
+
+
+# ---------------------------------------------------------------------------
+# Classifier as a SIGNAL (Phase 4): never removes a chunk. Adds the metadata field
+# `quality_classifier_label` ("Low"/"Medium"/"High", or null when unavailable) so a
+# downstream user can decide. Off by default: the CPU run takes ~3000 s for 2247 chunks.
+#   "off"   -> no labels, the cache is not even read (default; pipeline speed unchanged)
+#   "cache" -> labels only from the cache; never loads the model (fast, reuses a past run)
+#   "model" -> cache first, then the model for misses; if the model cannot load (no
+#              transformers/torch/weights/network) it falls back to cache-only and says so
+# The cache maps SHA-256(chunk text) -> label, so it survives re-chunking and re-ordering.
+# ---------------------------------------------------------------------------
+QUALITY_SIGNAL_MODE = "off"
+CACHE_SAVE_EVERY = 100  # a full model pass takes ~50 min; do not lose it to a crash
+
+_SIGNAL_STATE = {"computed": 0, "model_error": None}
+
+
+def _text_key(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _load_signal_cache() -> dict:
+    if not QUALITY_SIGNAL_CACHE_PATH.exists():
+        return {}
+    return json.loads(QUALITY_SIGNAL_CACHE_PATH.read_text(encoding="utf-8"))
+
+
+def _save_signal_cache(cache: dict) -> None:
+    QUALITY_SIGNAL_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    QUALITY_SIGNAL_CACHE_PATH.write_text(json.dumps(cache, indent=0, sort_keys=True), encoding="utf-8")
+
+
+def quality_signal_label(text: str, cache: dict):
+    """Classifier label for a chunk from the cache or (mode "model") the model; None if neither."""
+    key = _text_key(text)
+    if key in cache:
+        return cache[key]
+    if QUALITY_SIGNAL_MODE != "model" or _SIGNAL_STATE["model_error"]:
+        return None
+    try:
+        label = _classifier_label(text)
+    except Exception as exc:  # ImportError, missing weights, no network: degrade, but say so
+        _SIGNAL_STATE["model_error"] = f"{type(exc).__name__}: {exc}"
+        print(f"quality signal: model unavailable ({_SIGNAL_STATE['model_error']}); using cache only", file=sys.stderr)
+        return None
+    cache[key] = label
+    _SIGNAL_STATE["computed"] += 1
+    if _SIGNAL_STATE["computed"] % CACHE_SAVE_EVERY == 0:
+        _save_signal_cache(cache)
+    return label
 
 
 if __name__ == "__main__":
