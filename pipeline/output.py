@@ -41,6 +41,8 @@ def main():
                     "regulatory_tagged": chunk.get("regulatory_tagged", False),
                     "regulatory_keywords_found": chunk.get("regulatory_keywords_found", []),
                     "regulatory_density_score": chunk.get("regulatory_density_score", 0.0),
+                    # Phase 4: classifier signal ("Low"/"Medium"/"High"), null when not computed
+                    "quality_classifier_label": chunk.get("quality_classifier_label"),
                 },
             }
             f_out.write(json.dumps(record, ensure_ascii=False) + "\n")
