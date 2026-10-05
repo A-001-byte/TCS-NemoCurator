@@ -1,5 +1,11 @@
 # A1.4 — Quality Filter Comparison: Heuristic vs. Real nvidia/quality-classifier-deberta
 
+> **Status (Phase 4):** tested and rejected as a hard filter. It is available only as an optional
+> SIGNAL: `quality.QUALITY_SIGNAL_MODE` ("off" by default, "cache", or "model") adds the metadata field
+> `quality_classifier_label` ("Low"/"Medium"/"High", or null) and never removes a chunk. Labels are cached
+> by SHA-256 of the chunk text in `data/quality_signal_cache.json`. Option 1 below is what was implemented.
+> The numbers that follow were measured on the corpus as it was then (2247 chunks, before page-splice healing).
+
 ## Setup
 - 2247 deduped chunks from all 18 successfully-extracted PDFs, run through both:
   - Existing heuristic (word count, alpha ratio, symbol ratio, lexical diversity)
