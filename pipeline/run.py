@@ -1,8 +1,10 @@
 """Orchestrator: runs the full curation pipeline end to end (T0.3).
 
-Stage order is fixed: extract -> clean/langid -> dedup -> quality filter ->
+Stage order is fixed: extract -> clean/langid -> heal -> dedup -> quality filter ->
 PII redact -> output. PII redact runs AFTER dedup, never before (dedup relies
-on stable content hashes; redacting first corrupts them).
+on stable content hashes; redacting first corrupts them). Heal runs before dedup so
+page furniture (letterheads, footers) cannot hide real duplicates or pose as PII;
+set heal.HEAL_ENABLED = False to reproduce the pre-heal numbers.
 
 Writes data/output/pipeline_summary.json. The dashboard reads its own committed
 snapshot (dashboard/public/pipeline_summary.json), which Stream D refreshes on
@@ -12,7 +14,7 @@ import json
 import sys
 from pathlib import Path
 
-from pipeline import clean, dedup, extract, output, pii, quality
+from pipeline import clean, dedup, extract, heal, output, pii, quality
 
 ROOT = Path(__file__).resolve().parent.parent
 SUMMARY_PATH = ROOT / "data" / "output" / "pipeline_summary.json"
@@ -20,6 +22,7 @@ SUMMARY_PATH = ROOT / "data" / "output" / "pipeline_summary.json"
 STAGES = [
     ("extract", extract.main),
     ("clean_langid", clean.main),
+    ("heal", heal.main),
     ("dedup", dedup.main),
     ("quality_filter", quality.main),
     ("pii_redact", pii.main),
@@ -29,6 +32,7 @@ STAGES = [
 STAGE_RECORD_PATHS = {
     "extract": ROOT / "data" / "extracted" / "_stage_record.json",
     "clean_langid": ROOT / "data" / "cleaned" / "_stage_record.json",
+    "heal": ROOT / "data" / "healed" / "_stage_record.json",
     "dedup": ROOT / "data" / "deduped" / "_stage_record.json",
     "quality_filter": ROOT / "data" / "filtered" / "_stage_record.json",
     "pii_redact": ROOT / "data" / "redacted" / "_stage_record.json",
@@ -93,7 +97,10 @@ def build_document_drilldown() -> list:
 
 def main():
     stage_results = []
-    for name, fn in STAGES:
+    # Read at call time so the flag (and any path rebasing) is honoured per run.
+    stages = [(n, f) for n, f in STAGES if n != "heal" or heal.HEAL_ENABLED]
+    dedup.INPUT_DIR = dedup.HEALED_DIR if heal.HEAL_ENABLED else dedup.CLEANED_DIR
+    for name, fn in stages:
         try:
             fn()
         except SystemExit as exc:

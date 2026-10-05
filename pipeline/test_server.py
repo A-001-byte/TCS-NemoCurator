@@ -34,6 +34,11 @@ def main():
 
     summary = result["summary"]
     rows = [json.loads(line) for line in result["curated_jsonl"].splitlines() if line.strip()]
+    assert [s["stage"] for s in summary["stages"]] == [
+        "extract", "clean_langid", "heal", "dedup", "quality_filter", "pii_redact", "output",
+    ]
+    heal_stage = summary["stages"][2]
+    assert heal_stage["docs_in"] == heal_stage["docs_out"] == 1 and heal_stage["removed"] == 0
     assert summary["stages"][0]["docs_in"] == 1
     assert len(rows) == summary["final_output_chunks"] > 0
     assert all(row["metadata"]["source_file"] == SAMPLE.name for row in rows)

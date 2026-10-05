@@ -46,6 +46,9 @@ from datasketch import MinHash, MinHashLSH
 # ---------------------------------------------------------------------------
 
 CLEANED_DIR = Path(__file__).resolve().parent.parent / "data" / "cleaned"
+HEALED_DIR = Path(__file__).resolve().parent.parent / "data" / "healed"
+# Documents to dedup. run.py points this at CLEANED_DIR when HEAL_ENABLED is False.
+INPUT_DIR = HEALED_DIR
 DEDUPED_DIR = Path(__file__).resolve().parent.parent / "data" / "deduped"
 STAGE_RECORD_PATH = DEDUPED_DIR / "_stage_record.json"
 OUT_PATH = DEDUPED_DIR / "chunks.jsonl"
@@ -181,13 +184,26 @@ def _fuzzy_dedup_with_boilerplate_awareness(chunks: list) -> tuple:
 # MAIN ENTRY POINT (called by pipeline/run.py)
 # ---------------------------------------------------------------------------
 
+def _load_documents(directory: Path) -> list:
+    """Document records in `directory`. data/healed also holds heal_report.json and
+    regulatory_changelog.json, so only files shaped like a document are loaded."""
+    records = []
+    for path in sorted(directory.glob("*.json")):
+        if path.name.startswith("_"):
+            continue
+        record = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(record, dict) and "doc_id" in record and "text" in record:
+            records.append(record)
+    return records
+
+
 def main():
     DEDUPED_DIR.mkdir(parents=True, exist_ok=True)
-    doc_files = sorted(p for p in CLEANED_DIR.glob("*.json") if not p.name.startswith("_"))
+    # Standalone `python -m pipeline.dedup` without a prior heal run falls back to cleaned docs.
+    documents = _load_documents(INPUT_DIR) or _load_documents(CLEANED_DIR)
 
     all_chunks = []
-    for doc_path in doc_files:
-        record = json.loads(doc_path.read_text(encoding="utf-8"))
+    for record in documents:
         for idx, chunk_text in enumerate(split_into_chunks(record["text"])):
             all_chunks.append(
                 {
