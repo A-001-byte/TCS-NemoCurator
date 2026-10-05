@@ -5,20 +5,24 @@ content hashes, and redacting first would corrupt those hashes inconsistently).
 
 Detects and redacts, on real extracted Indian KYC/regulatory text:
   - PAN numbers (AAAAA9999A format)
-  - Aadhaar-style 12-digit numbers
+  - Aadhaar numbers (12 digits, first digit 2-9; Verhoeff checksum or an Aadhaar label required)
   - CIN, Corporate Identity Number (21-char MCA format, e.g. U65923UR1922PLC000234)
   - SWIFT/BIC codes (shape + required "SWIFT"/"BIC" cue, e.g. BARBINBBXXX)
   - Bank account numbers (9-18 digit runs, gated by cross-field context validation)
   - Phone numbers (Indian mobile / STD formats)
   - Email addresses
-  - Dates of birth / dates (DD/MM/YYYY, DD-MM-YYYY)
-  - PIN codes (6-digit Indian postal codes)
+  - Dates of birth (DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY; only after a DOB cue, so public
+    regulatory dates such as "circular dated 23-10-2018" are kept)
+  - PIN codes (6-digit Indian postal codes; only with a PIN label or after a place name and
+    hyphen/comma, never after a money word: "Urban 150000" is an amount, not an address)
   - Person names (via spaCy NER `en_core_web_sm`, filtered to spans that are
     Titlecase, non-repeating, not a known BFSI/legal noun phrase, AND appear
     near a personal-title cue like "Mr."/"Name:"/"Signatory". Dense regulatory
     text makes small NER models mistag generic capitalized phrases ("Gazette
     Notification") as PERSON; this filter trades recall for precision so every
     reported name redaction is real, never a false positive presented as PII.)
+    Initials ("Shri R. K. Sharma") and ALL-CAPS names ("MR. SURESH KUMAR"), which spaCy
+    misses, are also caught, but only directly after a title and never job titles.
 
 Cross-field validation (Stream C): an account-number-shaped span is only redacted as
 ACCOUNT_NUMBER once its SURROUNDING CONTEXT agrees. On the real 19-document corpus every
@@ -51,12 +55,15 @@ MAX_EXAMPLES_PER_TYPE = 6
 
 PATTERNS = [
     ("PAN", re.compile(r"\b[A-Z]{5}[0-9]{4}[A-Z]\b")),
-    ("AADHAAR", re.compile(r"\b\d{4}\s?\d{4}\s?\d{4}\b")),
+    # First digit 2-9; separators are space or hyphen only (never a newline). Candidates are
+    # validated by Verhoeff checksum / cue words: see _aadhaar_verdict.
+    ("AADHAAR", re.compile(r"\b[2-9]\d{3}[ -]?\d{4}[ -]?\d{4}\b")),
     ("EMAIL", re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")),
     ("PHONE", re.compile(r"(?<!\d)(?:\+?91[-\s]?)?[6-9]\d{9}(?!\d)")),
-    # Regex can't distinguish a birth date from a policy/circular date without more
-    # context (e.g. proximity to "DOB"/"Date of Birth"), so this is labeled generically.
-    ("DATE", re.compile(r"\b(0[1-9]|[12]\d|3[01])[/-](0[1-9]|1[0-2])[/-](19|20)\d{2}\b")),
+    # The shape also matches public regulatory dates ("circular dated 23-10-2018"), so a
+    # match is only redacted when a date-of-birth cue precedes it: see _has_dob_cue.
+    # Same separator on both sides: / - or . (RBI writes 18.11.2019).
+    ("DATE", re.compile(r"\b(?:0?[1-9]|[12]\d|3[01])([/.-])(?:0?[1-9]|1[0-2])\1(?:19|20)\d{2}\b")),
     ("PINCODE", re.compile(r"\b[1-9]\d{5}\b")),
     # CIN: MCA Corporate Identity Number. Listed/Unlisted + 5-digit industry code +
     # 2-letter state + 4-digit year + 3-letter ownership + 6-digit registration number.
@@ -111,6 +118,85 @@ SWIFT_CUE_RE = re.compile(r"(SWIFT\s*(Address|Code|BIC)?|\bBIC\b)")
 
 def _has_swift_cue(text: str, start: int) -> bool:
     return bool(SWIFT_CUE_RE.search(text[max(0, start - SWIFT_CUE_WINDOW) : start]))
+
+
+# --- Cue requirement for DATE -------------------------------------------------
+# A birth date is personal data; "circular dated 23-10-2018" is public regulatory
+# history that a compliance corpus must keep. Only a date-of-birth cue shortly BEFORE
+# the date (same line) marks it as personal.
+DOB_CUE_WINDOW = 30
+DOB_CUE_RE = re.compile(r"(?:\bD\.?\s?O\.?\s?B\b|date\s+of\s+birth|\bborn\b)", re.IGNORECASE)
+
+
+def _has_dob_cue(text: str, start: int) -> bool:
+    window = text[max(0, start - DOB_CUE_WINDOW) : start].rsplit("\n", 1)[-1]
+    return bool(DOB_CUE_RE.search(window))
+
+
+# --- Context validation for PINCODE -------------------------------------------
+# Any 6-digit number matches the shape: money amounts ("Urban 150000"), the tail of a
+# phone number ("05942-233739"). A PIN code is accepted only with a PIN label right before
+# it, or when it directly follows a place name and a hyphen/comma ("Mumbai-400001").
+# Indian PIN prefixes run 11..99; a number right after a money word is an amount.
+# NOTE: office addresses in public regulatory documents are institutional, not personal
+# data; they are still redacted (cheap and safe) but described as "address PIN codes".
+PIN_CONTEXT_WINDOW = 25
+PIN_LABEL_RE = re.compile(r"\bpin[\s-]?(?:code)?(?:\s*(?:no\.?|number))?\s*[:#.\-–—]*\s*$", re.IGNORECASE)
+PIN_AFTER_PLACE_RE = re.compile(r"[A-Za-z]{3,}\s*[-,–—]\s*$")
+PIN_MONEY_CUE_RE = re.compile(
+    r"(?:\bRs\.?|\bINR|₹|\bamount|\babove|\bexceeding|\bthreshold|\bof)\s*[:.\-–]?\s*$",
+    re.IGNORECASE,
+)
+MIN_PIN_PREFIX = 11
+
+
+def _pincode_verdict(text: str, start: int, end: int) -> str:
+    """'accept', 'reject_no_cue', or 'reject_other' (money cue / impossible prefix)."""
+    if int(text[start : start + 2]) < MIN_PIN_PREFIX:
+        return "reject_other"
+    before = text[max(0, start - PIN_CONTEXT_WINDOW) : start]
+    if PIN_MONEY_CUE_RE.search(before):
+        return "reject_other"
+    if PIN_LABEL_RE.search(before) or PIN_AFTER_PLACE_RE.search(before):
+        return "accept"
+    return "reject_no_cue"
+
+
+# --- Verification for AADHAAR -------------------------------------------------
+# Real Aadhaar numbers carry a Verhoeff check digit. Checksum-valid -> redact. Invalid
+# but an Aadhaar label nearby -> still redact, flagged for review (typo or OCR error).
+# Otherwise it is just a digit run (a reference number, a table value).
+_VERHOEFF_D = (
+    (0, 1, 2, 3, 4, 5, 6, 7, 8, 9), (1, 2, 3, 4, 0, 6, 7, 8, 9, 5), (2, 3, 4, 0, 1, 7, 8, 9, 5, 6),
+    (3, 4, 0, 1, 2, 8, 9, 5, 6, 7), (4, 0, 1, 2, 3, 9, 5, 6, 7, 8), (5, 9, 8, 7, 6, 0, 4, 3, 2, 1),
+    (6, 5, 9, 8, 7, 1, 0, 4, 3, 2), (7, 6, 5, 9, 8, 2, 1, 0, 4, 3), (8, 7, 6, 5, 9, 3, 2, 1, 0, 4),
+    (9, 8, 7, 6, 5, 4, 3, 2, 1, 0),
+)
+_VERHOEFF_P = (
+    (0, 1, 2, 3, 4, 5, 6, 7, 8, 9), (1, 5, 7, 6, 2, 8, 3, 0, 9, 4), (5, 8, 0, 3, 7, 9, 6, 1, 4, 2),
+    (8, 9, 1, 6, 0, 4, 3, 5, 2, 7), (9, 4, 5, 3, 1, 2, 6, 8, 7, 0), (4, 2, 8, 6, 5, 7, 3, 9, 0, 1),
+    (2, 7, 9, 3, 8, 0, 6, 4, 1, 5), (7, 0, 4, 6, 9, 1, 3, 2, 5, 8),
+)
+AADHAAR_CUE_WINDOW = 60
+AADHAAR_CUE_RE = re.compile(r"(?:aadhaar|aadhar|\bUID\b|UIDAI)", re.IGNORECASE)
+
+
+def verhoeff_valid(digits: str) -> bool:
+    """True if the digit string (check digit last) passes the Verhoeff checksum."""
+    c = 0
+    for i, ch in enumerate(reversed(digits)):
+        c = _VERHOEFF_D[c][_VERHOEFF_P[i % 8][int(ch)]]
+    return c == 0
+
+
+def _aadhaar_verdict(text: str, start: int, end: int) -> str:
+    """'valid' (checksum passes), 'needs_review' (checksum fails, Aadhaar label nearby),
+    or 'reject' (neither: not treated as an Aadhaar number)."""
+    digits = re.sub(r"\D", "", text[start:end])
+    if verhoeff_valid(digits):
+        return "valid"
+    window = text[max(0, start - AADHAAR_CUE_WINDOW) : end + AADHAAR_CUE_WINDOW]
+    return "needs_review" if AADHAAR_CUE_RE.search(window) else "reject"
 
 
 # --- Document-level validation report ----------------------------------------
@@ -204,6 +290,70 @@ def _has_personal_title_cue(text: str, start: int) -> bool:
     return bool(_PERSONAL_TITLE_CUE_RE.search(window))
 
 
+# --- PERSON_NAME recall: initials and ALL-CAPS, only after a title ----------------
+# spaCy's small model misses "Shri R. K. Sharma" and "MR. SURESH KUMAR". A name is accepted
+# here only right after Shri/Smt/Mr/Mrs/Ms/Dr, and only in the two shapes spaCy misses:
+# initials + surname, or 2+ ALL-CAPS words. Job titles and common words never qualify, so
+# "Mr. Managing Director" and "DR. NOTE THAT" stay untouched. Plain Title-Case names after
+# a title ("Mr. Pankaj Mittal") remain the spaCy path's job.
+_TITLE_START_RE = re.compile(r"\b(?:(?:Shri|Smt|Mr|Mrs|Ms|Dr)\.?|(?:SHRI|SMT)\.?|(?:MR|MRS|MS|DR)\.)[ \t]+")
+_MAX_NAME_TOKENS = 5
+_INITIAL_RE = re.compile(r"[A-Z]\.")
+_CAPS_RE = re.compile(r"[A-Z]{2,}")
+_WORD_NAME_RE = re.compile(r"[A-Z][a-z]+")
+_JOB_TITLE_WORDS = {
+    "managing", "director", "joint", "secretary", "chairman", "chairperson", "chief",
+    "executive", "general", "deputy", "assistant", "senior", "vice", "president", "head",
+    "governor", "additional", "special", "under", "nodal", "designated",
+}
+_COMMON_WORDS = {
+    "the", "and", "for", "that", "this", "note", "see", "not", "are", "all", "any", "with",
+    "from", "shall", "should", "may", "must", "will", "also", "only", "each", "such",
+    "their", "these", "none", "nil", "yes", "no",
+}
+_NOT_A_NAME = _NAME_BLOCKLIST_WORDS | _JOB_TITLE_WORDS | _COMMON_WORDS
+
+
+def _title_gated_names(text: str) -> list:
+    """(start, end, text) for initials/ALL-CAPS names that directly follow a title."""
+    spans = []
+    for title in _TITLE_START_RE.finditer(text):
+        pos, tokens, end = title.end(), [], title.end()
+        while len(tokens) < _MAX_NAME_TOKENS:
+            match = re.compile(r"\S+").match(text, pos)
+            if not match:
+                break
+            raw, trailing = match.group(0), ""
+            if raw[-1] in ",;:":
+                raw, trailing = raw[:-1], raw[-1]
+            if raw.endswith(".") and not _INITIAL_RE.fullmatch(raw):
+                raw, trailing = raw[:-1], "."
+            if _INITIAL_RE.fullmatch(raw):
+                kind = "initial"
+            elif _CAPS_RE.fullmatch(raw):
+                kind = "caps"
+            elif _WORD_NAME_RE.fullmatch(raw):
+                kind = "word"
+            else:
+                break
+            tokens.append((kind, raw))
+            end = match.start() + len(raw)
+            gap = re.compile(r"[ \t]+").match(text, match.end())
+            if trailing or not gap:
+                break
+            pos = gap.end()
+        kinds = [k for k, _ in tokens]
+        has_initial = "initial" in kinds
+        initials_plus_surname = has_initial and any(k != "initial" for k in kinds)
+        all_caps_name = len(tokens) >= 2 and all(k == "caps" for k in kinds)
+        if (initials_plus_surname or all_caps_name) and not any(
+            word.lower().rstrip(".") in _NOT_A_NAME for _, word in tokens
+        ):
+            start = title.end()
+            spans.append((start, end, text[start:end]))
+    return spans
+
+
 def _load_spacy():
     global _NLP, _SPACY_AVAILABLE
     try:
@@ -266,6 +416,25 @@ def redact_regex(text: str, entity_counts: dict, examples: list, doc_id: str, va
                 validation["swift_no_cue"] = validation.get("swift_no_cue", 0) + 1
                 return match.group(0)
 
+            elif label == "DATE" and not _has_dob_cue(scanned, match.start()):
+                validation["date_no_cue"] = validation.get("date_no_cue", 0) + 1
+                return match.group(0)
+
+            elif label == "PINCODE":
+                verdict = _pincode_verdict(scanned, match.start(), match.end())
+                if verdict != "accept":
+                    key = "pincode_no_cue" if verdict == "reject_no_cue" else "pincode_other"
+                    validation[key] = validation.get(key, 0) + 1
+                    return match.group(0)
+
+            elif label == "AADHAAR":
+                verdict = _aadhaar_verdict(scanned, match.start(), match.end())
+                if verdict == "reject":
+                    validation["aadhaar_rejected"] = validation.get("aadhaar_rejected", 0) + 1
+                    return match.group(0)
+                if verdict == "needs_review":
+                    validation["aadhaar_needs_review"] = validation.get("aadhaar_needs_review", 0) + 1
+
             entity_counts[label] = entity_counts.get(label, 0) + 1
             _record_example(examples, label, doc_id, match.group(0), context_before, context_after)
             return f"[REDACTED_{label}]"
@@ -275,18 +444,27 @@ def redact_regex(text: str, entity_counts: dict, examples: list, doc_id: str, va
 
 
 def redact_names_batch(texts: list, doc_ids: list, entity_counts: dict, examples: list) -> list:
-    if not _SPACY_AVAILABLE:
-        return texts
-    results = []
-    for doc, doc_id, text in zip(_NLP.pipe(texts, batch_size=64), doc_ids, texts):
-        spans = [
-            (ent.start_char, ent.end_char, ent.text)
-            for ent in doc.ents
-            if ent.label_ == "PERSON"
-            and _looks_like_person_name(ent.text)
-            and _has_personal_title_cue(text, ent.start_char)
+    if _SPACY_AVAILABLE:
+        spacy_spans = [
+            [
+                (ent.start_char, ent.end_char, ent.text)
+                for ent in doc.ents
+                if ent.label_ == "PERSON"
+                and _looks_like_person_name(ent.text)
+                and _has_personal_title_cue(text, ent.start_char)
+            ]
+            for doc, text in zip(_NLP.pipe(texts, batch_size=64), texts)
         ]
-        results.append(_apply_name_spans(text, spans, entity_counts, examples, doc_id))
+    else:
+        spacy_spans = [[] for _ in texts]
+    results = []
+    for text, doc_id, spans in zip(texts, doc_ids, spacy_spans):
+        # initials / ALL-CAPS names after a title; skip any span spaCy already found
+        extra = [
+            s for s in _title_gated_names(text)
+            if not any(s[0] < end and start < s[1] for start, end, _ in spans)
+        ]
+        results.append(_apply_name_spans(text, spans + extra, entity_counts, examples, doc_id))
     return results
 
 
@@ -307,95 +485,6 @@ def _apply_name_spans(text: str, spans: list, entity_counts: dict, examples: lis
         )
         redacted = redacted[:start] + "[REDACTED_PERSON_NAME]" + redacted[end:]
     return redacted
-
-
-def main():
-    REDACTED_DIR.mkdir(parents=True, exist_ok=True)
-    _load_spacy()
-
-    if not IN_PATH.exists():
-        print(json.dumps({"stage": "pii_redact", "error": "no input chunks"}))
-        sys.exit(1)
-
-    entity_counts = {}
-    examples = []
-    validation_totals = {}
-    chunks_in = 0
-    out_chunks = []
-
-    with IN_PATH.open(encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            chunk = json.loads(line)
-            chunks_in += 1
-            chunk_validation = {}
-            chunk["text"] = redact_regex(
-                chunk["text"], entity_counts, examples, chunk["chunk_id"], chunk_validation
-            )
-            # Additive field per the frozen chunk contract: "needs_review" means PII was
-            # redacted but its surrounding context didn't confirm the entity type.
-            chunk["validation_flag"] = (
-                "needs_review" if chunk_validation.get("account_needs_review") else "confident"
-            )
-            for key, count in chunk_validation.items():
-                validation_totals[key] = validation_totals.get(key, 0) + count
-            out_chunks.append(chunk)
-
-    texts = [c["text"] for c in out_chunks]
-    doc_ids = [c["chunk_id"] for c in out_chunks]
-    redacted_texts = redact_names_batch(texts, doc_ids, entity_counts, examples)
-
-    chunks_with_pii = 0
-    for chunk, new_text in zip(out_chunks, redacted_texts):
-        had_regex_hit = "[REDACTED_" in chunk["text"]
-        chunk["text"] = new_text
-        chunk["pii_redacted"] = had_regex_hit or "[REDACTED_PERSON_NAME]" in new_text
-        if chunk["pii_redacted"]:
-            chunks_with_pii += 1
-
-    with OUT_PATH.open("w", encoding="utf-8") as f:
-        for chunk in out_chunks:
-            f.write(json.dumps(chunk, ensure_ascii=False) + "\n")
-
-    EXAMPLES_PATH.write_text(json.dumps(examples, indent=2, ensure_ascii=False), encoding="utf-8")
-
-    validation_report = build_validation_report(out_chunks)
-    VALIDATION_REPORT_PATH.write_text(
-        json.dumps(validation_report, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
-
-    total_entities = sum(entity_counts.values())
-    record = {
-        "stage": "pii_redact",
-        "docs_in": chunks_in,
-        "docs_out": len(out_chunks),
-        "removed": 0,
-        "reason_counts": {},
-        "pii_entities_redacted": total_entities,
-        "entity_type_counts": entity_counts,
-        "chunks_with_pii": chunks_with_pii,
-        "name_detection_available": _SPACY_AVAILABLE,
-        # Cross-field validation outcomes (Stream C)
-        "account_numbers_suppressed": validation_totals.get("account_suppressed", 0),
-        "account_numbers_needs_review": validation_totals.get("account_needs_review", 0),
-        "swift_candidates_rejected_no_cue": validation_totals.get("swift_no_cue", 0),
-        "documents_with_pii": sum(1 for d in validation_report if d["pii_entities"]),
-        "validation_report_path": VALIDATION_REPORT_PATH.relative_to(REDACTED_DIR.parent.parent).as_posix(),
-        "chunks_needing_review": sum(
-            1 for c in out_chunks if c.get("validation_flag") == "needs_review"
-        ),
-    }
-    STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
-    print(json.dumps(record, indent=2))
-
-    if len(out_chunks) == 0:
-        sys.exit(1)
-
-
-if __name__ == "__main__":
-    main()
 
 
 # ---------------------------------------------------------------------------
@@ -461,61 +550,189 @@ def _gliner_windows(text: str) -> list:
     return windows
 
 
+# Per docs/A1_2_pii_gliner_comparison.md: GLiNER fires PERSON on job titles ("Managing
+# Director", "Joint Secretary"); PHONE/EMAIL looked good. With the guard on, a GLiNER PERSON
+# span is kept only if it passes the same title-cue + name-shape test as the spaCy path.
+GLINER_PERSON_GUARD = True
+# None = redact every GLiNER type; or a set such as {"PHONE", "EMAIL"} to restrict it.
+GLINER_ENABLED_TYPES = None
+
+
 def _load_gliner():
     global _gliner_model
     if _gliner_model is not None:
         return
-    from gliner import GLiNER
+    try:
+        from gliner import GLiNER  # lazy: gliner lives in the separate venv-pii, not the core env
+    except ImportError as exc:
+        raise RuntimeError(
+            "USE_GLINER_PII is True but the 'gliner' package is not installed. Install it in "
+            "the PII environment (see SETUP.md, venv-pii) or set USE_GLINER_PII = False."
+        ) from exc
     _gliner_model = GLiNER.from_pretrained("nvidia/gliner-PII")
+
+
+def _resolve_overlaps(spans: list) -> list:
+    """Drop overlapping spans, keeping the higher-score one (then the longer, then the
+    earlier). Returns the survivors ordered by start. A span is a dict with start/end/score."""
+    ranked = sorted(spans, key=lambda s: (-s.get("score", 0.0), -(s["end"] - s["start"]), s["start"]))
+    kept = []
+    for span in ranked:
+        if all(span["end"] <= k["start"] or span["start"] >= k["end"] for k in kept):
+            kept.append(span)
+    return sorted(kept, key=lambda s: s["start"])
 
 
 def redact_pii_gliner(text: str, entity_counts: dict, examples: list, doc_id: str):
     """
     Real GLiNER-PII redaction for one chunk. Returns (redacted_text, had_pii: bool).
-    NOTE: does not apply Stream C's cross-field validation (telecom-vs-account,
-    SWIFT cue requirement) -- this is GLiNER's own judgment only, unfiltered,
-    so the comparison shows what the real model does on its own.
+    Does not apply the regex path's cross-field validation (telecom-vs-account, SWIFT
+    cue, DATE/PIN gates): GLiNER's own judgment, so a comparison shows what the model
+    does alone. The one guard kept is GLINER_PERSON_GUARD (see above).
 
-    Long chunks are run through _gliner_windows() (see there for why) and results
-    are translated back to absolute offsets in `text` before redaction. Duplicate
-    detections from the overlap between windows are collapsed, keeping the first
-    (leftmost-starting) one per overlapping same-label span.
+    Long chunks are run through _gliner_windows() and results are translated back to
+    absolute offsets in `text`. Spans are then filtered, overlaps resolved
+    (_resolve_overlaps), and replacements applied from the end of the text so earlier
+    offsets stay valid.
     """
     _load_gliner()
 
-    all_entities = []
+    spans = []
     for window_text, offset in _gliner_windows(text):
         for ent in _gliner_model.predict_entities(
             window_text, GLINER_LABELS, threshold=GLINER_CONFIDENCE_THRESHOLD
         ):
-            all_entities.append({
-                "label": ent["label"],
+            label = GLINER_LABEL_MAP.get(ent["label"], ent["label"].upper().replace(" ", "_"))
+            span = {
+                "label": label,
                 "text": ent["text"],
                 "start": ent["start"] + offset,
                 "end": ent["end"] + offset,
-            })
+                "score": ent.get("score", 0.0),
+            }
+            if GLINER_ENABLED_TYPES is not None and label not in GLINER_ENABLED_TYPES:
+                continue
+            if (
+                label == "PERSON_NAME"
+                and GLINER_PERSON_GUARD
+                and not (_looks_like_person_name(span["text"]) and _has_personal_title_cue(text, span["start"]))
+            ):
+                continue
+            spans.append(span)
 
-    if not all_entities:
-        return text, False
-
-    all_entities.sort(key=lambda e: (e["start"], -e["end"]))
-    deduped = []
-    for ent in all_entities:
-        if deduped and ent["label"] == deduped[-1]["label"] and ent["start"] < deduped[-1]["end"]:
-            continue
-        deduped.append(ent)
-
-    deduped.sort(key=lambda e: e["start"], reverse=True)
+    resolved = _resolve_overlaps(spans)
     redacted = text
-    had_pii = False
-    for ent in deduped:
-        contract_label = GLINER_LABEL_MAP.get(ent["label"], ent["label"].upper().replace(" ", "_"))
-        entity_counts[contract_label] = entity_counts.get(contract_label, 0) + 1
+    for span in reversed(resolved):
+        entity_counts[span["label"]] = entity_counts.get(span["label"], 0) + 1
         _record_example(
-            examples, contract_label, doc_id, ent["text"],
-            text[max(0, ent["start"] - 40):ent["start"]],
-            text[ent["end"]:ent["end"] + 40],
+            examples, span["label"], doc_id, span["text"],
+            text[max(0, span["start"] - 40):span["start"]],
+            text[span["end"]:span["end"] + 40],
         )
-        redacted = redacted[:ent["start"]] + f"[REDACTED_{contract_label}]" + redacted[ent["end"]:]
-        had_pii = True
-    return redacted, had_pii
+        redacted = redacted[:span["start"]] + f"[REDACTED_{span['label']}]" + redacted[span["end"]:]
+    return redacted, bool(resolved)
+
+
+def main():
+    REDACTED_DIR.mkdir(parents=True, exist_ok=True)
+    if USE_GLINER_PII:
+        _load_gliner()  # fail now, with a clear message, if gliner is not installed
+    else:
+        _load_spacy()
+
+    if not IN_PATH.exists():
+        print(json.dumps({"stage": "pii_redact", "error": "no input chunks"}))
+        sys.exit(1)
+
+    entity_counts = {}
+    examples = []
+    validation_totals = {}
+    chunks_in = 0
+    out_chunks = []
+
+    with IN_PATH.open(encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            chunk = json.loads(line)
+            chunks_in += 1
+            chunk_validation = {}
+            if USE_GLINER_PII:
+                chunk["text"], _ = redact_pii_gliner(
+                    chunk["text"], entity_counts, examples, chunk["chunk_id"]
+                )
+            else:
+                chunk["text"] = redact_regex(
+                    chunk["text"], entity_counts, examples, chunk["chunk_id"], chunk_validation
+                )
+            # Additive field per the frozen chunk contract: "needs_review" means PII was
+            # redacted but its surrounding context didn't confirm the entity type.
+            needs_review = chunk_validation.get("account_needs_review") or chunk_validation.get(
+                "aadhaar_needs_review"
+            )
+            chunk["validation_flag"] = "needs_review" if needs_review else "confident"
+            for key, count in chunk_validation.items():
+                validation_totals[key] = validation_totals.get(key, 0) + count
+            out_chunks.append(chunk)
+
+    texts = [c["text"] for c in out_chunks]
+    doc_ids = [c["chunk_id"] for c in out_chunks]
+    # GLiNER already covers names (behind GLINER_PERSON_GUARD); the spaCy pass is the regex path's.
+    redacted_texts = texts if USE_GLINER_PII else redact_names_batch(texts, doc_ids, entity_counts, examples)
+
+    chunks_with_pii = 0
+    for chunk, new_text in zip(out_chunks, redacted_texts):
+        had_regex_hit = "[REDACTED_" in chunk["text"]
+        chunk["text"] = new_text
+        chunk["pii_redacted"] = had_regex_hit or "[REDACTED_PERSON_NAME]" in new_text
+        if chunk["pii_redacted"]:
+            chunks_with_pii += 1
+
+    with OUT_PATH.open("w", encoding="utf-8") as f:
+        for chunk in out_chunks:
+            f.write(json.dumps(chunk, ensure_ascii=False) + "\n")
+
+    EXAMPLES_PATH.write_text(json.dumps(examples, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    validation_report = build_validation_report(out_chunks)
+    VALIDATION_REPORT_PATH.write_text(
+        json.dumps(validation_report, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+
+    total_entities = sum(entity_counts.values())
+    record = {
+        "stage": "pii_redact",
+        "docs_in": chunks_in,
+        "docs_out": len(out_chunks),
+        "removed": 0,
+        "reason_counts": {},
+        "pii_entities_redacted": total_entities,
+        "entity_type_counts": entity_counts,
+        "chunks_with_pii": chunks_with_pii,
+        "name_detection_available": USE_GLINER_PII or _SPACY_AVAILABLE,
+        "pii_engine": "gliner" if USE_GLINER_PII else "regex+spacy",
+        # Cross-field validation outcomes (Stream C)
+        "account_numbers_suppressed": validation_totals.get("account_suppressed", 0),
+        "account_numbers_needs_review": validation_totals.get("account_needs_review", 0),
+        "swift_candidates_rejected_no_cue": validation_totals.get("swift_no_cue", 0),
+        "date_candidates_rejected_no_cue": validation_totals.get("date_no_cue", 0),
+        "pincode_candidates_rejected_no_cue": validation_totals.get("pincode_no_cue", 0),
+        "pincode_candidates_rejected_money_or_prefix": validation_totals.get("pincode_other", 0),
+        "aadhaar_candidates_rejected": validation_totals.get("aadhaar_rejected", 0),
+        "aadhaar_needs_review": validation_totals.get("aadhaar_needs_review", 0),
+        "documents_with_pii": sum(1 for d in validation_report if d["pii_entities"]),
+        "validation_report_path": VALIDATION_REPORT_PATH.relative_to(REDACTED_DIR.parent.parent).as_posix(),
+        "chunks_needing_review": sum(
+            1 for c in out_chunks if c.get("validation_flag") == "needs_review"
+        ),
+    }
+    STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
+    print(json.dumps(record, indent=2))
+
+    if len(out_chunks) == 0:
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
