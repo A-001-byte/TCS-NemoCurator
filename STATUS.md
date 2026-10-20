@@ -39,7 +39,7 @@ Owners and gates are in `docs/team/01_WORK_PLAN.md`; every change with before/af
 - **Dashboard snapshots are stale until Saachi's refresh is merged.** `dashboard/public/pipeline_summary.json` and `curated.jsonl` still hold the old 18-document numbers. `nemo_comparison.json` and `doctype_eval.json` are current.
 - **The document-type score is optimistic.** Four combinations were scored on the same 34 documents, and bank and NBFC policy were merged after seeing the confusion table. `fiu_reporting_spec` scores 0%.
 - **The 649 chunks only NeMo removes have not been hand-checked.** Most come from two FIU report-format guides (repeated field descriptions).
-- **Run time is unexplained.** `bfsi-curate` on all 35 PDFs took 16 minutes against 5 minutes 14 seconds for `python -m pipeline.run`. Needs a timing re-check before quoting any speed.
+- **Run time depends on machine load.** Full 35-PDF run on the CPU, three runs back to back on 21 Oct: `python -m pipeline.run` 379 s (CPU already 59% busy), `bfsi-curate` 326 s, `python -m pipeline.run` 330 s. The terminal command is as fast as the normal run; one earlier 16-minute run was a busy machine. Quote about 5.5 minutes on a quiet laptop.
 - **Public contact details are redacted too.** Most of the 68 PII items are government emails and office PIN codes in public documents.
 - **Tag keyword `fiu`** is counted inside FIU's own forms; left as is.
 
