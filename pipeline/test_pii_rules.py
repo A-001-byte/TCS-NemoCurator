@@ -107,7 +107,26 @@ def main():
     for text in ("0000 0000 0000", "1234 5678 9012", f"{good[:4]} {good[4:8]}\n{good[8:]}"):
         assert "AADHAAR" not in run(text)[1], text
 
-    print("ok: DATE cue gate, PINCODE context rules, AADHAAR checksum/cue policy")
+    # --- Held-out documents: figures in tables and placeholders are not PII (real spans) --
+    table_spans = (
+        # Aadhaar-shaped, checksum-valid by chance (FIU annual report statistics table)
+        "9 20 21 22 Regulators & others 452 1492 4107 1504 1276 1671 3230 2421 2516 Intelligence Agencies",
+        # field-length spec (FIU reporting format guide)
+        "f other 15 DetailsOfInvestigations CHAR 4000 4410 8409 Refer section 11.1.7 investigations 16 text",
+        # account-shaped runs in figure tables and the all-zero placeholder
+        "ies 13931 45952 56321 63466 71313 96432 102641123616188805 Chart 4: Dissemination of Suspicious",
+        "over the years. 485 483 200 100 140 120 123138125 109 177 129 111 160 135 180 137 149 164",
+        "For internal use of FIU-IND. Use value 0000000000 34 Date of Acknowledgement DATE 8 698 7",
+    )
+    for text in table_spans:
+        out, counts, validation = run(text)
+        assert out == text and not counts, text
+    assert verhoeff_valid("410715041276"), "the table value really does pass the checksum"
+    # A label overrides the table guard: real numbers on a figures-heavy line are still redacted
+    assert "[REDACTED_AADHAAR]" in run("1 2 3 4 5 Aadhaar 4107 1504 1276 end")[0]
+    assert "[REDACTED_ACCOUNT_NUMBER]" in run("1 2 3 4 5 A/c No. 123456789012 6 7 8")[0]
+
+    print("ok: DATE cue gate, PINCODE context rules, AADHAAR checksum/cue policy, table guard")
 
 
 if __name__ == "__main__":

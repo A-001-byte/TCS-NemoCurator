@@ -92,11 +92,38 @@ BANK_ACCOUNT_CUE_RE = re.compile(
 )
 
 
+# --- Numeric-table / placeholder guard (found on held-out documents) -----------
+# Statistics tables, column-width specs and example values hold digit runs that look like
+# account or Aadhaar numbers (a 12-digit group passes the Verhoeff checksum 1 time in 10 by
+# chance). On 16 documents never used for tuning, all 7 such hits were false: three in
+# tables of figures, one in a field-length spec, three placeholders such as 0000000000.
+# A span is rejected when it is a placeholder (one repeated digit) or sits among many other
+# bare numbers. An explicit label (A/c, Aadhaar, UID) always overrides the guard.
+NUMERIC_TABLE_WINDOW = 80
+MIN_NUMERIC_NEIGHBOURS = 3
+_BARE_NUMBER_RE = re.compile(r"^[\d.,/-]*\d[\d.,/-]*$")
+
+
+def _is_placeholder(digits: str) -> bool:
+    return len(set(digits)) == 1
+
+
+def _in_numeric_table(text: str, start: int, end: int) -> bool:
+    before = text[max(0, start - NUMERIC_TABLE_WINDOW) : start].split()
+    after = text[end : end + NUMERIC_TABLE_WINDOW].split()
+    return sum(1 for token in before + after if _BARE_NUMBER_RE.match(token)) >= MIN_NUMERIC_NEIGHBOURS
+
+
+def _looks_like_table_value(text: str, start: int, end: int) -> bool:
+    return _is_placeholder(re.sub(r"\D", "", text[start:end])) or _in_numeric_table(text, start, end)
+
+
 def _account_number_verdict(text: str, start: int, end: int) -> str:
     """Decide what an account-number-shaped span actually is, from its neighbours.
 
     Returns 'suppress' (telecom context -> not an account number at all),
-    'confident' (explicit bank-account context), or 'needs_review' (no context
+    'confident' (explicit bank-account context), 'reject' (no label and it is a
+    placeholder or a table value -> left alone), or 'needs_review' (no context
     either way -> still redacted, but flagged so a human can check).
     """
     window = text[max(0, start - ACCOUNT_CONTEXT_WINDOW) : end + ACCOUNT_CONTEXT_WINDOW]
@@ -104,6 +131,8 @@ def _account_number_verdict(text: str, start: int, end: int) -> str:
         return "suppress"
     if BANK_ACCOUNT_CUE_RE.search(window):
         return "confident"
+    if _looks_like_table_value(text, start, end):
+        return "reject"
     return "needs_review"
 
 
@@ -193,10 +222,13 @@ def _aadhaar_verdict(text: str, start: int, end: int) -> str:
     """'valid' (checksum passes), 'needs_review' (checksum fails, Aadhaar label nearby),
     or 'reject' (neither: not treated as an Aadhaar number)."""
     digits = re.sub(r"\D", "", text[start:end])
+    window = text[max(0, start - AADHAAR_CUE_WINDOW) : end + AADHAAR_CUE_WINDOW]
+    has_cue = bool(AADHAAR_CUE_RE.search(window))
+    if not has_cue and _looks_like_table_value(text, start, end):
+        return "reject"
     if verhoeff_valid(digits):
         return "valid"
-    window = text[max(0, start - AADHAAR_CUE_WINDOW) : end + AADHAAR_CUE_WINDOW]
-    return "needs_review" if AADHAAR_CUE_RE.search(window) else "reject"
+    return "needs_review" if has_cue else "reject"
 
 
 # --- Document-level validation report ----------------------------------------
@@ -406,6 +438,9 @@ def redact_regex(text: str, entity_counts: dict, examples: list, doc_id: str, va
                         context_before,
                         context_after,
                     )
+                    return match.group(0)
+                if verdict == "reject":
+                    validation["account_rejected"] = validation.get("account_rejected", 0) + 1
                     return match.group(0)
                 if verdict == "needs_review":
                     validation["account_needs_review"] = (
@@ -715,6 +750,7 @@ def main():
         # Cross-field validation outcomes (Stream C)
         "account_numbers_suppressed": validation_totals.get("account_suppressed", 0),
         "account_numbers_needs_review": validation_totals.get("account_needs_review", 0),
+        "account_candidates_rejected_table_or_placeholder": validation_totals.get("account_rejected", 0),
         "swift_candidates_rejected_no_cue": validation_totals.get("swift_no_cue", 0),
         "date_candidates_rejected_no_cue": validation_totals.get("date_no_cue", 0),
         "pincode_candidates_rejected_no_cue": validation_totals.get("pincode_no_cue", 0),
