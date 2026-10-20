@@ -41,7 +41,11 @@ const result = evaluate(labelled, families);
 // better of the versions we tried would overstate it.
 const plain = evaluate(labelled, families, 1);
 result.plain_tfidf = { accuracy: plain.accuracy, confident: plain.confident, flagged: plain.flagged };
-result.variants_tried = 2;
+// 4 = plain and filtered TF-IDF on the first 7-type label set, then both again after bank and
+// NBFC policy were merged into one type. The merge was chosen after seeing the confusion table.
+result.variants_tried = 4;
+result.variants_note =
+  "Four combinations were scored on these same documents (plain or filtered TF-IDF, with bank and NBFC policy separate or merged). The merge was chosen after seeing the confusion table, so treat the headline as the optimistic end.";
 result.type_descriptions = types;
 fs.writeFileSync(outPath, `${JSON.stringify(result, null, 2)}\n`);
 
