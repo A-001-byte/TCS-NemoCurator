@@ -1,0 +1,8 @@
+# GPU variant — adds CUDA build of torch for real NeMo dedup/classifier acceleration
+# Install requirements.txt first, then this file, on a machine with a CUDA GPU.
+
+-r requirements.txt
+
+# Replace CPU torch with CUDA build (B4, if RTX 4050 supports cudf)
+# torch==2.14.0 --index-url https://download.pytorch.org/whl/cu121
+# cudf-cu12  (only if B4 stretch goal is attempted — confirm with Kunal first)
