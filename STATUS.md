@@ -1,30 +1,60 @@
-# Build Status
-Last updated: 2026-09-17 01:02 IST
+# Project Status
 
-## Tier 0
-- [x] T0.1 PDFs downloaded — 19 real RBI/bank KYC/AML PDFs downloaded, 19 valid (`data/raw/*.pdf`)
-- [x] T0.2 Extraction — 18/19 extracted (1 image-only PDF failed cleanly, no crash: `bank_of_baroda_aml_questionnaire.pdf`)
-- [x] T0.3 Pipeline end-to-end — `python -m pipeline.run` exits 0
-- [x] T0.4 Deduplication — 148 chunks removed (1 exact, 147 fuzzy) out of 2395
-- [x] T0.5 PII redaction — ~285 entities redacted (PINCODE, EMAIL, DATE, ACCOUNT_NUMBER, PHONE, PERSON_NAME); real before/after pairs in `data/redacted/pii_examples.json`. Person-name detection tuned for precision over recall (title-cue + shape filter) after an initial pass produced false positives on generic legal noun phrases — see `pipeline/pii.py` docstring.
-- [x] T0.6 JSONL output — `data/output/curated.jsonl`, 2189 valid JSON lines, each with a `text` field
-- [x] T0.7 React dashboard builds — `npm run build` exits 0; dev server verified serving with no console errors (checked via browser)
-- [x] T0.8 Dashboard shows per-stage counts — funnel view matches pipeline_summary.json exactly
-- [x] T0.9 Dashboard shows PII before/after — real redacted spans from real documents rendered in UI
-- [x] T0.10 README honesty section — `README.md` "What is real / What is not" section written
+Last updated: Wednesday 21 Oct 2026. Final review: Thursday 22 Oct 2026, morning, in person.
+Owners and gates are in `docs/team/01_WORK_PLAN.md`; every change with before/after numbers is in `docs/IMPROVEMENT_LOG.md`.
 
-**TIER 0 COMPLETE.**
+## Done (with the evidence)
 
-## Tier 1
-- [ ] T1.1 `pip show nemo-curator` — FAILED, not installed (see Fallbacks)
-- [ ] T1.2 Real NeMo Curator `ProcessingStage`/`Pipeline` execution — not attempted, blocked by T1.1
-- [x] T1.3 Dashboard/README label equivalent-logic stages clearly — done
-- [x] T1.4 Document-level drill-down in dashboard — done: click a source PDF, see chars extracted, chunks surviving dedup/quality filter, chunks with PII redacted (real per-doc data from `pipeline_summary.json.documents`)
+| Area | Evidence |
+|---|---|
+| 7-stage pipeline on 35 PDFs (34 readable): 3,325 final chunks, 68 PII items hidden | `python -m pipeline.run`; numbers table in `README.md` |
+| 16 new source documents added; used as an untouched test of the earlier rules | PR #14. Found 7 false PII alarms (tables, placeholders), fixed: PII 75 → 68 |
+| One code path for library, terminal command and HTTP API | PR #15. `curate()` in `pipeline/api.py`; `python -m pipeline.test_api_parity` proves identical output (mutation-checked) |
+| Document-type classifier, scored with near-copy families held out | PR #15. 55.9% vs 29.4% for guessing; `dashboard/public/doctype_eval.json`; `npm test` has 7 tests |
+| Real NeMo Curator 1.3.0 comparison on the 35-PDF corpus | PR #16. NeMo removes 716 of 3,396 chunks, ours 71; `dashboard/public/nemo_comparison.json` |
+| Improvement phases 0 to 4: healing wired in, newest-version dedup, PII precision rules, meaningful regulatory tags, classifier as an optional signal | PRs #7 to #13; `docs/IMPROVEMENT_LOG.md` |
+| Tests | 10 Python self-check scripts and 7 dashboard tests, all passing on 20 Oct |
 
-## Blockers
-- None currently open.
+## In progress (owner, gate Wednesday 13:00 unless noted)
 
-## Fallbacks taken
-- NeMo Curator install (`pip install "nemo-curator[text_cpu]"`) FAILED: wheel build errors for `fasttext` and `cosmos-xenna` (no C++ build toolchain on this Windows machine). Proceeded with equivalent-logic stages per LOOP.md rule 4, clearly labelled "NeMo-Curator-equivalent stage, library integration pending" in dashboard UI and README. T1.1/T1.2 marked failed, not faked.
-- Initial paragraph-based chunking (split on blank lines) collapsed whole PDFs into single "paragraphs" because pdfplumber doesn't preserve blank-line paragraph breaks — switched to fixed 180-word chunking.
-- Initial spaCy PERSON-name detection had a very high false-positive rate on dense legal/regulatory text (misclassifying phrases like "Gazette Notification" as names). Added a personal-title-cue requirement (Mr./Name:/Signatory/etc. nearby) — this trades recall for precision, so only 1 person name currently reported, but it is a real, verified name in the source document.
+| Item | Owner |
+|---|---|
+| Run confirmed on Linux with all 35 PDFs; `requirements.txt` and `requirements-gpu.txt`; setup guide update | Aditi |
+| `pipeline/device.py`: choose CUDA or CPU automatically, with a test that needs no GPU | Aditi |
+| Demo laptop confirmed with a visible GPU (`nvidia-smi` inside Linux) | Kunal |
+| Tests converted to pytest plus one end-to-end test; token statistics file; held-out quality review; GPU vs CPU timing on the RTX 4050 (Wed afternoon) | Kunal |
+| Dashboard shows 35-document numbers from data; `pipeline/refresh_snapshots.py` and a "re-run pipeline" button; raw PII masked in the snapshot; panels for device, tokens and document types; demo script (Wed 18:00 to 21:00) | Saachi |
+| Merge branches in order (Aditi, Kunal, Ankit, Saachi), final full run on `main`, `docs/FINAL_NUMBERS.md` for the slides | Ankit (Wed 13:00 to 18:00) |
+
+## Not done, and why
+
+- **OCR for scanned PDFs.** One PDF (`bank_of_baroda_aml_questionnaire.pdf`) is image-only and fails cleanly. Out of scope for the review.
+- **GPU dedup.** NeMo's own dedup needs a CUDA GPU and cuDF (`docs/A1_3_dedup_gpu_finding.md`). Ours runs on the CPU.
+- **Hosted API.** Deliberately not built: it needs a running server, and bank documents would have to leave the customer's machine. The library and terminal command run locally.
+- **DeBERTa quality pass** (about 50 min on CPU). Not run; the classifier was rejected as a filter and stays an optional, off-by-default label.
+- **Model fine-tuning.** Out of scope by design.
+
+## Known issues (stated plainly)
+
+- **Dashboard snapshots are stale until Saachi's refresh is merged.** `dashboard/public/pipeline_summary.json` and `curated.jsonl` still hold the old 18-document numbers. `nemo_comparison.json` and `doctype_eval.json` are current.
+- **The document-type score is optimistic.** Four combinations were scored on the same 34 documents, and bank and NBFC policy were merged after seeing the confusion table. `fiu_reporting_spec` scores 0%.
+- **The 649 chunks only NeMo removes have not been hand-checked.** Most come from two FIU report-format guides (repeated field descriptions).
+- **Run time is unexplained.** `bfsi-curate` on all 35 PDFs took 16 minutes against 5 minutes 14 seconds for `python -m pipeline.run`. Needs a timing re-check before quoting any speed.
+- **Public contact details are redacted too.** Most of the 68 PII items are government emails and office PIN codes in public documents.
+- **Tag keyword `fiu`** is counted inside FIU's own forms; left as is.
+
+## Decisions made
+
+| Date | Decision |
+|---|---|
+| 4 Oct | Lexical-diversity cutoff lowered from 0.30 to 0.20 after a fake-junk test and a full read of the alpha-ratio removals (`docs/IMPROVEMENT_LOG.md`) |
+| 5 Oct | A chunk is tagged regulatory only with 2 distinct keywords (owner's choice) |
+| 20 Oct | The pipeline is exposed as one function with a terminal command and the existing local API on top; no hosted server for the review |
+| 21 Oct | Bank and NBFC policy merged into one document type, `institution_policy`; the merge is recorded as a variant tried |
+
+## Fallbacks taken (history)
+
+- Native Windows install of NeMo Curator fails (`fasttext`, `cosmos-xenna` need a C++ toolchain). Real NeMo runs on a Linux VM; `SETUP.md` documents the working setup.
+- NVIDIA's DeBERTa quality classifier is about 17x stricter and judges layout, not quality (`docs/A1_4_quality_classifier_comparison.md`), so it is not used as a filter.
+- Person-name detection uses a title cue and shape filter, trading recall for precision, after spaCy mislabelled legal phrases such as "Gazette Notification".
+- Chunking is fixed at 180 words because PDF extraction does not keep blank-line paragraph breaks.
