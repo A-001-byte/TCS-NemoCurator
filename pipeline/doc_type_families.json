@@ -1,0 +1,22 @@
+{
+  "families": [
+    [
+      "central_bank_india_kyc_aml_2021.pdf",
+      "central_bank_india_kyc_aml_2024_25.pdf",
+      "central_bank_india_kyc_aml_2025_26.pdf"
+    ],
+    [
+      "rbi_kyc_directions_2025_commercial_banks.pdf",
+      "rbi_kyc_directions_2025_nbfc.pdf",
+      "rbi_kyc_directions_2025_urban_coop_banks.pdf"
+    ],
+    [
+      "rbi_kyc_ebixcash.pdf",
+      "rbi_kyc_master_direction_slbc_mp.pdf"
+    ],
+    [
+      "rbi_kyc_summary_banklaw1.pdf",
+      "rbi_kyc_summary_banklaw2.pdf"
+    ]
+  ]
+}

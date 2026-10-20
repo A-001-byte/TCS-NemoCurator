@@ -16,7 +16,7 @@ export function tokenize(text) {
     .filter((word) => word.length > 2);
 }
 
-function createTermCounts(tokens) {
+export function createTermCounts(tokens) {
   const counts = new Map();
   for (const token of tokens) {
     counts.set(token, (counts.get(token) || 0) + 1);
@@ -61,7 +61,7 @@ function getCandidateDocuments(inputText, preparedCorpus) {
     .map((item) => item.document);
 }
 
-function cosineSimilarity(inputCounts, inputTotal, document, preparedCorpus) {
+export function cosineSimilarity(inputCounts, inputTotal, document, preparedCorpus) {
   const documentTotal = document.tokenCount || 1;
   let dot = 0;
   let inputMag = 0;
