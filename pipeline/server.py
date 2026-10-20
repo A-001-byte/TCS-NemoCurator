@@ -5,59 +5,24 @@
 POST /api/run  {"files": [{"name": "x.pdf", "data": "<base64>"}]}
   -> {"summary": <pipeline_summary.json>, "curated_jsonl": "<curated.jsonl text>", "log": "..."}
 
-Each run gets its own temp data/ folder: every stage's module-level paths are
-rebased there for the duration of the run, so the committed corpus is untouched.
+The run itself lives in pipeline.api (the same code the library and the CLI use): each run gets
+its own temp data/ folder, so the committed corpus is untouched.
 """
 import base64
 import binascii
-import contextlib
-import io
 import json
-import tempfile
-import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from pipeline import clean, dedup, extract, heal, output, pii, quality, run
+from pipeline.api import run_isolated
 
 HOST, PORT = "127.0.0.1", 8000
 MAX_FILES = 10
 MAX_TOTAL_BYTES = 30 * 1024 * 1024
-DATA_DIR = run.ROOT / "data"
-STAGE_DIRS = ("raw", "extracted", "cleaned", "healed", "deduped", "filtered", "redacted", "output")
-MODULES = (extract, clean, heal, dedup, quality, pii, output, run)
-
-# ponytail: one run at a time, because runs patch module globals; a job queue if this ever serves more than one user.
-RUN_LOCK = threading.Lock()
 
 
 class BadRequest(Exception):
     pass
-
-
-def _rebase(value, new_data_dir):
-    if isinstance(value, Path) and value.is_relative_to(DATA_DIR):
-        return new_data_dir / value.relative_to(DATA_DIR)
-    if isinstance(value, dict) and value and all(isinstance(v, Path) for v in value.values()):
-        return {k: _rebase(v, new_data_dir) for k, v in value.items()}
-    return value
-
-
-@contextlib.contextmanager
-def _pipeline_rooted_at(tmp_root: Path):
-    originals = {mod: dict(vars(mod)) for mod in MODULES}
-    try:
-        for mod in MODULES:
-            for name, value in originals[mod].items():
-                if name.isupper():
-                    setattr(mod, name, _rebase(value, tmp_root / "data"))
-        run.ROOT = tmp_root
-        yield
-    finally:
-        for mod in MODULES:
-            for name, value in originals[mod].items():
-                if name.isupper():
-                    setattr(mod, name, value)
 
 
 def _decode_files(payload):
@@ -86,22 +51,8 @@ def _decode_files(payload):
 
 
 def run_on_upload(files):
-    with RUN_LOCK, tempfile.TemporaryDirectory(prefix="kyc_run_") as tmp:
-        tmp_root = Path(tmp)
-        for sub in STAGE_DIRS:
-            (tmp_root / "data" / sub).mkdir(parents=True)
-        for name, data in files:
-            (tmp_root / "data" / "raw" / name).write_bytes(data)
-
-        log = io.StringIO()
-        with _pipeline_rooted_at(tmp_root), contextlib.redirect_stdout(log):
-            try:
-                run.main()
-            except SystemExit:
-                return None, log.getvalue()
-            summary = json.loads(run.SUMMARY_PATH.read_text(encoding="utf-8"))
-            curated = output.OUT_PATH.read_text(encoding="utf-8")
-        return {"summary": summary, "curated_jsonl": curated}, log.getvalue()
+    """(result, log) for a list of (name, pdf_bytes); result is None if the pipeline stopped."""
+    return run_isolated(files)
 
 
 class Handler(BaseHTTPRequestHandler):
