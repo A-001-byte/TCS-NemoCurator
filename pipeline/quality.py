@@ -349,7 +349,8 @@ def _load_quality_classifier():
             dropped = self.dropout(features)
             return torch.softmax(self.fc(dropped)[:, 0, :], dim=1)
 
-    _classifier_device = "cuda" if torch.cuda.is_available() else "cpu"
+    from pipeline.device import pick
+    _classifier_device = pick()
     _classifier_config = AutoConfig.from_pretrained("nvidia/quality-classifier-deberta")
     _classifier_tokenizer = AutoTokenizer.from_pretrained("nvidia/quality-classifier-deberta")
     _classifier_model = QualityModel.from_pretrained("nvidia/quality-classifier-deberta").to(_classifier_device)
