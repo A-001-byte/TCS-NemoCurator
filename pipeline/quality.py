@@ -43,6 +43,7 @@ import re
 import sys
 from collections import Counter
 from pathlib import Path
+from pipeline.device import pick, describe
 
 # ---------------------------------------------------------------------------
 # PATHS (match existing codebase convention)
@@ -300,6 +301,7 @@ def main():
         "quality_signal_mode": QUALITY_SIGNAL_MODE,
         "quality_signal_labels": dict(signal_counts),
         "quality_signal_model_error": _SIGNAL_STATE["model_error"],
+        "device": describe(pick()),
     }
     STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
     print(json.dumps(record, indent=2))
