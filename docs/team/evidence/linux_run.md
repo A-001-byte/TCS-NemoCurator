@@ -1,7 +1,7 @@
 # Linux Run — Aditi
 
 **Date:** 20 Oct 2026
-**OS:** Kali Linux (native, not WSL2 — differs from SETUP.md's assumption)
+**OS:** Kali Linux via WSL2
 **Python version:** Python 3.11.0rc1
 **Venv:** venv-curator
 
@@ -26,3 +26,5 @@ python3 -m pipeline.run
 - Exact match on every stage — no discrepancy to explain.
 - One extraction failure as expected: `bank_of_baroda_aml_questionnaire.pdf` (scanned PDF, no extractable text — known limitation, OCR out of scope).
 - Environment differs from SETUP.md (Kali native vs. WSL2 Ubuntu 22.04) but produced identical results.
+
+
