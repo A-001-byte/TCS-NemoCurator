@@ -130,5 +130,9 @@ def main():
     print("ok: furniture detection, OCR repair, edit classification, diff pairing, families, heal stage, dedup loader")
 
 
+def test_heal_changelog():
+    main()
+
+
 if __name__ == "__main__":
     main()

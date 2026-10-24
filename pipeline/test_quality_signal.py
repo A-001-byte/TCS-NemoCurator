@@ -109,5 +109,9 @@ def main():
     print("ok: signal is off by default, never removes chunks, SHA-256 cache, degrades cleanly")
 
 
+def test_quality_signal():
+    main()
+
+
 if __name__ == "__main__":
     main()

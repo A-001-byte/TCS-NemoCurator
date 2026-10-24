@@ -104,5 +104,9 @@ def main():
     print("ok: GLiNER overlap resolution, person guard, label restriction, lazy import")
 
 
+def test_pii_gliner():
+    main()
+
+
 if __name__ == "__main__":
     main()
