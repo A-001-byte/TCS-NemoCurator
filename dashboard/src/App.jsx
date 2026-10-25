@@ -22,6 +22,7 @@ import {
   Download,
   LoaderCircle,
   Scale,
+  RefreshCw,
 } from "lucide-react";
 import { STAGES, ENTITIES, reasonLabel, entityLabel } from "./stages";
 import {
@@ -59,6 +60,7 @@ const byStage = (stages, name) => stages.find((s) => s.stage === name) || {};
 
 function useTheme() {
   const [theme, setTheme] = useState(() => {
+
     try {
       const saved = localStorage.getItem("theme");
       if (saved) return saved;
@@ -141,8 +143,10 @@ function Sidebar({ active, theme, onToggleTheme, documentCount }) {
   );
 }
 
-function Topbar({ active }) {
+
+function Topbar({ active, onRefresh, refreshing }) {
   const section = SECTIONS.find((s) => s.id === active);
+
   return (
     <header className="topbar">
       <div className="crumbs">
@@ -150,13 +154,27 @@ function Topbar({ active }) {
         <ChevronRight size={16} className="muted" />
         <span>{section?.title}</span>
       </div>
-      <span className="pill">
-        <span className="dot" />
-        Snapshot: pipeline_summary.json
-      </span>
+
+      <div className="topbar-actions">
+        <span className="pill">
+          <span className="dot" />
+          Snapshot: pipeline_summary.json
+        </span>
+
+        <button
+          type="button"
+          className="btn btn-ghost"
+          onClick={onRefresh}
+          disabled={refreshing}
+        >
+          <RefreshCw size={16} />
+          {refreshing ? "Refreshing..." : "Refresh snapshot"}
+        </button>
+      </div>
     </header>
   );
 }
+
 
 function SectionHeader({ title, description }) {
   return (
@@ -1367,19 +1385,49 @@ function RunPipeline() {
 
 export default function App() {
   const [summary, setSummary] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [theme, toggleTheme] = useTheme();
   const active = useActiveSection(Boolean(summary));
 
-  useEffect(() => {
-    fetch("/pipeline_summary.json", { cache: "no-store" })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then(setSummary)
-      .catch((err) => setError(err.message));
-  }, []);
+ 
+const loadSummary = async (refreshSnapshot = false) => {
+  setRefreshing(true);
+  setError(null);
+
+  try {
+    if (refreshSnapshot) {
+      const refreshRes = await fetch("/api/refresh");
+      const refreshData = await refreshRes.json();
+
+      if (!refreshRes.ok) {
+        throw new Error(
+          refreshData.error || `HTTP ${refreshRes.status}`
+        );
+      }
+    }
+
+    const res = await fetch("/pipeline_summary.json", {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    setSummary(data);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setRefreshing(false);
+  }
+};
+
+
+useEffect(() => {
+  loadSummary();
+}, []);
 
   return (
     <div className="shell">
@@ -1390,7 +1438,11 @@ export default function App() {
         documentCount={summary?.documents?.length}
       />
       <div className="main">
-        <Topbar active={active} />
+        <Topbar
+  active={active}
+  onRefresh={() => loadSummary(true)}
+  refreshing={refreshing}
+/>
         <main className="content">
           {error && (
             <div className="card empty">

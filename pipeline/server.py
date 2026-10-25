@@ -15,6 +15,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from pipeline.api import run_isolated
+from pipeline.refresh_snapshots import refresh
 
 HOST, PORT = "127.0.0.1", 8000
 MAX_FILES = 10
@@ -67,6 +68,13 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/api/health":
             self._send(200, {"ok": True})
+        elif self.path == "/api/refresh":
+            try:
+                refresh()
+                self._send(200, {"ok": True, "message": "Snapshot refreshed."})
+            except Exception as exc:
+                self.log_error("snapshot refresh failed: %r", exc)
+                self._send(500, {"error": f"Snapshot refresh failed: {exc}"})
         else:
             self._send(404, {"error": "Not found"})
 
