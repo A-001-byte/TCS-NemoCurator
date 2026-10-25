@@ -57,9 +57,9 @@ venv-pii final known-good stack:
   transformers==4.55.0
   gliner (installed --no-deps to avoid re-upgrading transformers)
 
-## Main pipeline setup (Kali Linux / any Debian-based Linux)
+## Main pipeline setup (Ubuntu 22.04, WSL2 or native)
 
-Confirmed working on Kali Linux (native), 20-21 Oct 2026.
+Confirmed working on Ubuntu 22.04.5 (WSL2), 20-25 Oct 2026.
 
 1. Clone the repo:
    git clone https://github.com/A-001-byte/TCS-NemoCurator.git
@@ -85,6 +85,6 @@ cd ~/TCS-NemoCurator
 source venv-curator/bin/activate
 
 ## Notes
-- Note: use `python3`, not `python` — not aliased on Debian/Kali by default.
+- Note: use `python3`, not `python`; it is not aliased on Ubuntu/Debian by default.
 - GPU is optional. Device selection (pipeline/device.py) auto-detects CUDA
   and falls back to CPU automatically. No manual config needed.

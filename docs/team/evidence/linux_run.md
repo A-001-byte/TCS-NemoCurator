@@ -1,7 +1,7 @@
 # Linux Run — Aditi
 
 **Date:** 20 Oct 2026
-**OS:** Kali Linux via WSL2
+**OS:** Ubuntu 22.04.5 LTS (WSL2)
 **Python version:** Python 3.11.0rc1
 **Venv:** venv-curator
 
@@ -13,7 +13,7 @@ python3 -m pipeline.run
 
 ## Stage numbers — match confirmed
 
-| Stage | Expected (Windows run) | This run (Kali) | Match? |
+| Stage | Expected (Windows run) | This run (Ubuntu WSL2) | Match? |
 |---|---|---|---|
 | PDFs in | 35 | 35 | ✅ |
 | PDFs readable | 34 | 34 | ✅ |
@@ -25,6 +25,7 @@ python3 -m pipeline.run
 ## Notes
 - Exact match on every stage — no discrepancy to explain.
 - One extraction failure as expected: `bank_of_baroda_aml_questionnaire.pdf` (scanned PDF, no extractable text — known limitation, OCR out of scope).
-- Environment differs from SETUP.md (Kali native vs. WSL2 Ubuntu 22.04) but produced identical results.
+- Environment matches SETUP.md (Ubuntu 22.04 on WSL2) and produced identical results.
 
 
+- Re-run on current main (25 Oct 2026) gives 66 PII items instead of 68. main's pii.py changed after this baseline. This branch does not touch pii.py.
