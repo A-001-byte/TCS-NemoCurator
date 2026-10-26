@@ -4,9 +4,14 @@ All notable changes to this project. The format follows [Keep a Changelog](https
 Numbers in parentheses are pull requests. Before-and-after figures for each pipeline change are in
 `docs/IMPROVEMENT_LOG.md`.
 
-## [Unreleased] (towards 1.0.0)
+## [1.0.0] - 2026-10-27
+
+First release. The curated output of the 35-PDF corpus is unchanged since the finalisation began: 3,325 chunks, 68 PII
+items, SHA-256 of `curated.jsonl` starting `0c238547804a8407` on Windows, native Linux and WSL.
 
 ### Added
+- `bfsi-curate run --pii-engine regex|gliner --quality-signal off|model`: the optional GPU models behind explicit flags;
+  `--device cuda` fails clearly when CUDA-enabled PyTorch is missing. Off by default (#29).
 - One entry point for the pipeline: `curate()` in `pipeline/api.py`, the `bfsi-curate` command (`run`, `serve`,
   `--version`) and the local HTTP API all share one code path; a test checks they return identical output (#15, #25).
 - Document-type classifier (nearest centroid on TF-IDF) scored with each document's near-copy family held out, with its
