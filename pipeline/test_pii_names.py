@@ -63,5 +63,9 @@ def main():
     print(f"ok: {len(POSITIVES)} positives found, {len(NEGATIVES)} negatives untouched")
 
 
+def test_pii_names():
+    main()
+
+
 if __name__ == "__main__":
     main()

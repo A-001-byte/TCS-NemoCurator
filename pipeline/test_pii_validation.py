@@ -93,5 +93,9 @@ def main():
     print("ok: CIN + SWIFT cue + account validation + document report behave as expected")
 
 
+def test_pii_validation():
+    main()
+
+
 if __name__ == "__main__":
     main()

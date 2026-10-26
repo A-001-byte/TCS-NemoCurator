@@ -129,5 +129,9 @@ def main():
     print("ok: DATE cue gate, PINCODE context rules, AADHAAR checksum/cue policy, table guard")
 
 
+def test_pii_rules():
+    main()
+
+
 if __name__ == "__main__":
     main()

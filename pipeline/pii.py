@@ -393,9 +393,13 @@ def _load_spacy():
 
         # Only NER is needed for PERSON detection; disabling the rest
         # (tagger/parser/lemmatizer/attribute_ruler) roughly halves per-doc latency.
-        _NLP = spacy.load(
-            "en_core_web_sm", disable=["tagger", "parser", "lemmatizer", "attribute_ruler"]
-        )
+        disabled = ["tagger", "parser", "lemmatizer", "attribute_ruler"]
+        try:
+            _NLP = spacy.load("en_core_web_sm", disable=disabled)
+        except OverflowError:
+            # Some spaCy builds cannot deserialize the model's saved tokenizer.
+            # Keep its NER weights and use spaCy's default English tokenizer.
+            _NLP = spacy.load("en_core_web_sm", disable=disabled, exclude=["tokenizer"])
         _SPACY_AVAILABLE = True
     except Exception:
         _NLP = None
@@ -604,7 +608,9 @@ def _load_gliner():
             "USE_GLINER_PII is True but the 'gliner' package is not installed. Install it in "
             "the PII environment (see SETUP.md, venv-pii) or set USE_GLINER_PII = False."
         ) from exc
-    _gliner_model = GLiNER.from_pretrained("nvidia/gliner-PII")
+    from pipeline.device import pick
+
+    _gliner_model = GLiNER.from_pretrained("nvidia/gliner-PII").to(pick())
 
 
 def _resolve_overlaps(spans: list) -> list:

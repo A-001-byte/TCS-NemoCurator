@@ -1,0 +1,176 @@
+{
+  "tokenizer": "tiktoken:cl100k_base",
+  "total_tokens": 803179,
+  "per_document": [
+    {
+      "source_file": "amfi_sebi_aml_minimum_standards_2024.pdf",
+      "chunks": 59,
+      "tokens": 14708
+    },
+    {
+      "source_file": "bank_of_baroda_kyc.pdf",
+      "chunks": 8,
+      "tokens": 2033
+    },
+    {
+      "source_file": "bhiwani_dccb_kyc_aml_cft_2023_24.pdf",
+      "chunks": 198,
+      "tokens": 44829
+    },
+    {
+      "source_file": "central_bank_india_kyc_aml_2021.pdf",
+      "chunks": 179,
+      "tokens": 44015
+    },
+    {
+      "source_file": "central_bank_india_kyc_aml_2024_25.pdf",
+      "chunks": 193,
+      "tokens": 46620
+    },
+    {
+      "source_file": "central_bank_india_kyc_aml_2025_26.pdf",
+      "chunks": 283,
+      "tokens": 68168
+    },
+    {
+      "source_file": "fiu_india_aml_cft_guidelines_2023.pdf",
+      "chunks": 21,
+      "tokens": 5350
+    },
+    {
+      "source_file": "fiu_india_aml_cft_guidelines_vda_2023.pdf",
+      "chunks": 44,
+      "tokens": 10285
+    },
+    {
+      "source_file": "fiu_india_annual_report_2021_22.pdf",
+      "chunks": 74,
+      "tokens": 19465
+    },
+    {
+      "source_file": "fiu_india_brochure.pdf",
+      "chunks": 10,
+      "tokens": 2357
+    },
+    {
+      "source_file": "fiu_india_insurers_aml_guidelines.pdf",
+      "chunks": 85,
+      "tokens": 23581
+    },
+    {
+      "source_file": "fiu_india_rbi_ctr_circular_2010.pdf",
+      "chunks": 62,
+      "tokens": 14603
+    },
+    {
+      "source_file": "fiu_india_reporting_format.pdf",
+      "chunks": 561,
+      "tokens": 132993
+    },
+    {
+      "source_file": "fiu_india_reporting_format_guide_v2_2.pdf",
+      "chunks": 220,
+      "tokens": 59152
+    },
+    {
+      "source_file": "jsa_prism_aml_cft_guidelines_jul2023.pdf",
+      "chunks": 8,
+      "tokens": 1769
+    },
+    {
+      "source_file": "jsa_prism_rbi_kyc_directions_dec2025.pdf",
+      "chunks": 9,
+      "tokens": 2199
+    },
+    {
+      "source_file": "manappuram_kyc_policy.pdf",
+      "chunks": 91,
+      "tokens": 21478
+    },
+    {
+      "source_file": "nainital_bank_kyc_aml_policy.pdf",
+      "chunks": 206,
+      "tokens": 48209
+    },
+    {
+      "source_file": "protium_kyc_aml_policy_2023.pdf",
+      "chunks": 86,
+      "tokens": 20240
+    },
+    {
+      "source_file": "rajkot_peoples_coop_bank_kyc_2025_26.pdf",
+      "chunks": 93,
+      "tokens": 21659
+    },
+    {
+      "source_file": "rbi_fraud_master_direction_elp.pdf",
+      "chunks": 12,
+      "tokens": 2861
+    },
+    {
+      "source_file": "rbi_fraud_master_direction_pwc.pdf",
+      "chunks": 16,
+      "tokens": 3786
+    },
+    {
+      "source_file": "rbi_fraud_risk_directions_2026_commercial_banks.pdf",
+      "chunks": 31,
+      "tokens": 7162
+    },
+    {
+      "source_file": "rbi_kyc_directions_2025_commercial_banks.pdf",
+      "chunks": 154,
+      "tokens": 36244
+    },
+    {
+      "source_file": "rbi_kyc_directions_2025_nbfc.pdf",
+      "chunks": 125,
+      "tokens": 29745
+    },
+    {
+      "source_file": "rbi_kyc_directions_2025_urban_coop_banks.pdf",
+      "chunks": 116,
+      "tokens": 27233
+    },
+    {
+      "source_file": "rbi_kyc_ebixcash.pdf",
+      "chunks": 111,
+      "tokens": 27222
+    },
+    {
+      "source_file": "rbi_kyc_fidcindia_aug2025.pdf",
+      "chunks": 3,
+      "tokens": 771
+    },
+    {
+      "source_file": "rbi_kyc_master_direction_slbc_mp.pdf",
+      "chunks": 77,
+      "tokens": 18193
+    },
+    {
+      "source_file": "rbi_kyc_summary_banklaw1.pdf",
+      "chunks": 8,
+      "tokens": 2032
+    },
+    {
+      "source_file": "rbi_kyc_summary_banklaw2.pdf",
+      "chunks": 7,
+      "tokens": 1942
+    },
+    {
+      "source_file": "rbi_kyc_updated_aug2025_allinonebanking.pdf",
+      "chunks": 40,
+      "tokens": 9585
+    },
+    {
+      "source_file": "rbi_ppi_master_direction.pdf",
+      "chunks": 85,
+      "tokens": 21910
+    },
+    {
+      "source_file": "vivriti_kyc_aml_policy_nov2023.pdf",
+      "chunks": 50,
+      "tokens": 10780
+    }
+  ]
+}
