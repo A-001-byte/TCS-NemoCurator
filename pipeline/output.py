@@ -24,7 +24,8 @@ def main():
     docs_out = 0
     total_chars = 0
 
-    with IN_PATH.open(encoding="utf-8") as f_in, OUT_PATH.open("w", encoding="utf-8") as f_out:
+    # newline="\n": the same bytes on Windows and Linux, so the file's hash does not depend on the operating system.
+    with IN_PATH.open(encoding="utf-8") as f_in, OUT_PATH.open("w", encoding="utf-8", newline="\n") as f_out:
         for line in f_in:
             line = line.strip()
             if not line:
@@ -60,7 +61,7 @@ def main():
         # Relative on purpose: an absolute path leaks the machine's folders into every shared summary.
         "output_path": f"data/output/{OUT_PATH.name}",
     }
-    STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
+    STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8", newline="\n")
     print(json.dumps(record, indent=2))
 
     if docs_out == 0:

@@ -11,7 +11,7 @@ Phases 0 to 5 of the finalisation loop are done (PRs #23 to #27 merged, phase 5 
 
 | Area | Evidence |
 |---|---|
-| 7-stage pipeline on 35 PDFs (34 readable), 3,325 final chunks, 68 PII items hidden, name detection on | `python -m pipeline.run`; README numbers table (generated); curated hash prefix `8e2b6954e85ac3fd` unchanged through the finalisation |
+| 7-stage pipeline on 35 PDFs (34 readable), 3,325 final chunks, 68 PII items hidden, name detection on | `python -m pipeline.run`; README numbers table (generated); curated hash prefix `0c238547804a8407` (SHA-256 of `curated.jsonl`, the same on Windows and Linux since the line-ending fix; the earlier `8e2b6954e85ac3fd` was the same content with Windows line endings) |
 | One code path for the library, the `bfsi-curate` command and the HTTP API | `curate()` in `pipeline/api.py`; `python -m pipeline.test_api_parity` proves identical output (mutation-checked) |
 | HTTP API hardened: one error shape, correct statuses, limits, background refresh job | `tests/test_server_endpoints.py` (45 tests), `tests/test_refresh_job.py`; endpoint table in `README.md` |
 | No silent degradation: name detection off is reported by the pipeline, the CLI and the dashboard | `tests/test_pipeline_edges.py`; this is what turned 68 into 66 on two machines |
