@@ -1,0 +1,61 @@
+{"id": "pan-1", "kind": "positive", "text": "Customer PAN: ABCDE1234F submitted with the application form.", "pii": [["PAN", "ABCDE1234F"]]}
+{"id": "pan-2", "kind": "positive", "text": "The applicant's permanent account number is BQRPS5678K as per the Income Tax record.", "pii": [["PAN", "BQRPS5678K"]]}
+{"id": "pan-3-lowercase", "kind": "positive", "text": "pan card no. abcde1234f attached", "pii": [["PAN", "abcde1234f"]], "note": "lower-case, as typed in some forms"}
+{"id": "aadhaar-1", "kind": "positive", "text": "Aadhaar number of the account holder: 7260 1815 9082.", "pii": [["AADHAAR", "7260 1815 9082"]]}
+{"id": "aadhaar-2", "kind": "positive", "text": "UID 501661318603 was used for e-KYC verification.", "pii": [["AADHAAR", "501661318603"]]}
+{"id": "aadhaar-3", "kind": "positive", "text": "ID proof submitted: 3390-9960-3089 (officially valid document).", "pii": [["AADHAAR", "3390-9960-3089"]], "note": "no Aadhaar cue word; only the checksum identifies it"}
+{"id": "aadhaar-4", "kind": "positive", "text": "Customer Aadhar No 446281948213, address as per UIDAI records.", "pii": [["AADHAAR", "446281948213"]]}
+{"id": "aadhaar-5", "kind": "positive", "text": "The KYC file lists 5518 1909 3782 for the nominee.", "pii": [["AADHAAR", "5518 1909 3782"]], "note": "no cue; checksum-valid"}
+{"id": "aadhaar-6", "kind": "positive", "text": "Masked copy: XXXX XXXX 5432 is accepted; full number 857975432313 must not be stored.", "pii": [["AADHAAR", "857975432313"]]}
+{"id": "email-1", "kind": "positive", "text": "Please write to rajesh.sharma@examplebank.in for any clarification.", "pii": [["EMAIL", "rajesh.sharma@examplebank.in"]]}
+{"id": "email-2", "kind": "positive", "text": "Email ID: priya_nair92@mail.example.com (alternate: p.nair@example.co.in).", "pii": [["EMAIL", "priya_nair92@mail.example.com"], ["EMAIL", "p.nair@example.co.in"]]}
+{"id": "email-3", "kind": "positive", "text": "Send the signed form to kyc-team@examplefinance.com before 30 June.", "pii": [["EMAIL", "kyc-team@examplefinance.com"]]}
+{"id": "phone-1", "kind": "positive", "text": "Mobile number: 9876543210.", "pii": [["PHONE", "9876543210"]]}
+{"id": "phone-2", "kind": "positive", "text": "Call the customer on +91 9123456780 to confirm the address.", "pii": [["PHONE", "+91 9123456780"]]}
+{"id": "phone-3", "kind": "positive", "text": "Contact: +91-8765432109 (resident).", "pii": [["PHONE", "+91-8765432109"]]}
+{"id": "phone-4-spaced", "kind": "positive", "text": "Phone: 98765 43210 and office 99887 66554.", "pii": [["PHONE", "98765 43210"], ["PHONE", "99887 66554"]], "note": "5+5 grouping is common on forms"}
+{"id": "phone-5-leading-zero", "kind": "positive", "text": "Mobile 09876501234 as given by the applicant.", "pii": [["PHONE", "09876501234"]], "note": "leading zero"}
+{"id": "dob-1", "kind": "positive", "text": "Date of Birth: 14/03/1985 as per PAN.", "pii": [["DATE", "14/03/1985"]]}
+{"id": "dob-2", "kind": "positive", "text": "D.O.B. 02-11-1990, place of birth Pune.", "pii": [["DATE", "02-11-1990"]]}
+{"id": "dob-3", "kind": "positive", "text": "The account holder was born on 27.07.1978 in Jaipur.", "pii": [["DATE", "27.07.1978"]]}
+{"id": "dob-4-month-name", "kind": "positive", "text": "DOB: 14 March 1985", "pii": [["DATE", "14 March 1985"]], "note": "written-out month"}
+{"id": "pin-1", "kind": "positive", "text": "Residential address: Flat 12, Gokhale Road, Pune - 411030.", "pii": [["PINCODE", "411030"]]}
+{"id": "pin-2", "kind": "positive", "text": "Correspondence address: 14 MG Road, Bengaluru, PIN: 560001.", "pii": [["PINCODE", "560001"]]}
+{"id": "pin-3", "kind": "positive", "text": "Address 7 Nehru Nagar, Lucknow 226001.", "pii": [["PINCODE", "226001"]], "note": "no label, no dash"}
+{"id": "pin-4-spaced", "kind": "positive", "text": "Pin code 400 001, Mumbai.", "pii": [["PINCODE", "400 001"]], "note": "grouped as 3+3"}
+{"id": "account-1", "kind": "positive", "text": "Credit the amount to A/c No. 123456789012 at the branch.", "pii": [["ACCOUNT_NUMBER", "123456789012"]]}
+{"id": "account-2", "kind": "positive", "text": "Savings account number 50100234567891 was opened in 2019.", "pii": [["ACCOUNT_NUMBER", "50100234567891"]]}
+{"id": "account-3", "kind": "positive", "text": "Beneficiary account 9988776655443322 with IFSC SBIN0001234.", "pii": [["ACCOUNT_NUMBER", "9988776655443322"]]}
+{"id": "account-4-abbrev", "kind": "positive", "text": "Acct no 001122334455667 debited on 12 June.", "pii": [["ACCOUNT_NUMBER", "001122334455667"]], "note": "abbreviation 'acct'"}
+{"id": "account-5-no-cue", "kind": "positive", "text": "Please remit to 31245678901234 and send the UTR.", "pii": [["ACCOUNT_NUMBER", "31245678901234"]], "note": "no account cue"}
+{"id": "swift-1", "kind": "positive", "text": "SWIFT code: SBININBBXXX for the correspondent bank.", "pii": [["SWIFT_BIC", "SBININBBXXX"]]}
+{"id": "swift-2", "kind": "positive", "text": "Beneficiary bank BIC HDFCINBB, Mumbai.", "pii": [["SWIFT_BIC", "HDFCINBB"]]}
+{"id": "cin-1", "kind": "positive", "text": "Company CIN: U12345MH2010PTC123456, registered in Maharashtra.", "pii": [["CIN", "U12345MH2010PTC123456"]]}
+{"id": "cin-2", "kind": "positive", "text": "Corporate Identity Number L65110DL1994PLC056789 appears on the certificate.", "pii": [["CIN", "L65110DL1994PLC056789"]]}
+{"id": "name-1-title", "kind": "positive", "text": "The account is held in the name of Shri Rajesh Kumar Sharma.", "pii": [["PERSON_NAME", "Rajesh Kumar Sharma"]]}
+{"id": "name-2-title", "kind": "positive", "text": "Mrs. Priya Nair attended the branch for re-KYC.", "pii": [["PERSON_NAME", "Priya Nair"]]}
+{"id": "name-3-title", "kind": "positive", "text": "Dr. Anil Deshpande is the authorised signatory.", "pii": [["PERSON_NAME", "Anil Deshpande"]]}
+{"id": "name-4-no-title", "kind": "positive", "text": "Customer name: Rahul Verma, account opened 2021.", "pii": [["PERSON_NAME", "Rahul Verma"]], "note": "label but no honorific"}
+{"id": "name-5-no-title", "kind": "positive", "text": "Nominee: Sunita Patel (spouse).", "pii": [["PERSON_NAME", "Sunita Patel"]], "note": "no honorific"}
+{"id": "name-6-caps", "kind": "positive", "text": "Applicant name SUNITA KUMARI GUPTA, father's name RAMESH GUPTA.", "pii": [["PERSON_NAME", "SUNITA KUMARI GUPTA"], ["PERSON_NAME", "RAMESH GUPTA"]], "note": "upper-case, as on forms"}
+{"id": "name-7-initials", "kind": "positive", "text": "Smt. K. S. Iyer submitted the declaration.", "pii": [["PERSON_NAME", "K. S. Iyer"]]}
+{"id": "mixed-1", "kind": "positive", "text": "Shri Vikram Singh, PAN FGHIJ9876L, mobile 9812345670, email vikram.singh@examplemail.in.", "pii": [["PERSON_NAME", "Vikram Singh"], ["PAN", "FGHIJ9876L"], ["PHONE", "9812345670"], ["EMAIL", "vikram.singh@examplemail.in"]]}
+{"id": "mixed-2", "kind": "positive", "text": "Aadhaar 6874 7491 1868; D.O.B. 05/09/1992; PIN code 380015; A/c No. 40012345678901.", "pii": [["AADHAAR", "6874 7491 1868"], ["DATE", "05/09/1992"], ["PINCODE", "380015"], ["ACCOUNT_NUMBER", "40012345678901"]]}
+{"id": "neg-circular-date", "kind": "negative", "text": "Reserve Bank circular dated 23-10-2018 amended the Master Direction effective 01.04.2019.", "pii": []}
+{"id": "neg-statute", "kind": "negative", "text": "Section 12 of the Prevention of Money-laundering Act, 2002 requires reporting entities to maintain records for five years.", "pii": []}
+{"id": "neg-table-figures", "kind": "negative", "text": "Total transactions 1234567890 1098765432 2345678901 3456789012 4567890123 in the quarter.", "pii": []}
+{"id": "neg-field-length", "kind": "negative", "text": "Field 14 holds the account identifier and is 18 characters long; example value 000000000000000000.", "pii": []}
+{"id": "neg-toll-free", "kind": "negative", "text": "Customers may call the toll free number 1800-11-4000 or 1800 425 1234 for assistance.", "pii": []}
+{"id": "neg-fax", "kind": "negative", "text": "Director, FIU-IND, Tel: 011-23314429, Fax: 011-23314459.", "pii": []}
+{"id": "neg-regulatory-codes", "kind": "negative", "text": "Reporting formats CTR, STR, CCR and NTR must be filed in the prescribed XML under the FINnet gateway.", "pii": []}
+{"id": "neg-allcaps-headings", "kind": "negative", "text": "ANNEXURE ACCOUNTS RECEIVABLE DECLARATION SCHEDULE OF CHARGES", "pii": []}
+{"id": "neg-ifsc", "kind": "negative", "text": "The IFSC of the branch is SBIN0001234 and the MICR code is 400002001.", "pii": []}
+{"id": "neg-amounts", "kind": "negative", "text": "Cash transactions of Rs. 10,00,000 and above, or 50,000 in a month, must be reported within 15 days.", "pii": []}
+{"id": "neg-organisation-names", "kind": "negative", "text": "The Gazette Notification issued by the Ministry of Finance was published by the Financial Intelligence Unit.", "pii": []}
+{"id": "neg-job-titles", "kind": "negative", "text": "The Principal Officer and the Designated Director shall ensure compliance with the Board approved policy.", "pii": []}
+{"id": "neg-year-ranges", "kind": "negative", "text": "Records for the years 2010-2015 and 2016-2020 are retained as per the PML Rules, 2005.", "pii": []}
+{"id": "neg-sebi-reg", "kind": "negative", "text": "SEBI Master Circular SEBI/HO/MIRSD/MIRSD-SECFATF/P/CIR/2023/0000 dated 12-04-2023 applies.", "pii": []}
+{"id": "neg-time-and-version", "kind": "negative", "text": "Version 2.3 of the specification, released 2023-04-12 10:30:00, supersedes version 2.2.", "pii": []}
+{"id": "neg-sample-placeholders", "kind": "negative", "text": "Enter 10 digits, for example 0000000000, in the mobile field; the PAN field takes AAAAA9999A as a sample.", "pii": [], "note": "placeholders in a form guide; the PAN shaped sample is a known over-redaction candidate"}
+{"id": "public-1-office-address", "kind": "public", "text": "Reserve Bank of India, Central Office, Shahid Bhagat Singh Marg, Mumbai - 400001.", "pii": [], "note": "official address printed in a public document; redacting it is over-cautious, not a leak"}
+{"id": "public-2-office-email", "kind": "public", "text": "Queries may be sent to helpdesk@rbi.org.in or to fiuindia@nic.in.", "pii": [], "note": "official mailboxes in a public document"}
