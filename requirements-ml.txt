@@ -1,0 +1,13 @@
+# The optional models: GLiNER-PII (USE_GLINER_PII in pipeline/pii.py) and the DeBERTa quality
+# classifier (QUALITY_SIGNAL_MODE in pipeline/quality.py). Both are off by default; the default
+# pipeline needs none of this.
+# Usage: pip install -r requirements-ml.txt
+#
+# Versions are those of the benchmark in docs/team/evidence/gpu_benchmark.md (K4). SETUP.md records
+# a torch 2.14.0 import failure with gliner on one CPU build; if you hit it, use torch 2.5.1.
+
+-r requirements.txt
+
+torch==2.14.0
+transformers==4.55.0
+gliner==0.2.25

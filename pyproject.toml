@@ -6,9 +6,25 @@ build-backend = "setuptools.build_meta"
 name = "bfsi-curator"
 dynamic = ["version"]
 description = "Curate banking and KYC regulatory PDFs into redacted, deduplicated fine-tuning JSONL."
-requires-python = ">=3.10"
-# ponytail: dependencies are installed from requirements.txt (Aditi's task B2); point this at it once it exists.
-dependencies = []
+readme = "README.md"
+requires-python = ">=3.11"
+# Compatible ranges here; the exact tested versions are pinned in requirements.txt (a test checks
+# that every pin satisfies its range).
+dependencies = [
+    "pdfplumber~=0.11.10",
+    "langdetect~=1.0.9",
+    "datasketch~=2.0",
+    "tiktoken~=0.14.0",
+    "spacy~=3.8.16",
+    "en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl",
+]
+
+[project.optional-dependencies]
+# The optional GLiNER and DeBERTa models (off by default). For a GPU see requirements-gpu.txt.
+ml = ["torch~=2.14.0", "transformers~=4.55.0", "gliner~=0.2.25"]
+# Real NVIDIA NeMo Curator, only for pipeline/nemo_compare.py. Linux or WSL2 only.
+nemo = ["nemo-curator[text_cpu]==1.3.0"]
+dev = ["pytest~=9.1", "pytest-cov~=7.1", "ruff==0.17.2"]
 
 [project.scripts]
 bfsi-curate = "pipeline.cli:main"
@@ -18,3 +34,34 @@ packages = ["pipeline"]
 
 [tool.setuptools.dynamic]
 version = {attr = "pipeline.__version__"}
+
+# ---------------------------------------------------------------------------------------------
+# Lint and format (ruff): `ruff check pipeline tests scripts` and `ruff format --check ...`
+# ---------------------------------------------------------------------------------------------
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = ["venv", "venv-curator", "venv-pii", "dashboard", "data"]
+
+[tool.ruff.lint]
+# E, W: pycodestyle  F: pyflakes  B: bugbear  I: import order
+select = ["E", "W", "F", "B", "I"]
+ignore = [
+    "E501",  # line length is the formatter's job; long strings and URLs stay as written
+    "B905",  # zip(strict=...) on every zip would be noise: our zips pair equal-length lists by construction
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pipeline"]
+
+# ---------------------------------------------------------------------------------------------
+# Coverage (pytest-cov): `python -m pytest --cov`
+# ---------------------------------------------------------------------------------------------
+[tool.coverage.run]
+source = ["pipeline"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_also = ["if __name__ == .__main__.:"]

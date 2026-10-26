@@ -1,8 +1,11 @@
-# GPU variant. Install on a Linux machine with an NVIDIA GPU and driver.
-# Verified by Kunal: RTX 4050, WSL2, cudf-cu12 26.10.2 imports and runs.
+# GPU variant: the optional models plus cuDF. Install on a Linux machine with an NVIDIA GPU and driver.
+# Verified by Kunal: RTX 4050, WSL2, cudf-cu12 26.10.2 imports and runs (docs/team/evidence/gpu_benchmark.md).
 # Usage: pip install -r requirements-gpu.txt
+#
+# The default pipeline runs on the CPU. The GPU is used only by the optional GLiNER and DeBERTa
+# models. torch must be a CUDA build: install it from the PyTorch index that matches your driver.
 
--r requirements.txt
+-r requirements-ml.txt
 
 --extra-index-url https://pypi.nvidia.com
 cudf-cu12==26.10.2
