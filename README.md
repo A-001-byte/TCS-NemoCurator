@@ -128,15 +128,20 @@ Exit codes: `0` success, `1` the pipeline stopped (a one-line reason is printed;
 
 **3. HTTP API and dashboard**
 ```bash
+./scripts/start_local.sh                            # one terminal; uses the active Python environment
+# Or start separately:
 python -m pipeline.server                          # API on 127.0.0.1:8000
-cd dashboard && npm install && npm run dev         # dashboard; /api is proxied to the server above
+cd dashboard && npm ci && npm run dev               # dashboard; /api is proxied to the server above
 ```
+
+Before a full-corpus refresh or uploaded-PDF run, the dashboard offers quality labels off/on and Auto/CPU/GPU. Defaults are labels off and Auto. GPU acceleration is used by the optional quality model when labels are on; the PII engine stays regex + spaCy. The header reports the quality stage's actual device in the saved snapshot.
 
 | Method and path | Purpose | Answers |
 |---|---|---|
 | `GET /api/health` | liveness and version | `200 {"ok": true, "version": ...}` |
+| `GET /api/capabilities` | report CUDA availability and GPU name for the device picker | `200` with `cuda_available` and `gpu_name` |
 | `POST /api/run` | curate uploaded PDFs: `{"files": [{"name": "x.pdf", "data": "<base64>"}]}` returns `{summary, curated_jsonl, log}` | `200`, `400` bad request, `409` another run is in progress, `413` too large, `422` the pipeline stopped, `500` |
-| `POST /api/refresh` | re-run the whole corpus in the background and republish the dashboard snapshots | `202` started, `409` already running |
+| `POST /api/refresh` | re-run the whole corpus with optional `device` and `quality_signal` JSON choices | `202` started, `409` already running |
 | `GET /api/refresh/status` | `{"state": "idle" \| "running" \| "succeeded" \| "failed", ...}` | `200` |
 
 A known path with the wrong method returns `405` with an `Allow` header, an unknown path `404`, and every error is `{"error": "<what went wrong>"}`.
@@ -148,6 +153,8 @@ Limits and safety: at most 10 files and 30 MB per upload; one run at a time; **n
 | Setting | Values | Effect |
 |---|---|---|
 | `CURATOR_DEVICE` | `cpu`, `cuda` | forces the compute device for the optional models; default is auto-detect with CPU fallback (`--device` on the CLI wins) |
+| `CURATOR_REFRESH_DEVICE` | `auto`, `cpu`, `cuda` | device for the dashboard's full-corpus refresh; default is `auto` |
+| `CURATOR_REFRESH_QUALITY_SIGNAL` | `off`, `model` | optional quality label for the dashboard refresh; default is `off`. Set this to `model` with `CURATOR_REFRESH_DEVICE=cuda` to make the refresh button use the GPU. PII stays on regex + spaCy. |
 | `CURATOR_HOST`, `CURATOR_PORT` | address, port | where the server listens; the `--host` and `--port` flags win |
 
 The optional models are off by default. After installing `requirements-ml.txt` with a CUDA-enabled PyTorch build, use `bfsi-curate run pdfs/ -o out/ --device cuda --pii-engine gliner --quality-signal model` to use both. GLiNER replaces regex + spaCy and has different validation behavior. The DeBERTa signal adds labels without filtering chunks. The other pipeline stages still run on CPU. See [`SETUP.md`](SETUP.md) for the one-time GPU install.

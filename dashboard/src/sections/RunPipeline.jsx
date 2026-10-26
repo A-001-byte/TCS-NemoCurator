@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { STAGES, reasonLabel } from "../stages";
 import { SectionHeader } from "../components/common";
+import RunOptions from "../components/RunOptions";
 import { fmt } from "../format";
 
 const API_HINT = "Start it with: python -m pipeline.server (or: bfsi-curate serve)";
@@ -39,6 +40,8 @@ function RunResult({ result }) {
   const { summary, curated_jsonl: curated } = result;
   const stem = new Date().toISOString().slice(0, 19).replaceAll(":", "-");
   const firstRow = curated.split("\n").find((line) => line.trim());
+  const quality = summary.stages.find((stage) => stage.stage === "quality_filter") || {};
+  const pii = summary.stages.find((stage) => stage.stage === "pii_redact") || {};
 
   return (
     <div className="grid-result">
@@ -55,6 +58,11 @@ function RunResult({ result }) {
             <CircleCheck size={14} /> Done
           </span>
         </div>
+
+        <p className="cell-sub">
+          Quality labels: {quality.quality_signal_mode || "off"} · Quality device: {quality.device || "cpu"}
+          {" "}· PII engine: {pii.pii_engine || "regex+spacy"}
+        </p>
 
         <table className="table">
           <thead>
@@ -134,7 +142,7 @@ function RunResult({ result }) {
   );
 }
 
-export default function RunPipeline() {
+export default function RunPipeline({ options, onOptionsChange, capabilities }) {
   const [files, setFiles] = useState([]);
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -156,6 +164,7 @@ export default function RunPipeline() {
     setResult(null);
     try {
       const payload = {
+        ...options,
         files: await Promise.all(files.map(async (f) => ({ name: f.name, data: await readAsBase64(f) }))),
       };
       const res = await fetch("/api/run", {
@@ -232,6 +241,8 @@ export default function RunPipeline() {
             ))}
           </ul>
         )}
+
+        <RunOptions options={options} onChange={onOptionsChange} capabilities={capabilities} disabled={busy} />
 
         <div className="actions">
           <button type="button" className="btn btn-primary" disabled={busy || files.length === 0} onClick={runPipeline}>
