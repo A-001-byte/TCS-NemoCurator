@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Union
 
-from pipeline import clean, dedup, extract, heal, output, pii, quality, run
+from pipeline import clean, dedup, extract, heal, manifest, output, pii, quality, run
 from pipeline.device import pick
 
 log = logging.getLogger(__name__)
@@ -71,6 +71,7 @@ class CurateResult:
     summary_path: Path
     device: str
     log: str
+    manifest_path: Optional[Path] = None
 
 
 def _rebase(value, new_data_dir):
@@ -169,7 +170,8 @@ def curate(
     input_dir, output_dir = Path(input_dir), Path(output_dir)
     if not input_dir.is_dir():
         raise FileNotFoundError(f"Input folder not found: {input_dir}")
-    if not extract.list_pdfs(input_dir):
+    pdfs = extract.list_pdfs(input_dir)
+    if not pdfs:
         raise ValueError(f"No .pdf files in {input_dir}")
 
     resolved = pick(device)
@@ -178,6 +180,17 @@ def curate(
             "CUDA requested but CUDA-enabled PyTorch is unavailable in this Python environment. "
             "Install the CUDA PyTorch build and try again."
         )
+    run_id, started = manifest.new_run_id(), manifest.utc_now()
+    manifest.audit(
+        output_dir,
+        "started",
+        run_id,
+        input_dir=str(input_dir),
+        files=len(pdfs),
+        device=resolved,
+        pii_engine=pii_engine,
+        quality_signal=quality_signal,
+    )
     previous = os.environ.get(DEVICE_ENV)
     os.environ[DEVICE_ENV] = resolved
     try:
@@ -187,18 +200,34 @@ def curate(
             pii_engine=pii_engine,
             quality_signal=quality_signal,
         )
+        if result is None:
+            raise RuntimeError(f"{stop_reason(pipeline_log)}\n{pipeline_log}")
+    except BaseException as exc:  # includes Ctrl+C: a run that did not finish is always on record
+        manifest.audit(output_dir, "failed", run_id, error=manifest.failure_reason(exc))
+        raise
     finally:
         if previous is None:
             os.environ.pop(DEVICE_ENV, None)
         else:
             os.environ[DEVICE_ENV] = previous
-    if result is None:
-        raise RuntimeError(f"{stop_reason(pipeline_log)}\n{pipeline_log}")
     summary = result["summary"]
     if not summary.get("name_detection_available", True):
         log.warning(
             "Person-name detection is OFF on this run: the spaCy model did not load, so names are not redacted."
         )
-    return CurateResult(
-        summary, output_dir / "curated.jsonl", output_dir / "pipeline_summary.json", resolved, pipeline_log
+    curated_path, summary_path = output_dir / "curated.jsonl", output_dir / "pipeline_summary.json"
+    manifest_path = manifest.write_manifest(
+        output_dir,
+        run_id=run_id,
+        started=started,
+        finished=manifest.utc_now(),
+        pdfs=pdfs,
+        summary=summary,
+        device=resolved,
+        pii_engine=pii_engine,
+        quality_signal=quality_signal,
+        curated_path=curated_path,
+        summary_path=summary_path,
     )
+    manifest.audit(output_dir, "finished", run_id, chunks=summary["final_output_chunks"], manifest=manifest_path.name)
+    return CurateResult(summary, curated_path, summary_path, resolved, pipeline_log, manifest_path)

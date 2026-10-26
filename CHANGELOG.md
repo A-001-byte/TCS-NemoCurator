@@ -4,6 +4,13 @@ All notable changes to this project. The format follows [Keep a Changelog](https
 Numbers in parentheses are pull requests. Before-and-after figures for each pipeline change are in
 `docs/IMPROVEMENT_LOG.md`.
 
+## [Unreleased]
+
+### Added
+- A run manifest (`manifest.json`) and an append-only audit log (`audit.jsonl`) next to every library or terminal run:
+  inputs and outputs with SHA-256, options, tool version, stage counts, who started the run and how it ended.
+  `curated.jsonl` is unchanged.
+
 ## [1.0.0] - 2026-10-27
 
 First release. The curated output of the 35-PDF corpus is unchanged since the finalisation began: 3,325 chunks, 68 PII

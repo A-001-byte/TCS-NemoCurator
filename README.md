@@ -104,6 +104,7 @@ from pipeline.api import curate
 result = curate("pdfs/", "out/")  # all 7 stages on every *.pdf in pdfs/
 print(result.summary["final_output_chunks"])  # out/curated.jsonl and out/pipeline_summary.json are written
 ```
+Every library or terminal run also leaves a record next to the output: `out/manifest.json` (tool version, platform, the options used, each input PDF's name and SHA-256, each output's SHA-256 and record count, the stage counts) and `out/audit.jsonl` (one line when a run starts and one when it finishes or fails, with the time and the operating-system user). The manifest never contains folder paths. Runs through the HTTP API do not write these files.
 
 **2. Terminal**
 ```bash
