@@ -64,5 +64,9 @@ def main():
     print("ok: pruned keywords, overlap-free density, word boundaries, tag threshold")
 
 
+def test_quality_tags():
+    main()
+
+
 if __name__ == "__main__":
     main()

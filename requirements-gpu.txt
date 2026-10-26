@@ -1,0 +1,8 @@
+# GPU variant. Install on a Linux machine with an NVIDIA GPU and driver.
+# Verified by Kunal: RTX 4050, WSL2, cudf-cu12 26.10.2 imports and runs.
+# Usage: pip install -r requirements-gpu.txt
+
+-r requirements.txt
+
+--extra-index-url https://pypi.nvidia.com
+cudf-cu12==26.10.2

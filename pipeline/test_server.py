@@ -28,23 +28,30 @@ def main():
     assert _decode_files({"files": [{"name": "../../evil.pdf", "data": pdf}]})[0][0] == "evil.pdf"
 
     raw_dir_before = extract.RAW_DIR
-    result, log = run_on_upload(_decode_files({"files": [{"name": SAMPLE.name, "data": pdf}]}))
-    assert result, log
-    assert extract.RAW_DIR == raw_dir_before, "module paths must be restored after a run"
+    try:
+        result, log = run_on_upload(_decode_files({"files": [{"name": SAMPLE.name, "data": pdf}]}))
+        assert result, log
+        assert extract.RAW_DIR == raw_dir_before, "module paths must be restored after a run"
 
-    summary = result["summary"]
-    rows = [json.loads(line) for line in result["curated_jsonl"].splitlines() if line.strip()]
-    assert [s["stage"] for s in summary["stages"]] == [
-        "extract", "clean_langid", "heal", "dedup", "quality_filter", "pii_redact", "output",
-    ]
-    heal_stage = summary["stages"][2]
-    assert heal_stage["docs_in"] == heal_stage["docs_out"] == 1 and heal_stage["removed"] == 0
-    assert summary["stages"][0]["docs_in"] == 1
-    assert len(rows) == summary["final_output_chunks"] > 0
-    assert all(row["metadata"]["source_file"] == SAMPLE.name for row in rows)
-    assert summary["pii_entities_redacted"] > 0, "this PDF has PIN codes and emails"
-    assert "[REDACTED_" in result["curated_jsonl"]
-    print(f"ok: {len(rows)} chunks, {summary['pii_entities_redacted']} PII entities redacted")
+        summary = result["summary"]
+        rows = [json.loads(line) for line in result["curated_jsonl"].splitlines() if line.strip()]
+        assert [s["stage"] for s in summary["stages"]] == [
+            "extract", "clean_langid", "heal", "dedup", "quality_filter", "pii_redact", "output",
+        ]
+        heal_stage = summary["stages"][2]
+        assert heal_stage["docs_in"] == heal_stage["docs_out"] == 1 and heal_stage["removed"] == 0
+        assert summary["stages"][0]["docs_in"] == 1
+        assert len(rows) == summary["final_output_chunks"] > 0
+        assert all(row["metadata"]["source_file"] == SAMPLE.name for row in rows)
+        assert summary["pii_entities_redacted"] > 0, "this PDF has PIN codes and emails"
+        assert "[REDACTED_" in result["curated_jsonl"]
+        print(f"ok: {len(rows)} chunks, {summary['pii_entities_redacted']} PII entities redacted")
+    finally:
+        extract.RAW_DIR = raw_dir_before
+
+
+def test_server():
+    main()
 
 
 if __name__ == "__main__":

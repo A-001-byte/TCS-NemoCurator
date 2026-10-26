@@ -56,3 +56,38 @@ venv-pii final known-good stack:
   torch==2.5.1+cpu
   transformers==4.55.0
   gliner (installed --no-deps to avoid re-upgrading transformers)
+
+## Main pipeline setup (Ubuntu 22.04, WSL2 or native Linux)
+
+Confirmed working on Ubuntu 22.04.5 (WSL2), 20-25 Oct 2026.
+
+1. Clone the repo:
+   git clone https://github.com/A-001-byte/TCS-NemoCurator.git
+   cd TCS-NemoCurator
+
+2. Create and activate the venv:
+   python3.11 -m venv venv-curator
+   source venv-curator/bin/activate
+
+3. Install dependencies:
+   pip install --upgrade pip
+   pip install -r requirements.txt
+
+4. Verify:
+   python3 -m pipeline.test_server
+   # must print: ok: 8 chunks, 5 PII entities redacted
+
+5. Run the full pipeline:
+   python3 -m pipeline.run
+
+## Resuming work after a shutdown
+cd ~/TCS-NemoCurator
+source venv-curator/bin/activate
+
+## Notes
+- Note: use `python3`, not `python`; it is not aliased on Ubuntu/Debian by default.
+- GPU is optional. Automatic CUDA detection with CPU fallback (pipeline/device.py) applies to
+  the quality classifier only (pipeline/quality.py, used when the optional DeBERTa classifier
+  runs). Every other stage, including deduplication, runs on the CPU. GPU deduplication is not
+  claimed: cuDF installs and runs on an RTX 4050, but the NeMo dedup import and runtime checks
+  have not passed yet (docs/team/evidence/gpu_benchmark.md). Override with CURATOR_DEVICE=cpu|cuda.

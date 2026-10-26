@@ -54,5 +54,9 @@ def main():
     print("ok: version years, newest-first ordering, shared clause kept from the newest version")
 
 
+def test_dedup_versions():
+    main()
+
+
 if __name__ == "__main__":
     main()
