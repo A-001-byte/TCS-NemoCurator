@@ -1,983 +1,981 @@
-﻿{
-    "labels":  [
-                   "fiu_aml_guideline",
-                   "fiu_reporting_spec",
-                   "institution_policy",
-                   "rbi_kyc_direction",
-                   "rbi_other_direction",
-                   "summary_or_publication"
-               ],
-    "caption":  "Document-type classification and clause similarity over a corpus of 35 documents. Not a trained fraud/anomaly model.",
-    "settings":  {
-                     "low_confidence_margin":  0.05,
-                     "top_k":  3,
-                     "max_doc_share":  0.5
-                 },
-    "n_documents":  34,
-    "n_scored":  34,
-    "n_families":  4,
-    "accuracy":  {
-                     "by_document":  0.6176470588235294,
-                     "by_family":  0.5588235294117647
-                 },
-    "majority_baseline":  0.29411764705882354,
-    "confident":  {
-                      "count":  18,
-                      "accuracy":  0.6111111111111112
-                  },
-    "flagged":  {
-                    "count":  16,
-                    "accuracy":  0.5
-                },
-    "per_type":  [
-                     {
-                         "label":  "fiu_aml_guideline",
-                         "documents":  4,
-                         "scored":  4,
-                         "recall":  0.5
-                     },
-                     {
-                         "label":  "fiu_reporting_spec",
-                         "documents":  3,
-                         "scored":  3,
-                         "recall":  0
-                     },
-                     {
-                         "label":  "institution_policy",
-                         "documents":  10,
-                         "scored":  10,
-                         "recall":  0.9
-                     },
-                     {
-                         "label":  "rbi_kyc_direction",
-                         "documents":  6,
-                         "scored":  6,
-                         "recall":  0.3333333333333333
-                     },
-                     {
-                         "label":  "rbi_other_direction",
-                         "documents":  4,
-                         "scored":  4,
-                         "recall":  0.75
-                     },
-                     {
-                         "label":  "summary_or_publication",
-                         "documents":  7,
-                         "scored":  7,
-                         "recall":  0.42857142857142855
-                     }
-                 ],
-    "unscored":  [
-
-                 ],
-    "per_document":  [
-                         {
-                             "source_file":  "central_bank_india_kyc_aml_2025_26.pdf",
-                             "true":  "institution_policy",
-                             "family":  0,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.37772265453930043
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.3680752849901331
-                                          },
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.16029149906283352
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  31,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "nainital_bank_kyc_aml_policy.pdf",
-                             "true":  "institution_policy",
-                             "family":  null,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.3712078140290724
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.3357454297191901
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.10905367548093434
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "rajkot_peoples_coop_bank_kyc_2025_26.pdf",
-                             "true":  "institution_policy",
-                             "family":  null,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.3301865616289887
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.25235453528304724
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.13232419404089082
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "rbi_fraud_risk_directions_2026_commercial_banks.pdf",
-                             "true":  "rbi_other_direction",
-                             "family":  null,
-                             "predicted":  "rbi_other_direction",
-                             "top3":  [
-                                          {
-                                              "label":  "rbi_other_direction",
-                                              "score":  0.44315605753751697
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.0556374920256669
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.04281764827228565
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "rbi_other_direction",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "rbi_ppi_master_direction.pdf",
-                             "true":  "rbi_other_direction",
-                             "family":  null,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.04420774116094602
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.02987848555889612
-                                          },
-                                          {
-                                              "label":  "rbi_other_direction",
-                                              "score":  0.027792778593947045
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  false
-                         },
-                         {
-                             "source_file":  "central_bank_india_kyc_aml_2024_25.pdf",
-                             "true":  "institution_policy",
-                             "family":  0,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.36478370899975376
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.2988780821058123
-                                          },
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.14842529014544653
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  31,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "jsa_prism_rbi_kyc_directions_dec2025.pdf",
-                             "true":  "summary_or_publication",
-                             "family":  null,
-                             "predicted":  "summary_or_publication",
-                             "top3":  [
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.39717086797807527
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.08417701663618173
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.044117035656227245
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "summary_or_publication",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "manappuram_kyc_policy.pdf",
-                             "true":  "institution_policy",
-                             "family":  null,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.09287916225328023
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.0628547329238534
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.03323500742493882
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "rbi_fraud_master_direction_pwc.pdf",
-                             "true":  "rbi_other_direction",
-                             "family":  null,
-                             "predicted":  "rbi_other_direction",
-                             "top3":  [
-                                          {
-                                              "label":  "rbi_other_direction",
-                                              "score":  0.24794257387693408
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.040078689557263986
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.03717260046948343
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "rbi_other_direction",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "rbi_kyc_directions_2025_commercial_banks.pdf",
-                             "true":  "rbi_kyc_direction",
-                             "family":  1,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.4544894277264326
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.2473849481403287
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.13118721424900562
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  31,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  false
-                         },
-                         {
-                             "source_file":  "rbi_kyc_directions_2025_nbfc.pdf",
-                             "true":  "rbi_kyc_direction",
-                             "family":  1,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.11908807191951061
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.07381518717136791
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.03521119402054605
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  31,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  false
-                         },
-                         {
-                             "source_file":  "rbi_kyc_directions_2025_urban_coop_banks.pdf",
-                             "true":  "rbi_kyc_direction",
-                             "family":  1,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.4452935465091805
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.2620324066043317
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.13280954534040004
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  31,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  false
-                         },
-                         {
-                             "source_file":  "rbi_kyc_fidcindia_aug2025.pdf",
-                             "true":  "rbi_kyc_direction",
-                             "family":  null,
-                             "predicted":  "rbi_kyc_direction",
-                             "top3":  [
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.07573222632959853
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.05515461735551651
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.022328695037363046
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "rbi_kyc_direction",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "rbi_kyc_summary_banklaw1.pdf",
-                             "true":  "summary_or_publication",
-                             "family":  3,
-                             "predicted":  "fiu_reporting_spec",
-                             "top3":  [
-                                          {
-                                              "label":  "fiu_reporting_spec",
-                                              "score":  0.056668282673325424
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.056493596100544996
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.05314000354021428
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  32,
-                             "predicted_by_document":  "summary_or_publication",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "rbi_kyc_updated_aug2025_allinonebanking.pdf",
-                             "true":  "summary_or_publication",
-                             "family":  null,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.2407212734703073
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.22305089403229508
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.07212980994639473
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  false
-                         },
-                         {
-                             "source_file":  "amfi_sebi_aml_minimum_standards_2024.pdf",
-                             "true":  "fiu_aml_guideline",
-                             "family":  null,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.11409170578155464
-                                          },
-                                          {
-                                              "label":  "fiu_reporting_spec",
-                                              "score":  0.09332699077963985
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.06255389803275324
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  false
-                         },
-                         {
-                             "source_file":  "bhiwani_dccb_kyc_aml_cft_2023_24.pdf",
-                             "true":  "institution_policy",
-                             "family":  null,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.37765049000151485
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.2491676594644092
-                                          },
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.13194326253253089
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "fiu_india_reporting_format.pdf",
-                             "true":  "fiu_reporting_spec",
-                             "family":  null,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.3063611748499817
-                                          },
-                                          {
-                                              "label":  "fiu_reporting_spec",
-                                              "score":  0.2015527239929749
-                                          },
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.09827712800005384
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  false
-                         },
-                         {
-                             "source_file":  "rbi_fraud_master_direction_elp.pdf",
-                             "true":  "rbi_other_direction",
-                             "family":  null,
-                             "predicted":  "rbi_other_direction",
-                             "top3":  [
-                                          {
-                                              "label":  "rbi_other_direction",
-                                              "score":  0.3371888051100135
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.04734504860528061
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.045023155392848735
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "rbi_other_direction",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "rbi_kyc_ebixcash.pdf",
-                             "true":  "rbi_kyc_direction",
-                             "family":  2,
-                             "predicted":  "rbi_kyc_direction",
-                             "top3":  [
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.3635748374800085
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.344914675866608
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.11178565967042343
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  32,
-                             "predicted_by_document":  "rbi_kyc_direction",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "fiu_india_aml_cft_guidelines_2023.pdf",
-                             "true":  "fiu_aml_guideline",
-                             "family":  null,
-                             "predicted":  "fiu_aml_guideline",
-                             "top3":  [
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.10936020169808601
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.10254731752483946
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.04371878665266514
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "fiu_aml_guideline",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "fiu_india_aml_cft_guidelines_vda_2023.pdf",
-                             "true":  "fiu_aml_guideline",
-                             "family":  null,
-                             "predicted":  "fiu_aml_guideline",
-                             "top3":  [
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.09233499597715757
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.07067121962573013
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.035378477020580494
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "fiu_aml_guideline",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "jsa_prism_aml_cft_guidelines_jul2023.pdf",
-                             "true":  "summary_or_publication",
-                             "family":  null,
-                             "predicted":  "summary_or_publication",
-                             "top3":  [
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.35584178816637757
-                                          },
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.08434738669305467
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.02853681035830859
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "summary_or_publication",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "protium_kyc_aml_policy_2023.pdf",
-                             "true":  "institution_policy",
-                             "family":  null,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.2745969670418068
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.18562737326460452
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.12011483147388141
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "rbi_kyc_summary_banklaw2.pdf",
-                             "true":  "summary_or_publication",
-                             "family":  3,
-                             "predicted":  "fiu_reporting_spec",
-                             "top3":  [
-                                          {
-                                              "label":  "fiu_reporting_spec",
-                                              "score":  0.054759110911521365
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.042472186132344124
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.027760432280898962
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  32,
-                             "predicted_by_document":  "summary_or_publication",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "vivriti_kyc_aml_policy_nov2023.pdf",
-                             "true":  "institution_policy",
-                             "family":  null,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.1859118491486364
-                                          },
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.08870557708745266
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.08188231355473212
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "bank_of_baroda_kyc.pdf",
-                             "true":  "institution_policy",
-                             "family":  null,
-                             "predicted":  "fiu_reporting_spec",
-                             "top3":  [
-                                          {
-                                              "label":  "fiu_reporting_spec",
-                                              "score":  0.3134530982389784
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.04420818449731254
-                                          },
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.04132050642929173
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "fiu_reporting_spec",
-                             "correct_by_document":  false
-                         },
-                         {
-                             "source_file":  "fiu_india_annual_report_2021_22.pdf",
-                             "true":  "summary_or_publication",
-                             "family":  null,
-                             "predicted":  "summary_or_publication",
-                             "top3":  [
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.08677727247195845
-                                          },
-                                          {
-                                              "label":  "rbi_other_direction",
-                                              "score":  0.08533403691784415
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.08339250222011335
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "summary_or_publication",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "central_bank_india_kyc_aml_2021.pdf",
-                             "true":  "institution_policy",
-                             "family":  0,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.34137722750131017
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.2538126950042257
-                                          },
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.1353013910224285
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  true,
-                             "scored":  true,
-                             "training_documents":  31,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  true
-                         },
-                         {
-                             "source_file":  "fiu_india_reporting_format_guide_v2_2.pdf",
-                             "true":  "fiu_reporting_spec",
-                             "family":  null,
-                             "predicted":  "fiu_aml_guideline",
-                             "top3":  [
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.4089025053818897
-                                          },
-                                          {
-                                              "label":  "fiu_reporting_spec",
-                                              "score":  0.18594808925812525
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.14052391193655747
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "fiu_aml_guideline",
-                             "correct_by_document":  false
-                         },
-                         {
-                             "source_file":  "rbi_kyc_master_direction_slbc_mp.pdf",
-                             "true":  "rbi_kyc_direction",
-                             "family":  2,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.3464434618158437
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.22576955917046676
-                                          },
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.11779285669142339
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  32,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  false
-                         },
-                         {
-                             "source_file":  "fiu_india_rbi_ctr_circular_2010.pdf",
-                             "true":  "fiu_reporting_spec",
-                             "family":  null,
-                             "predicted":  "institution_policy",
-                             "top3":  [
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.17798035194465187
-                                          },
-                                          {
-                                              "label":  "rbi_kyc_direction",
-                                              "score":  0.1492631440398592
-                                          },
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.07380789728424
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "institution_policy",
-                             "correct_by_document":  false
-                         },
-                         {
-                             "source_file":  "fiu_india_insurers_aml_guidelines.pdf",
-                             "true":  "fiu_aml_guideline",
-                             "family":  null,
-                             "predicted":  "fiu_reporting_spec",
-                             "top3":  [
-                                          {
-                                              "label":  "fiu_reporting_spec",
-                                              "score":  0.37117306098490543
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.032224081762279824
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.03061942124233742
-                                          }
-                                      ],
-                             "low_confidence":  false,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "fiu_reporting_spec",
-                             "correct_by_document":  false
-                         },
-                         {
-                             "source_file":  "fiu_india_brochure.pdf",
-                             "true":  "summary_or_publication",
-                             "family":  null,
-                             "predicted":  "fiu_aml_guideline",
-                             "top3":  [
-                                          {
-                                              "label":  "fiu_aml_guideline",
-                                              "score":  0.07467146085499002
-                                          },
-                                          {
-                                              "label":  "institution_policy",
-                                              "score":  0.07391180329537295
-                                          },
-                                          {
-                                              "label":  "summary_or_publication",
-                                              "score":  0.049947492204299275
-                                          }
-                                      ],
-                             "low_confidence":  true,
-                             "correct":  false,
-                             "scored":  true,
-                             "training_documents":  33,
-                             "predicted_by_document":  "fiu_aml_guideline",
-                             "correct_by_document":  false
-                         }
-                     ],
-    "plain_tfidf":  {
-                        "accuracy":  {
-                                         "by_document":  0.5,
-                                         "by_family":  0.4411764705882353
-                                     },
-                        "confident":  {
-                                          "count":  7,
-                                          "accuracy":  0.2857142857142857
-                                      },
-                        "flagged":  {
-                                        "count":  27,
-                                        "accuracy":  0.48148148148148145
-                                    }
-                    },
-    "variants_tried":  4,
-    "variants_note":  "Four combinations were scored on these same documents (plain or filtered TF-IDF, with bank and NBFC policy separate or merged). The merge was chosen after seeing the confusion table, so treat the headline as the optimistic end.",
-    "type_descriptions":  {
-                              "rbi_kyc_direction":  "RBI Master Direction on Know Your Customer, its amendments and re-hosted copies",
-                              "rbi_other_direction":  "Other RBI directions: fraud risk management and prepaid payment instruments",
-                              "institution_policy":  "A bank\u0027s or non-bank finance company\u0027s own KYC / AML / CFT policy or KYC questionnaire",
-                              "fiu_aml_guideline":  "AML / CFT guidelines from FIU-IND, or sector standards for reporting entities",
-                              "fiu_reporting_spec":  "Report filing formats and circulars on transaction reporting",
-                              "summary_or_publication":  "Law-firm and portal summaries, brochures and annual reports"
-                          }
+{
+  "labels": [
+    "fiu_aml_guideline",
+    "fiu_reporting_spec",
+    "institution_policy",
+    "rbi_kyc_direction",
+    "rbi_other_direction",
+    "summary_or_publication"
+  ],
+  "caption": "Document-type classification and clause similarity over a corpus of 34 documents. Not a trained fraud/anomaly model.",
+  "settings": {
+    "low_confidence_margin": 0.05,
+    "top_k": 3,
+    "max_doc_share": 0.5
+  },
+  "n_documents": 34,
+  "n_scored": 34,
+  "n_families": 4,
+  "accuracy": {
+    "by_document": 0.6176470588235294,
+    "by_family": 0.5588235294117647
+  },
+  "majority_baseline": 0.29411764705882354,
+  "confident": {
+    "count": 18,
+    "accuracy": 0.6111111111111112
+  },
+  "flagged": {
+    "count": 16,
+    "accuracy": 0.5
+  },
+  "per_type": [
+    {
+      "label": "fiu_aml_guideline",
+      "documents": 4,
+      "scored": 4,
+      "recall": 0.5
+    },
+    {
+      "label": "fiu_reporting_spec",
+      "documents": 3,
+      "scored": 3,
+      "recall": 0
+    },
+    {
+      "label": "institution_policy",
+      "documents": 10,
+      "scored": 10,
+      "recall": 0.9
+    },
+    {
+      "label": "rbi_kyc_direction",
+      "documents": 6,
+      "scored": 6,
+      "recall": 0.3333333333333333
+    },
+    {
+      "label": "rbi_other_direction",
+      "documents": 4,
+      "scored": 4,
+      "recall": 0.75
+    },
+    {
+      "label": "summary_or_publication",
+      "documents": 7,
+      "scored": 7,
+      "recall": 0.42857142857142855
+    }
+  ],
+  "unscored": [],
+  "per_document": [
+    {
+      "source_file": "central_bank_india_kyc_aml_2025_26.pdf",
+      "true": "institution_policy",
+      "family": 0,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.37772265453930043
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.3680752849901331
+        },
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.16029149906283352
+        }
+      ],
+      "low_confidence": true,
+      "correct": true,
+      "scored": true,
+      "training_documents": 31,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "nainital_bank_kyc_aml_policy.pdf",
+      "true": "institution_policy",
+      "family": null,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.3712078140290724
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.3357454297191901
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.10905367548093434
+        }
+      ],
+      "low_confidence": true,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "rajkot_peoples_coop_bank_kyc_2025_26.pdf",
+      "true": "institution_policy",
+      "family": null,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.3301865616289887
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.25235453528304724
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.13232419404089082
+        }
+      ],
+      "low_confidence": false,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "rbi_fraud_risk_directions_2026_commercial_banks.pdf",
+      "true": "rbi_other_direction",
+      "family": null,
+      "predicted": "rbi_other_direction",
+      "top3": [
+        {
+          "label": "rbi_other_direction",
+          "score": 0.44315605753751697
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.0556374920256669
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.04281764827228565
+        }
+      ],
+      "low_confidence": false,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "rbi_other_direction",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "rbi_ppi_master_direction.pdf",
+      "true": "rbi_other_direction",
+      "family": null,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.04420774116094602
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.02987848555889612
+        },
+        {
+          "label": "rbi_other_direction",
+          "score": 0.027792778593947045
+        }
+      ],
+      "low_confidence": true,
+      "correct": false,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": false
+    },
+    {
+      "source_file": "central_bank_india_kyc_aml_2024_25.pdf",
+      "true": "institution_policy",
+      "family": 0,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.36478370899975376
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.2988780821058123
+        },
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.14842529014544653
+        }
+      ],
+      "low_confidence": false,
+      "correct": true,
+      "scored": true,
+      "training_documents": 31,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "jsa_prism_rbi_kyc_directions_dec2025.pdf",
+      "true": "summary_or_publication",
+      "family": null,
+      "predicted": "summary_or_publication",
+      "top3": [
+        {
+          "label": "summary_or_publication",
+          "score": 0.39717086797807527
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.08417701663618173
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.044117035656227245
+        }
+      ],
+      "low_confidence": false,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "summary_or_publication",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "manappuram_kyc_policy.pdf",
+      "true": "institution_policy",
+      "family": null,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.09287916225328023
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.0628547329238534
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.03323500742493882
+        }
+      ],
+      "low_confidence": true,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "rbi_fraud_master_direction_pwc.pdf",
+      "true": "rbi_other_direction",
+      "family": null,
+      "predicted": "rbi_other_direction",
+      "top3": [
+        {
+          "label": "rbi_other_direction",
+          "score": 0.24794257387693408
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.040078689557263986
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.03717260046948343
+        }
+      ],
+      "low_confidence": false,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "rbi_other_direction",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "rbi_kyc_directions_2025_commercial_banks.pdf",
+      "true": "rbi_kyc_direction",
+      "family": 1,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.4544894277264326
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.2473849481403287
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.13118721424900562
+        }
+      ],
+      "low_confidence": false,
+      "correct": false,
+      "scored": true,
+      "training_documents": 31,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": false
+    },
+    {
+      "source_file": "rbi_kyc_directions_2025_nbfc.pdf",
+      "true": "rbi_kyc_direction",
+      "family": 1,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.11908807191951061
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.07381518717136791
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.03521119402054605
+        }
+      ],
+      "low_confidence": true,
+      "correct": false,
+      "scored": true,
+      "training_documents": 31,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": false
+    },
+    {
+      "source_file": "rbi_kyc_directions_2025_urban_coop_banks.pdf",
+      "true": "rbi_kyc_direction",
+      "family": 1,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.4452935465091805
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.2620324066043317
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.13280954534040004
+        }
+      ],
+      "low_confidence": false,
+      "correct": false,
+      "scored": true,
+      "training_documents": 31,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": false
+    },
+    {
+      "source_file": "rbi_kyc_fidcindia_aug2025.pdf",
+      "true": "rbi_kyc_direction",
+      "family": null,
+      "predicted": "rbi_kyc_direction",
+      "top3": [
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.07573222632959853
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.05515461735551651
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.022328695037363046
+        }
+      ],
+      "low_confidence": true,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "rbi_kyc_direction",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "rbi_kyc_summary_banklaw1.pdf",
+      "true": "summary_or_publication",
+      "family": 3,
+      "predicted": "fiu_reporting_spec",
+      "top3": [
+        {
+          "label": "fiu_reporting_spec",
+          "score": 0.056668282673325424
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.056493596100544996
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.05314000354021428
+        }
+      ],
+      "low_confidence": true,
+      "correct": false,
+      "scored": true,
+      "training_documents": 32,
+      "predicted_by_document": "summary_or_publication",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "rbi_kyc_updated_aug2025_allinonebanking.pdf",
+      "true": "summary_or_publication",
+      "family": null,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.2407212734703073
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.22305089403229508
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.07212980994639473
+        }
+      ],
+      "low_confidence": true,
+      "correct": false,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": false
+    },
+    {
+      "source_file": "amfi_sebi_aml_minimum_standards_2024.pdf",
+      "true": "fiu_aml_guideline",
+      "family": null,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.11409170578155464
+        },
+        {
+          "label": "fiu_reporting_spec",
+          "score": 0.09332699077963985
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.06255389803275324
+        }
+      ],
+      "low_confidence": true,
+      "correct": false,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": false
+    },
+    {
+      "source_file": "bhiwani_dccb_kyc_aml_cft_2023_24.pdf",
+      "true": "institution_policy",
+      "family": null,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.37765049000151485
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.2491676594644092
+        },
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.13194326253253089
+        }
+      ],
+      "low_confidence": false,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "fiu_india_reporting_format.pdf",
+      "true": "fiu_reporting_spec",
+      "family": null,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.3063611748499817
+        },
+        {
+          "label": "fiu_reporting_spec",
+          "score": 0.2015527239929749
+        },
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.09827712800005384
+        }
+      ],
+      "low_confidence": false,
+      "correct": false,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": false
+    },
+    {
+      "source_file": "rbi_fraud_master_direction_elp.pdf",
+      "true": "rbi_other_direction",
+      "family": null,
+      "predicted": "rbi_other_direction",
+      "top3": [
+        {
+          "label": "rbi_other_direction",
+          "score": 0.3371888051100135
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.04734504860528061
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.045023155392848735
+        }
+      ],
+      "low_confidence": false,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "rbi_other_direction",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "rbi_kyc_ebixcash.pdf",
+      "true": "rbi_kyc_direction",
+      "family": 2,
+      "predicted": "rbi_kyc_direction",
+      "top3": [
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.3635748374800085
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.344914675866608
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.11178565967042343
+        }
+      ],
+      "low_confidence": true,
+      "correct": true,
+      "scored": true,
+      "training_documents": 32,
+      "predicted_by_document": "rbi_kyc_direction",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "fiu_india_aml_cft_guidelines_2023.pdf",
+      "true": "fiu_aml_guideline",
+      "family": null,
+      "predicted": "fiu_aml_guideline",
+      "top3": [
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.10936020169808601
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.10254731752483946
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.04371878665266514
+        }
+      ],
+      "low_confidence": true,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "fiu_aml_guideline",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "fiu_india_aml_cft_guidelines_vda_2023.pdf",
+      "true": "fiu_aml_guideline",
+      "family": null,
+      "predicted": "fiu_aml_guideline",
+      "top3": [
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.09233499597715757
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.07067121962573013
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.035378477020580494
+        }
+      ],
+      "low_confidence": true,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "fiu_aml_guideline",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "jsa_prism_aml_cft_guidelines_jul2023.pdf",
+      "true": "summary_or_publication",
+      "family": null,
+      "predicted": "summary_or_publication",
+      "top3": [
+        {
+          "label": "summary_or_publication",
+          "score": 0.35584178816637757
+        },
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.08434738669305467
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.02853681035830859
+        }
+      ],
+      "low_confidence": false,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "summary_or_publication",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "protium_kyc_aml_policy_2023.pdf",
+      "true": "institution_policy",
+      "family": null,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.2745969670418068
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.18562737326460452
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.12011483147388141
+        }
+      ],
+      "low_confidence": false,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "rbi_kyc_summary_banklaw2.pdf",
+      "true": "summary_or_publication",
+      "family": 3,
+      "predicted": "fiu_reporting_spec",
+      "top3": [
+        {
+          "label": "fiu_reporting_spec",
+          "score": 0.054759110911521365
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.042472186132344124
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.027760432280898962
+        }
+      ],
+      "low_confidence": true,
+      "correct": false,
+      "scored": true,
+      "training_documents": 32,
+      "predicted_by_document": "summary_or_publication",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "vivriti_kyc_aml_policy_nov2023.pdf",
+      "true": "institution_policy",
+      "family": null,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.1859118491486364
+        },
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.08870557708745266
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.08188231355473212
+        }
+      ],
+      "low_confidence": false,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "bank_of_baroda_kyc.pdf",
+      "true": "institution_policy",
+      "family": null,
+      "predicted": "fiu_reporting_spec",
+      "top3": [
+        {
+          "label": "fiu_reporting_spec",
+          "score": 0.3134530982389784
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.04420818449731254
+        },
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.04132050642929173
+        }
+      ],
+      "low_confidence": false,
+      "correct": false,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "fiu_reporting_spec",
+      "correct_by_document": false
+    },
+    {
+      "source_file": "fiu_india_annual_report_2021_22.pdf",
+      "true": "summary_or_publication",
+      "family": null,
+      "predicted": "summary_or_publication",
+      "top3": [
+        {
+          "label": "summary_or_publication",
+          "score": 0.08677727247195845
+        },
+        {
+          "label": "rbi_other_direction",
+          "score": 0.08533403691784415
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.08339250222011335
+        }
+      ],
+      "low_confidence": true,
+      "correct": true,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "summary_or_publication",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "central_bank_india_kyc_aml_2021.pdf",
+      "true": "institution_policy",
+      "family": 0,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.34137722750131017
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.2538126950042257
+        },
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.1353013910224285
+        }
+      ],
+      "low_confidence": false,
+      "correct": true,
+      "scored": true,
+      "training_documents": 31,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": true
+    },
+    {
+      "source_file": "fiu_india_reporting_format_guide_v2_2.pdf",
+      "true": "fiu_reporting_spec",
+      "family": null,
+      "predicted": "fiu_aml_guideline",
+      "top3": [
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.4089025053818897
+        },
+        {
+          "label": "fiu_reporting_spec",
+          "score": 0.18594808925812525
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.14052391193655747
+        }
+      ],
+      "low_confidence": false,
+      "correct": false,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "fiu_aml_guideline",
+      "correct_by_document": false
+    },
+    {
+      "source_file": "rbi_kyc_master_direction_slbc_mp.pdf",
+      "true": "rbi_kyc_direction",
+      "family": 2,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.3464434618158437
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.22576955917046676
+        },
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.11779285669142339
+        }
+      ],
+      "low_confidence": false,
+      "correct": false,
+      "scored": true,
+      "training_documents": 32,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": false
+    },
+    {
+      "source_file": "fiu_india_rbi_ctr_circular_2010.pdf",
+      "true": "fiu_reporting_spec",
+      "family": null,
+      "predicted": "institution_policy",
+      "top3": [
+        {
+          "label": "institution_policy",
+          "score": 0.17798035194465187
+        },
+        {
+          "label": "rbi_kyc_direction",
+          "score": 0.1492631440398592
+        },
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.07380789728424
+        }
+      ],
+      "low_confidence": true,
+      "correct": false,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "institution_policy",
+      "correct_by_document": false
+    },
+    {
+      "source_file": "fiu_india_insurers_aml_guidelines.pdf",
+      "true": "fiu_aml_guideline",
+      "family": null,
+      "predicted": "fiu_reporting_spec",
+      "top3": [
+        {
+          "label": "fiu_reporting_spec",
+          "score": 0.37117306098490543
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.032224081762279824
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.03061942124233742
+        }
+      ],
+      "low_confidence": false,
+      "correct": false,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "fiu_reporting_spec",
+      "correct_by_document": false
+    },
+    {
+      "source_file": "fiu_india_brochure.pdf",
+      "true": "summary_or_publication",
+      "family": null,
+      "predicted": "fiu_aml_guideline",
+      "top3": [
+        {
+          "label": "fiu_aml_guideline",
+          "score": 0.07467146085499002
+        },
+        {
+          "label": "institution_policy",
+          "score": 0.07391180329537295
+        },
+        {
+          "label": "summary_or_publication",
+          "score": 0.049947492204299275
+        }
+      ],
+      "low_confidence": true,
+      "correct": false,
+      "scored": true,
+      "training_documents": 33,
+      "predicted_by_document": "fiu_aml_guideline",
+      "correct_by_document": false
+    }
+  ],
+  "plain_tfidf": {
+    "accuracy": {
+      "by_document": 0.5,
+      "by_family": 0.4411764705882353
+    },
+    "confident": {
+      "count": 7,
+      "accuracy": 0.2857142857142857
+    },
+    "flagged": {
+      "count": 27,
+      "accuracy": 0.48148148148148145
+    }
+  },
+  "variants_tried": 4,
+  "variants_note": "Four combinations were scored on these same documents (plain or filtered TF-IDF, with bank and NBFC policy separate or merged). The merge was chosen after seeing the confusion table, so treat the headline as the optimistic end.",
+  "type_descriptions": {
+    "rbi_kyc_direction": "RBI Master Direction on Know Your Customer, its amendments and re-hosted copies",
+    "rbi_other_direction": "Other RBI directions: fraud risk management and prepaid payment instruments",
+    "institution_policy": "A bank's or non-bank finance company's own KYC / AML / CFT policy or KYC questionnaire",
+    "fiu_aml_guideline": "AML / CFT guidelines from FIU-IND, or sector standards for reporting entities",
+    "fiu_reporting_spec": "Report filing formats and circulars on transaction reporting",
+    "summary_or_publication": "Law-firm and portal summaries, brochures and annual reports"
+  }
 }

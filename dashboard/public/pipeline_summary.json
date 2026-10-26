@@ -78,7 +78,8 @@
       "high_density_count": 821,
       "quality_signal_mode": "off",
       "quality_signal_labels": {},
-      "quality_signal_model_error": null
+      "quality_signal_model_error": null,
+      "device": "cpu"
     },
     {
       "stage": "pii_redact",
@@ -86,16 +87,17 @@
       "docs_out": 3325,
       "removed": 0,
       "reason_counts": {},
-      "pii_entities_redacted": 66,
+      "pii_entities_redacted": 68,
       "entity_type_counts": {
         "EMAIL": 47,
         "PINCODE": 13,
         "CIN": 2,
         "PHONE": 3,
-        "SWIFT_BIC": 1
+        "SWIFT_BIC": 1,
+        "PERSON_NAME": 2
       },
-      "chunks_with_pii": 51,
-      "name_detection_available": false,
+      "chunks_with_pii": 53,
+      "name_detection_available": true,
       "pii_engine": "regex+spacy",
       "account_numbers_suppressed": 5,
       "account_numbers_needs_review": 0,
@@ -106,7 +108,7 @@
       "pincode_candidates_rejected_money_or_prefix": 6,
       "aadhaar_candidates_rejected": 6,
       "aadhaar_needs_review": 0,
-      "documents_with_pii": 23,
+      "documents_with_pii": 24,
       "validation_report_path": "data/redacted/validation_report.json",
       "chunks_needing_review": 0
     },
@@ -116,190 +118,205 @@
       "docs_out": 3325,
       "removed": 0,
       "reason_counts": {},
-      "total_chars": 3810438,
-      "output_path": "C:\\Users\\hp\\AppData\\Local\\Temp\\kyc_run_2n1gzo5o\\data\\output\\curated.jsonl"
+      "total_chars": 3810453,
+      "output_path": "data/output/curated.jsonl"
     }
   ],
   "duplicates_removed": 330,
   "cross_doc_boilerplate_removed": 290,
   "intra_doc_near_duplicate_removed": 37,
-  "pii_entities_redacted": 66,
+  "pii_entities_redacted": 68,
   "pii_entity_type_counts": {
     "EMAIL": 47,
     "PINCODE": 13,
     "CIN": 2,
     "PHONE": 3,
-    "SWIFT_BIC": 1
+    "SWIFT_BIC": 1,
+    "PERSON_NAME": 2
   },
-  "name_detection_available": false,
+  "name_detection_available": true,
   "pii_examples": [
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "central_bank_india_kyc_aml_2025_26__213",
       "entity_type": "EMAIL",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "m**@gov.in",
+      "context_before": "-23092465 (Fax), email address: jsctcr- ",
+      "context_after": "]. 3.2 The Ministry of External Affairs,"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "central_bank_india_kyc_aml_2025_26__221",
       "entity_type": "EMAIL",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "js****-***@gov.in",
+      "context_before": "ld necessarily be conveyed on email id: ",
+      "context_after": " 6.3 The UAPA Nodal Officer of the State"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "central_bank_india_kyc_aml_2025_26__240",
       "entity_type": "EMAIL",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "d**@fiuindia.gov.in",
+      "context_before": "35, 011- 23314459 (FAX), email address: ",
+      "context_after": "]. 1.2 Regulator under this order shall "
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "nainital_bank_kyc_aml_policy__0",
       "entity_type": "EMAIL",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "**@nainitalbank.co.in",
+      "context_before": "site: www.nainitalbank.co.in e-mail ID: ",
+      "context_after": ", Phone: 05942-233739 DOCUMENT CONTROL O"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "nainital_bank_kyc_aml_policy__0",
       "entity_type": "PINCODE",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "26****",
+      "context_before": ": G.B. Pant Road, Nainital, Uttarakhand-",
+      "context_after": "] CIN No. [REDACTED_CIN], website"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "nainital_bank_kyc_aml_policy__0",
       "entity_type": "CIN",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "U6*******************",
+      "context_before": "Uttarakhand-[REDACTED_PINCODE]] CIN No. ",
+      "context_after": ", website: www.nainitalbank.co.in e-mail"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "nainital_bank_kyc_aml_policy__138",
       "entity_type": "EMAIL",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "js****-***@gov.in",
+      "context_before": "6, 011- 230923465 (Fax), email address: ",
+      "context_after": "] 3.2 The Ministry of External Affairs, "
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "nainital_bank_kyc_aml_policy__138",
       "entity_type": "ACCOUNT_NUMBER_SUPPRESSED",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "23*******",
+      "context_before": "A [Telephone Number: 011-23092456, 011- ",
+      "context_after": " (Fax), email address: [REDACTED_EMAIL]]"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "nainital_bank_kyc_aml_policy__142",
       "entity_type": "EMAIL",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "js****-***@gov.in",
+      "context_before": "ll necessarily be conveyed on email id: ",
+      "context_after": ". (iii) The banks, stock exchanges/depos"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "nainital_bank_kyc_aml_policy__157",
       "entity_type": "PINCODE",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "11****",
+      "context_before": "retary (CTCR), North Block, New Delhi – ",
+      "context_after": "” or through email to [REDACTED_EMAIL]” "
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "rbi_ppi_master_direction__0",
       "entity_type": "PINCODE",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "40****",
+      "context_before": "ShahidBhagat Singh Road, Fort, Mumbai - ",
+      "context_after": ""
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "rbi_fraud_master_direction_pwc__14",
       "entity_type": "PHONE",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "+91 **********",
+      "context_before": "ices Leader Partner, Risk Consulting M: ",
+      "context_after": " M: +(91) [REDACTED_PHONE] E: [REDACTED_EMAIL]"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "rbi_fraud_master_direction_pwc__14",
       "entity_type": "PHONE",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "81********",
+      "context_before": "k Consulting M: [REDACTED_PHONE] M: +(91) ",
+      "context_after": " E: [REDACTED_EMAIL] E: [REDACTED_EMAIL]"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "rbi_fraud_master_direction_pwc__15",
       "entity_type": "PHONE",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "95********",
+      "context_before": "",
+      "context_after": " E: [REDACTED_EMAIL] pwc.in Data Classif"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "rbi_fraud_master_direction_pwc__15",
       "entity_type": "CIN",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "U7*******************",
+      "context_before": "ving Corporate Identity Number or CIN : ",
+      "context_after": "), which is a member firm of Pricewaterh"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "rbi_kyc_directions_2025_commercial_banks__122",
       "entity_type": "ACCOUNT_NUMBER_SUPPRESSED",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "23*******",
+      "context_before": "umber: 011-24010033, 011- 24010034, 011-",
+      "context_after": " (Fax), email address: [REDACTED_EMAIL]]"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "rbi_kyc_directions_2025_commercial_banks__141",
       "entity_type": "PINCODE",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "11****",
+      "context_before": "retary (CTCR), North Block, New Delhi – ",
+      "context_after": "” or through email to jsctcr- [REDACTED_"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "rbi_kyc_directions_2025_urban_coop_banks__122",
       "entity_type": "ACCOUNT_NUMBER_SUPPRESSED",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "23*******",
+      "context_before": "umber: 011-24010033, 011- 24010034, 011-",
+      "context_after": " (Fax), email address: [REDACTED_EMAIL]]"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "bhiwani_dccb_kyc_aml_cft_2023_24__139",
       "entity_type": "PINCODE",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "11****",
+      "context_before": "rti Building, Connaught Place New Delhi-",
+      "context_after": ". Website - http://fiuindia.gov.in/. b. "
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "bhiwani_dccb_kyc_aml_cft_2023_24__187",
       "entity_type": "ACCOUNT_NUMBER_SUPPRESSED",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "23*******",
+      "context_before": "Fax No. 011-",
+      "context_after": " and also convey over telephone on 011-2"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "rbi_kyc_ebixcash__131",
       "entity_type": "PINCODE",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "11****",
+      "context_before": "retary (CTCR), North Block, New Delhi – ",
+      "context_after": "” or through email to [REDACTED_EMAIL]” "
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "bank_of_baroda_kyc__0",
       "entity_type": "SWIFT_BIC",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "BA*********",
+      "context_before": " SWIFT Address of Financial Institution ",
+      "context_after": " 4 Full Address of the registered office"
     },
     {
-      "doc_id": "[REDACTED]",
+      "doc_id": "central_bank_india_kyc_aml_2021__170",
       "entity_type": "ACCOUNT_NUMBER_SUPPRESSED",
-      "before": "[REDACTED]",
-      "context_before": "[REDACTED]",
-      "context_after": "[REDACTED]"
+      "before": "01*********",
+      "context_before": "he UAPA[Telephone Number: 011-23092548, ",
+      "context_after": " (Fax), email address: [REDACTED_EMAIL]]"
+    },
+    {
+      "doc_id": "bank_of_baroda_kyc__1",
+      "entity_type": "PERSON_NAME",
+      "before": "Pa**** ******",
+      "context_before": "rs and Directors Principal officer: Mr. ",
+      "context_after": ", General Manager 16. of your institutio"
+    },
+    {
+      "doc_id": "fiu_india_annual_report_2021_22__38",
+      "entity_type": "PERSON_NAME",
+      "before": "Ch******* ******",
+      "context_before": "e of its practices and procedures. Shri ",
+      "context_after": ", Additional Director, FIU-India was ele"
     }
   ],
   "regulatory_tagged_count": 1913,
   "regulatory_untagged_count": 1412,
   "high_density_count": 821,
   "final_output_chunks": 3325,
-  "final_output_chars": 3810438,
+  "final_output_chars": 3810453,
   "documents": [
     {
       "doc_id": "amfi_sebi_aml_minimum_standards_2024",
@@ -315,7 +332,7 @@
       "char_count": 9317,
       "chunks_after_dedup": 8,
       "chunks_after_quality_filter": 8,
-      "chunks_with_pii_redacted": 2
+      "chunks_with_pii_redacted": 3
     },
     {
       "doc_id": "bhiwani_dccb_kyc_aml_cft_2023_24",
@@ -371,7 +388,7 @@
       "char_count": 95143,
       "chunks_after_dedup": 78,
       "chunks_after_quality_filter": 74,
-      "chunks_with_pii_redacted": 0
+      "chunks_with_pii_redacted": 1
     },
     {
       "doc_id": "fiu_india_brochure",
