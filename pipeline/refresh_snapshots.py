@@ -11,6 +11,7 @@ byte; only the PII examples, which show original values by design, are masked.
 import argparse
 import json
 import logging
+import os
 import re
 import shutil
 import tempfile
@@ -24,6 +25,8 @@ log = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_INPUT = ROOT / "data" / "raw"
 DEFAULT_OUTPUT = ROOT / "dashboard" / "public"
+REFRESH_DEVICE_ENV = "CURATOR_REFRESH_DEVICE"
+REFRESH_QUALITY_SIGNAL_ENV = "CURATOR_REFRESH_QUALITY_SIGNAL"
 
 VISIBLE_CHARS = 2  # most characters of an original value left readable in a published example
 MAX_LEAKS_REPORTED = 5
@@ -136,8 +139,21 @@ def refresh(input_dir=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT) -> dict:
     if not any(input_dir.glob("*.pdf")):
         raise ValueError(f"No PDF files found in {input_dir}")
 
+    device = os.environ.get(REFRESH_DEVICE_ENV, "auto").strip().lower()
+    quality_signal = os.environ.get(REFRESH_QUALITY_SIGNAL_ENV, "off").strip().lower()
+    if device not in ("auto", "cpu", "cuda"):
+        raise ValueError(f"{REFRESH_DEVICE_ENV} must be auto, cpu or cuda")
+    if quality_signal not in ("off", "model"):
+        raise ValueError(f"{REFRESH_QUALITY_SIGNAL_ENV} must be off or model")
+
     with tempfile.TemporaryDirectory(prefix="dashboard_refresh_") as temp:
-        result = curate(input_dir, Path(temp) / "output", device="auto")
+        result = curate(
+            input_dir,
+            Path(temp) / "output",
+            device=device,
+            pii_engine="regex",
+            quality_signal=quality_signal,
+        )
         published = publish_snapshots(result.summary, result.output_path, output_dir)
 
     log.info(

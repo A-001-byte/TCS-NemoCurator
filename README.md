@@ -135,6 +135,8 @@ Limits and safety: at most 10 files and 30 MB per upload; one run at a time; **n
 | Setting | Values | Effect |
 |---|---|---|
 | `CURATOR_DEVICE` | `cpu`, `cuda` | forces the compute device for the optional models; default is auto-detect with CPU fallback (`--device` on the CLI wins) |
+| `CURATOR_REFRESH_DEVICE` | `auto`, `cpu`, `cuda` | device for the dashboard's full-corpus refresh; default is `auto` |
+| `CURATOR_REFRESH_QUALITY_SIGNAL` | `off`, `model` | optional quality label for the dashboard refresh; default is `off`. Set this to `model` with `CURATOR_REFRESH_DEVICE=cuda` to make the refresh button use the GPU. PII stays on regex + spaCy. |
 | `CURATOR_HOST`, `CURATOR_PORT` | address, port | where the server listens; the `--host` and `--port` flags win |
 
 The optional models are off by default. After installing `requirements-ml.txt` with a CUDA-enabled PyTorch build, use `bfsi-curate run pdfs/ -o out/ --device cuda --pii-engine gliner --quality-signal model` to use both. GLiNER replaces regex + spaCy and has different validation behavior. The DeBERTa signal adds labels without filtering chunks. The other pipeline stages still run on CPU. See [`SETUP.md`](SETUP.md) for the one-time GPU install.
