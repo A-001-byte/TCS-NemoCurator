@@ -1,0 +1,6 @@
+# Optional OCR for scanned PDFs (bfsi-curate run --ocr). The Python package is only a wrapper: it also needs the
+# Tesseract program itself. Ubuntu / WSL2: sudo apt install tesseract-ocr    Windows: install Tesseract, add it to PATH.
+# Usage: pip install -r requirements-ocr.txt
+-r requirements.txt
+
+pytesseract==0.3.13

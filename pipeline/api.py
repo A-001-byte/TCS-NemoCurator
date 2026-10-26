@@ -130,6 +130,7 @@ def run_isolated(
     pii_engine: Optional[str] = None,
     quality_signal: Optional[str] = None,
     device: Optional[str] = None,
+    ocr: Optional[bool] = None,
 ) -> tuple:
     """Run every stage in a throwaway data/ folder.
 
@@ -161,6 +162,8 @@ def run_isolated(
             if quality_signal is not None:
                 quality.QUALITY_SIGNAL_MODE = quality_signal
                 quality.QUALITY_SIGNAL_STRICT = quality_signal == "model"
+            if ocr is not None:
+                extract.OCR_ENABLED = ocr
             if raw_dir is not None:
                 extract.RAW_DIR = Path(raw_dir)
             try:
@@ -186,6 +189,7 @@ def curate(
     *,
     pii_engine: str = "regex",
     quality_signal: str = "off",
+    ocr: bool = False,
 ) -> CurateResult:
     """Run the full pipeline on every PDF in `input_dir`; write the results to `output_dir`.
 
@@ -200,6 +204,10 @@ def curate(
     if not pdfs:
         raise ValueError(f"No .pdf files in {input_dir}")
 
+    if ocr:
+        reason = extract.ocr_unavailable_reason()
+        if reason:
+            raise RuntimeError(reason)
     resolved = pick(device)
     if device == "cuda" and resolved == "cpu":
         raise RuntimeError(
@@ -225,6 +233,7 @@ def curate(
             output_dir=output_dir,
             pii_engine=pii_engine,
             quality_signal=quality_signal,
+            ocr=ocr,
         )
         if result is None:
             raise RuntimeError(f"{stop_reason(pipeline_log)}\n{pipeline_log}")

@@ -98,7 +98,19 @@ Notes:
 - torch 2.14.0 failed on one CPU build with `ValueError: Duplicate dispatch rule for <built-in function intern>` when importing `gliner`. Changing `transformers` did not help. If you hit it, install `torch==2.5.1` (for a CPU-only machine from `--index-url https://download.pytorch.org/whl/cpu`) and keep `transformers==4.55.0`.
 - `tiktoken` downloads its encoding on first use, so run the token statistics once while online.
 
-## 5. Real NeMo Curator (optional)
+## 5. OCR for scanned PDFs (optional)
+
+Without OCR a scanned PDF (no text layer) fails extraction cleanly and is counted. To read such pages:
+
+```bash
+sudo apt install -y tesseract-ocr            # the Tesseract program (about 30 MB); Windows: install Tesseract and add it to PATH
+pip install -r requirements-ocr.txt          # the Python wrapper
+bfsi-curate run my_pdfs/ -o out/ --ocr
+```
+
+Only pages with no text are OCR'd; pages with a text layer are untouched. The run's extract record shows `ocr` and `ocr_pages`. If Tesseract or the wrapper is missing, `--ocr` stops at once with a one-line reason instead of failing halfway. OCR is slow (seconds per page) and its text is noisier than a real text layer, so it may lose or garble words that the rest of the pipeline then sees.
+
+## 6. Real NeMo Curator (optional)
 
 Only `pipeline/nemo_compare.py` needs it; the pipeline never imports it. Use a separate virtual environment:
 
@@ -113,7 +125,7 @@ python3 -m pipeline.nemo_compare data/deduped/chunks.jsonl data/output/curated.j
 
 Run `python3 -m pipeline.run` first so the two input files exist. The comparison follows NVIDIA's official text quickstart for 1.3.0 (`Pipeline`, `JsonlReader`, `ScoreFilter`, `JsonlWriter`) on the CPU executor; no GPU is needed.
 
-## 6. Troubleshooting
+## 7. Troubleshooting
 
 | Symptom | Fix |
 |---|---|

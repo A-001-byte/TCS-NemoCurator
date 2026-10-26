@@ -27,6 +27,8 @@ DISTRIBUTION = {
     "gliner": "gliner",
     "huggingface_hub": "huggingface-hub",
     "nemo_curator": "nemo-curator",
+    "pytesseract": "pytesseract",
+    "pypdfium2": "pypdfium2",
 }
 CORE = {"datasketch", "langdetect", "pdfplumber", "spacy", "tiktoken"}
 OPTIONAL_ONLY = {"torch", "transformers", "gliner", "huggingface_hub", "nemo_curator"}
@@ -87,7 +89,13 @@ def test_pyproject_declares_every_core_package_the_code_imports():
 
 
 @pytest.mark.parametrize(
-    "extra,file", [("ml", "requirements-ml.txt"), ("nemo", "requirements-nemo.txt"), ("dev", "requirements-dev.txt")]
+    "extra,file",
+    [
+        ("ml", "requirements-ml.txt"),
+        ("nemo", "requirements-nemo.txt"),
+        ("ocr", "requirements-ocr.txt"),
+        ("dev", "requirements-dev.txt"),
+    ],
 )
 def test_every_extra_matches_its_requirements_file(extra, file):
     pinned = pins(file)
@@ -106,7 +114,7 @@ def test_the_core_install_does_not_pull_in_the_heavy_optional_packages():
 
 
 def test_the_optional_files_build_on_the_core_file():
-    for name in ("requirements-dev.txt", "requirements-ml.txt", "requirements-nemo.txt"):
+    for name in ("requirements-dev.txt", "requirements-ml.txt", "requirements-nemo.txt", "requirements-ocr.txt"):
         assert "-r requirements.txt" in (ROOT / name).read_text(encoding="utf-8"), name
     assert "-r requirements-ml.txt" in (ROOT / "requirements-gpu.txt").read_text(encoding="utf-8")
 
@@ -137,9 +145,9 @@ def test_every_third_party_module_the_code_uses_is_declared_somewhere():
     for path in (ROOT / "pipeline").glob("*.py"):
         used |= third_party(ast.parse(path.read_text(encoding="utf-8")), top_level_only=False)
     declared = set()
-    for name in ("requirements.txt", "requirements-ml.txt", "requirements-nemo.txt"):
+    for name in ("requirements.txt", "requirements-ml.txt", "requirements-nemo.txt", "requirements-ocr.txt"):
         declared |= set(pins(name))
-    transitive = {"huggingface-hub"}  # installed by transformers
+    transitive = {"huggingface-hub", "pypdfium2"}  # installed by transformers and by pdfplumber
     for module in used:
         distribution = DISTRIBUTION.get(module)
         assert distribution, f"unknown third-party import {module!r}: add it to DISTRIBUTION and a requirements file"
@@ -154,6 +162,7 @@ def test_the_requirement_files_have_no_duplicate_or_unpinned_entries():
         "requirements-dev.txt",
         "requirements-ml.txt",
         "requirements-nemo.txt",
+        "requirements-ocr.txt",
         "requirements-gpu.txt",
     ):
         entries = requirement_lines(name)
