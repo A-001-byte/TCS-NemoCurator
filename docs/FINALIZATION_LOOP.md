@@ -27,18 +27,18 @@ Phases are ordered by **demo impact first, tidiness second**, so that if time ru
 
 ## Phase 0: baseline (before any change)
 
-- [ ] 0.1 `main` is current; `pytest` 29 pass, `npm test` 7 pass, `npm run lint` clean or listed, `npm run build` ok
-- [ ] 0.2 Full run on `main`: 3,325 chunks, 68 PII (names on), timing recorded
-- [ ] 0.3 Open the PR for Aditi's `feat/aditi-final-evidence` (docs only)
+- [x] 0.1 `main` is current; `pytest` 29 pass, `npm test` 7 pass, `npm run lint` clean or listed, `npm run build` ok — 29 pytest, 7 npm test, build ok, one known lint warning (26 Oct)
+- [x] 0.2 Full run on `main`: 3,325 chunks, 68 PII (names on), timing recorded — 3,325 chunks, 68 PII, names on, 11 min 48 s on a busy laptop (26 Oct)
+- [x] 0.3 Open the PR for Aditi's `feat/aditi-final-evidence` (docs only) — PR #23
 
 ## Phase 1: demo-critical (what the audience sees)
 
-- [ ] 1.1 PII example masking: keep `doc_id` and the already-redacted context, mask only the original value; add `pipeline/test_refresh.py` (7 stages, no raw email, 10-digit or Aadhaar-shaped string in any snapshot, numbers equal the pipeline's)
-- [ ] 1.2 Regenerate every dashboard snapshot from `main` (expect 68 PII, names on, `device` present); no byte-order marks; stop committing regenerated copies of other people's files by hand
-- [ ] 1.3 Dashboard panels: **Document types** (caption read from `doctype_eval.json`), **Tokens** (`token_stats.json`), **Device** badge; each hides itself if its file is missing
-- [ ] 1.4 Refresh without a frozen button: `POST /api/refresh` starts a background job and answers 202; `GET /api/refresh/status`; a second request while running answers 409; the button polls
-- [ ] 1.5 Demo script and likely questions rewritten for Linux and for the real numbers, with the live 3-PDF sample, the NeMo comparison, the document-type caveat and the terminal command
-- [ ] 1.6 `scripts/make_final_numbers.py` builds `docs/FINAL_NUMBERS.md` from the snapshots, so slides, README and dashboard cannot disagree
+- [x] 1.1 PII example masking: keep `doc_id` and the already-redacted context, mask only the original value; add `pipeline/test_refresh.py` (7 stages, no raw email, 10-digit or Aadhaar-shaped string in any snapshot, numbers equal the pipeline's) — `pipeline/refresh_snapshots.py`; `tests/test_refresh.py` (7 tests, 6 rules mutation-checked); also fixed a local-path leak in the committed snapshot
+- [x] 1.2 Regenerate every dashboard snapshot from `main` (expect 68 PII, names on, `device` present); no byte-order marks; stop committing regenerated copies of other people's files by hand — real refresh on 35 PDFs: 3,325 / 68 / names on / device cpu, curated hash 8e2b6954e85ac3fd unchanged, no byte-order mark, no local path
+- [x] 1.3 Dashboard panels: **Document types** (caption read from `doctype_eval.json`), **Tokens** (`token_stats.json`), **Device** badge; each hides itself if its file is missing — `dashboard/src/sections/`, `shapes.js`, `useSnapshot.js`; checked in a browser; npm test 14 pass
+- [x] 1.4 Refresh without a frozen button: `POST /api/refresh` starts a background job and answers 202; `GET /api/refresh/status`; a second request while running answers 409; the button polls — `pipeline/refresh_job.py`; `tests/test_refresh_job.py` (4 tests, 5 mutations); browser: running, success, server down
+- [x] 1.5 Demo script and likely questions rewritten for Linux and for the real numbers, with the live 3-PDF sample, the NeMo comparison, the document-type caveat and the terminal command — `docs/demo/DEMO_SCRIPT.md` and `docs/demo/LIKELY_QUESTIONS.md`
+- [x] 1.6 `scripts/make_final_numbers.py` builds `docs/FINAL_NUMBERS.md` from the snapshots, so slides, README and dashboard cannot disagree — `scripts/make_final_numbers.py`; `tests/test_final_numbers.py` (7 tests); `docs/FINAL_NUMBERS.md` generated
 
 ## Phase 2: backend hardening (the API and the library)
 
