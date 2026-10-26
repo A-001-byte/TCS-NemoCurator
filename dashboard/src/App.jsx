@@ -23,8 +23,17 @@ import {
   LoaderCircle,
   Scale,
   RefreshCw,
+  Tags,
+  Hash,
+  Cpu,
 } from "lucide-react";
 import { STAGES, ENTITIES, reasonLabel, entityLabel } from "./stages";
+import { Bar, SectionHeader } from "./components/common";
+import { fmt, pct } from "./format";
+import DocumentTypes from "./sections/DocumentTypes";
+import Tokens from "./sections/Tokens";
+import { isDocTypeReport, isTokenReport } from "./shapes";
+import { useSnapshot } from "./useSnapshot";
 import {
   prepareCorpus,
   rankMatches,
@@ -35,16 +44,21 @@ import {
 } from "./similarity";
 import "./App.css";
 
-const SECTIONS = [
+/* `optional` sections appear only when their snapshot file loads (see buildSections). */
+const ALL_SECTIONS = [
   { id: "overview", title: "Overview", icon: LayoutDashboard },
   { id: "pipeline", title: "Pipeline", icon: Workflow },
   { id: "corpus", title: "Corpus quality", icon: Library },
+  { id: "tokens", title: "Token statistics", icon: Hash, optional: "tokens" },
   { id: "nemo", title: "NeMo comparison", icon: Scale },
+  { id: "doctypes", title: "Document types", icon: Tags, optional: "doctypes" },
   { id: "pii", title: "PII redaction", icon: ShieldCheck },
   { id: "documents", title: "Source documents", icon: Files },
   { id: "search", title: "Similarity search", icon: Search },
   { id: "run", title: "Process documents", icon: Upload },
 ];
+
+const buildSections = (available) => ALL_SECTIONS.filter((s) => !s.optional || available[s.optional]);
 
 const EXAMPLE_QUERY =
   "The customer submitted KYC documents including PAN details, address proof and bank account information. The transaction history shows multiple unusual transfers requiring further review.";
@@ -52,8 +66,6 @@ const EXCERPT_CHARS = 480;
 const SUPPRESSED = "ACCOUNT_NUMBER_SUPPRESSED";
 const EXAMPLES_SHOWN = 6;
 
-const fmt = (n) => (typeof n === "number" ? n.toLocaleString("en-US") : "–");
-const pct = (part, whole) => (whole ? `${((part / whole) * 100).toFixed(1)}%` : "–");
 const byStage = (stages, name) => stages.find((s) => s.stage === name) || {};
 
 /* ---------- shell ---------- */
@@ -82,8 +94,8 @@ function useTheme() {
   return [theme, () => setTheme((t) => (t === "dark" ? "light" : "dark"))];
 }
 
-function useActiveSection(ready) {
-  const [active, setActive] = useState(SECTIONS[0].id);
+function useActiveSection(ready, sections) {
+  const [active, setActive] = useState(sections[0].id);
   useEffect(() => {
     if (!ready) return undefined;
     const observer = new IntersectionObserver(
@@ -93,16 +105,16 @@ function useActiveSection(ready) {
       },
       { rootMargin: "-30% 0px -60% 0px" }
     );
-    SECTIONS.forEach(({ id }) => {
+    sections.forEach(({ id }) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
     return () => observer.disconnect();
-  }, [ready]);
+  }, [ready, sections]);
   return active;
 }
 
-function Sidebar({ active, theme, onToggleTheme, documentCount }) {
+function Sidebar({ sections, active, theme, onToggleTheme, documentCount }) {
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -116,7 +128,7 @@ function Sidebar({ active, theme, onToggleTheme, documentCount }) {
       </div>
 
       <nav className="nav" aria-label="Sections">
-        {SECTIONS.map(({ id, title, icon: Icon }) => (
+        {sections.map(({ id, title, icon: Icon }) => (
           <a
             key={id}
             href={`#${id}`}
@@ -144,8 +156,9 @@ function Sidebar({ active, theme, onToggleTheme, documentCount }) {
 }
 
 
-function Topbar({ active, onRefresh, refreshing }) {
-  const section = SECTIONS.find((s) => s.id === active);
+/* `device` is the compute device the run reported (null while the summary loads, "" if it is absent). */
+function Topbar({ sections, active, device, onRefresh, refreshing }) {
+  const section = sections.find((s) => s.id === active);
 
   return (
     <header className="topbar">
@@ -156,6 +169,12 @@ function Topbar({ active, onRefresh, refreshing }) {
       </div>
 
       <div className="topbar-actions">
+        {device !== null && (
+          <span className="pill" title="Compute device the pipeline reported for this run">
+            <Cpu size={14} />
+            Device: {device || "not reported"}
+          </span>
+        )}
         <span className="pill">
           <span className="dot" />
           Snapshot: pipeline_summary.json
@@ -175,24 +194,6 @@ function Topbar({ active, onRefresh, refreshing }) {
   );
 }
 
-
-function SectionHeader({ title, description }) {
-  return (
-    <div className="section-head">
-      <h2>{title}</h2>
-      {description && <p className="section-desc">{description}</p>}
-    </div>
-  );
-}
-
-function Bar({ value, max, tone = "primary" }) {
-  const width = max ? Math.max((value / max) * 100, value > 0 ? 2 : 0) : 0;
-  return (
-    <div className="bar">
-      <div className={`bar-fill fill-${tone}`} style={{ width: `${width}%` }} />
-    </div>
-  );
-}
 
 /* ---------- overview ---------- */
 
@@ -1388,7 +1389,17 @@ export default function App() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [theme, toggleTheme] = useTheme();
-  const active = useActiveSection(Boolean(summary));
+  const doctypes = useSnapshot("doctype_eval.json", isDocTypeReport);
+  const tokens = useSnapshot("token_stats.json", isTokenReport);
+  const hasDoctypes = doctypes.status === "ready";
+  const hasTokens = tokens.status === "ready";
+  const sections = useMemo(
+    () => buildSections({ doctypes: hasDoctypes, tokens: hasTokens }),
+    [hasDoctypes, hasTokens]
+  );
+  const active = useActiveSection(Boolean(summary), sections);
+  // null until the summary loads; "" when a run did not report a device
+  const device = summary ? byStage(summary.stages, "quality_filter").device || "" : null;
 
  
 const loadSummary = async (refreshSnapshot = false) => {
@@ -1432,6 +1443,7 @@ useEffect(() => {
   return (
     <div className="shell">
       <Sidebar
+        sections={sections}
         active={active}
         theme={theme}
         onToggleTheme={toggleTheme}
@@ -1439,10 +1451,12 @@ useEffect(() => {
       />
       <div className="main">
         <Topbar
-  active={active}
-  onRefresh={() => loadSummary(true)}
-  refreshing={refreshing}
-/>
+          sections={sections}
+          active={active}
+          device={device}
+          onRefresh={() => loadSummary(true)}
+          refreshing={refreshing}
+        />
         <main className="content">
           {error && (
             <div className="card empty">
@@ -1459,7 +1473,9 @@ useEffect(() => {
               <Overview summary={summary} />
               <Pipeline stages={summary.stages} />
               <CorpusQuality summary={summary} />
+              {hasTokens && <Tokens report={tokens.data} />}
               <NemoComparison />
+              {hasDoctypes && <DocumentTypes report={doctypes.data} />}
               <PiiSection summary={summary} />
               <Documents documents={summary.documents || []} />
               <SimilaritySearch />
