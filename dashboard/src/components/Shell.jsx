@@ -53,7 +53,7 @@ export function Sidebar({ sections, active, theme, onToggleTheme, documentCount 
   );
 }
 
-/* `device` is the compute device the run reported (null while the summary loads, "" if it is absent). */
+/* `device` describes the quality model's actual device in the saved snapshot. */
 export function Topbar({ sections, active, device, onRefresh, refreshing, elapsed }) {
   const section = sections.find((s) => s.id === active);
 
@@ -67,9 +67,9 @@ export function Topbar({ sections, active, device, onRefresh, refreshing, elapse
 
       <div className="topbar-actions">
         {device !== null && (
-          <span className="pill" title="Compute device the pipeline reported for this run">
+          <span className="pill" title="Quality model device in the saved snapshot">
             <Cpu size={14} />
-            Device: {device || "not reported"}
+            Quality: {device || "not reported"}
           </span>
         )}
         <span className="pill">
