@@ -168,7 +168,7 @@ function Topbar({ active, onRefresh, refreshing }) {
           disabled={refreshing}
         >
           <RefreshCw size={16} />
-          {refreshing ? "Refreshing..." : "Refresh snapshot"}
+          {refreshing ? "Re-running pipeline..." : "Re-run pipeline and refresh numbers"}
         </button>
       </div>
     </header>
@@ -1397,7 +1397,7 @@ const loadSummary = async (refreshSnapshot = false) => {
 
   try {
     if (refreshSnapshot) {
-      const refreshRes = await fetch("/api/refresh");
+      const refreshRes = await fetch("/api/refresh", { method: "POST" });
       const refreshData = await refreshRes.json();
 
       if (!refreshRes.ok) {

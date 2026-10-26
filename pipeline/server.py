@@ -68,19 +68,29 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/api/health":
             self._send(200, {"ok": True})
-        elif self.path == "/api/refresh":
-            try:
-                refresh()
-                self._send(200, {"ok": True, "message": "Snapshot refreshed."})
-            except Exception as exc:
-                self.log_error("snapshot refresh failed: %r", exc)
-                self._send(500, {"error": f"Snapshot refresh failed: {exc}"})
         else:
             self._send(404, {"error": "Not found"})
 
+    
+    
+    
     def do_POST(self):
+        if self.path == "/api/refresh":
+            try:
+                summary = refresh()
+                self._send(200, {
+                    "ok": True,
+                    "message": "Pipeline rerun and snapshot refreshed.",
+                    "chunks": summary.get("final_output_chunks", 0),
+                })
+            except Exception as exc:
+                self.log_error("snapshot refresh failed: %r", exc)
+                self._send(500, {"error": f"Snapshot refresh failed: {exc}"})
+            return
+
         if self.path != "/api/run":
             return self._send(404, {"error": "Not found"})
+
         length = int(self.headers.get("Content-Length") or 0)
         # base64 inflates by 4/3; allow for the JSON wrapper too
         if length > MAX_TOTAL_BYTES * 4 // 3 + 64 * 1024:
@@ -94,12 +104,14 @@ class Handler(BaseHTTPRequestHandler):
 
         try:
             result, log = run_on_upload(files)
-        except Exception as exc:  # report pipeline crashes to the UI instead of dropping the connection
+        except Exception as exc:
             self.log_error("pipeline crashed: %r", exc)
             return self._send(500, {"error": f"Pipeline crashed: {exc}"})
         if result is None:
             return self._send(422, {"error": "The pipeline stopped before finishing.", "log": log})
         self._send(200, {**result, "log": log})
+
+
 
 
 if __name__ == "__main__":
