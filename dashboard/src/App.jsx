@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import {
   LayoutDashboard,
   Workflow,
@@ -23,8 +23,18 @@ import {
   LoaderCircle,
   Scale,
   RefreshCw,
+  Tags,
+  Hash,
+  Cpu,
 } from "lucide-react";
 import { STAGES, ENTITIES, reasonLabel, entityLabel } from "./stages";
+import { Bar, SectionHeader } from "./components/common";
+import { duration, fmt, pct } from "./format";
+import DocumentTypes from "./sections/DocumentTypes";
+import Tokens from "./sections/Tokens";
+import { isDocTypeReport, isSummary, isTokenReport } from "./shapes";
+import { useRefresh } from "./useRefresh";
+import { useSnapshot } from "./useSnapshot";
 import {
   prepareCorpus,
   rankMatches,
@@ -35,16 +45,21 @@ import {
 } from "./similarity";
 import "./App.css";
 
-const SECTIONS = [
+/* `optional` sections appear only when their snapshot file loads (see buildSections). */
+const ALL_SECTIONS = [
   { id: "overview", title: "Overview", icon: LayoutDashboard },
   { id: "pipeline", title: "Pipeline", icon: Workflow },
   { id: "corpus", title: "Corpus quality", icon: Library },
+  { id: "tokens", title: "Token statistics", icon: Hash, optional: "tokens" },
   { id: "nemo", title: "NeMo comparison", icon: Scale },
+  { id: "doctypes", title: "Document types", icon: Tags, optional: "doctypes" },
   { id: "pii", title: "PII redaction", icon: ShieldCheck },
   { id: "documents", title: "Source documents", icon: Files },
   { id: "search", title: "Similarity search", icon: Search },
   { id: "run", title: "Process documents", icon: Upload },
 ];
+
+const buildSections = (available) => ALL_SECTIONS.filter((s) => !s.optional || available[s.optional]);
 
 const EXAMPLE_QUERY =
   "The customer submitted KYC documents including PAN details, address proof and bank account information. The transaction history shows multiple unusual transfers requiring further review.";
@@ -52,8 +67,6 @@ const EXCERPT_CHARS = 480;
 const SUPPRESSED = "ACCOUNT_NUMBER_SUPPRESSED";
 const EXAMPLES_SHOWN = 6;
 
-const fmt = (n) => (typeof n === "number" ? n.toLocaleString("en-US") : "–");
-const pct = (part, whole) => (whole ? `${((part / whole) * 100).toFixed(1)}%` : "–");
 const byStage = (stages, name) => stages.find((s) => s.stage === name) || {};
 
 /* ---------- shell ---------- */
@@ -82,8 +95,8 @@ function useTheme() {
   return [theme, () => setTheme((t) => (t === "dark" ? "light" : "dark"))];
 }
 
-function useActiveSection(ready) {
-  const [active, setActive] = useState(SECTIONS[0].id);
+function useActiveSection(ready, sections) {
+  const [active, setActive] = useState(sections[0].id);
   useEffect(() => {
     if (!ready) return undefined;
     const observer = new IntersectionObserver(
@@ -93,16 +106,16 @@ function useActiveSection(ready) {
       },
       { rootMargin: "-30% 0px -60% 0px" }
     );
-    SECTIONS.forEach(({ id }) => {
+    sections.forEach(({ id }) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
     return () => observer.disconnect();
-  }, [ready]);
+  }, [ready, sections]);
   return active;
 }
 
-function Sidebar({ active, theme, onToggleTheme, documentCount }) {
+function Sidebar({ sections, active, theme, onToggleTheme, documentCount }) {
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -116,7 +129,7 @@ function Sidebar({ active, theme, onToggleTheme, documentCount }) {
       </div>
 
       <nav className="nav" aria-label="Sections">
-        {SECTIONS.map(({ id, title, icon: Icon }) => (
+        {sections.map(({ id, title, icon: Icon }) => (
           <a
             key={id}
             href={`#${id}`}
@@ -144,8 +157,9 @@ function Sidebar({ active, theme, onToggleTheme, documentCount }) {
 }
 
 
-function Topbar({ active, onRefresh, refreshing }) {
-  const section = SECTIONS.find((s) => s.id === active);
+/* `device` is the compute device the run reported (null while the summary loads, "" if it is absent). */
+function Topbar({ sections, active, device, onRefresh, refreshing, elapsed }) {
+  const section = sections.find((s) => s.id === active);
 
   return (
     <header className="topbar">
@@ -156,6 +170,12 @@ function Topbar({ active, onRefresh, refreshing }) {
       </div>
 
       <div className="topbar-actions">
+        {device !== null && (
+          <span className="pill" title="Compute device the pipeline reported for this run">
+            <Cpu size={14} />
+            Device: {device || "not reported"}
+          </span>
+        )}
         <span className="pill">
           <span className="dot" />
           Snapshot: pipeline_summary.json
@@ -168,31 +188,48 @@ function Topbar({ active, onRefresh, refreshing }) {
           disabled={refreshing}
         >
           <RefreshCw size={16} />
-          {refreshing ? "Re-running pipeline..." : "Re-run pipeline and refresh numbers"}
+          {refreshing ? `Re-running pipeline… ${duration(elapsed)}` : "Re-run pipeline and refresh numbers"}
         </button>
       </div>
     </header>
   );
 }
 
-
-function SectionHeader({ title, description }) {
-  return (
-    <div className="section-head">
-      <h2>{title}</h2>
-      {description && <p className="section-desc">{description}</p>}
-    </div>
-  );
+/* Progress, result or failure of a pipeline refresh started from the top bar. */
+function RefreshStatus({ job }) {
+  if (job.state === "running") {
+    return (
+      <div className="callout" role="status">
+        <LoaderCircle size={18} className="spin" />
+        <p>
+          Re-running the pipeline on every document. This takes several minutes; the numbers on this
+          page update by themselves when it finishes ({duration(job.elapsed_seconds)} so far).
+        </p>
+      </div>
+    );
+  }
+  if (job.state === "succeeded") {
+    return (
+      <div className="callout" role="status">
+        <CircleCheck size={18} />
+        <p>
+          Snapshots refreshed: {fmt(job.chunks)} curated chunks, {fmt(job.pii_entities)} PII entities
+          redacted ({duration(job.elapsed_seconds)}).
+        </p>
+      </div>
+    );
+  }
+  if (job.state === "failed") {
+    return (
+      <div className="card empty" role="alert">
+        <TriangleAlert size={18} />
+        <p>The refresh failed: {job.error}</p>
+      </div>
+    );
+  }
+  return null;
 }
 
-function Bar({ value, max, tone = "primary" }) {
-  const width = max ? Math.max((value / max) * 100, value > 0 ? 2 : 0) : 0;
-  return (
-    <div className="bar">
-      <div className={`bar-fill fill-${tone}`} style={{ width: `${width}%` }} />
-    </div>
-  );
-}
 
 /* ---------- overview ---------- */
 
@@ -1384,54 +1421,29 @@ function RunPipeline() {
 /* ---------- app ---------- */
 
 export default function App() {
-  const [summary, setSummary] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState(null);
   const [theme, toggleTheme] = useTheme();
-  const active = useActiveSection(Boolean(summary));
+  // Bumped when a refresh finishes: every snapshot is read again and every section remounts.
+  const [dataVersion, setDataVersion] = useState(0);
+  const summaryState = useSnapshot("pipeline_summary.json", isSummary, dataVersion);
+  const summary = summaryState.data;
+  const doctypes = useSnapshot("doctype_eval.json", isDocTypeReport, dataVersion);
+  const tokens = useSnapshot("token_stats.json", isTokenReport, dataVersion);
+  const refresh = useRefresh(useCallback(() => setDataVersion((v) => v + 1), []));
+  const hasDoctypes = doctypes.status === "ready";
+  const hasTokens = tokens.status === "ready";
+  const sections = useMemo(
+    () => buildSections({ doctypes: hasDoctypes, tokens: hasTokens }),
+    [hasDoctypes, hasTokens]
+  );
+  const active = useActiveSection(Boolean(summary), sections);
+  // null until the summary loads; "" when a run did not report a device
+  const device = summary ? byStage(summary.stages, "quality_filter").device || "" : null;
 
- 
-const loadSummary = async (refreshSnapshot = false) => {
-  setRefreshing(true);
-  setError(null);
-
-  try {
-    if (refreshSnapshot) {
-      const refreshRes = await fetch("/api/refresh", { method: "POST" });
-      const refreshData = await refreshRes.json();
-
-      if (!refreshRes.ok) {
-        throw new Error(
-          refreshData.error || `HTTP ${refreshRes.status}`
-        );
-      }
-    }
-
-    const res = await fetch("/pipeline_summary.json", {
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
-
-    const data = await res.json();
-    setSummary(data);
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setRefreshing(false);
-  }
-};
-
-
-useEffect(() => {
-  loadSummary();
-}, []);
 
   return (
     <div className="shell">
       <Sidebar
+        sections={sections}
         active={active}
         theme={theme}
         onToggleTheme={toggleTheme}
@@ -1439,32 +1451,39 @@ useEffect(() => {
       />
       <div className="main">
         <Topbar
-  active={active}
-  onRefresh={() => loadSummary(true)}
-  refreshing={refreshing}
-/>
+          sections={sections}
+          active={active}
+          device={device}
+          onRefresh={refresh.start}
+          refreshing={refresh.job.state === "running"}
+          elapsed={refresh.job.elapsed_seconds}
+        />
         <main className="content">
-          {error && (
+          <RefreshStatus job={refresh.job} />
+          {summaryState.status === "missing" && (
             <div className="card empty">
               <TriangleAlert size={18} />
               <p>
-                Could not load pipeline_summary.json ({error}). Run <code>python -m pipeline.run</code>{" "}
-                from the project root first.
+                Could not load pipeline_summary.json. Run <code>python -m pipeline.run</code> from the
+                project root first, or start the server with <code>python -m pipeline.server</code> and
+                use the re-run button above.
               </p>
             </div>
           )}
-          {!summary && !error && <p className="muted">Loading pipeline results…</p>}
+          {summaryState.status === "loading" && <p className="muted">Loading pipeline results…</p>}
           {summary && (
-            <>
+            <Fragment key={dataVersion}>
               <Overview summary={summary} />
               <Pipeline stages={summary.stages} />
               <CorpusQuality summary={summary} />
+              {hasTokens && <Tokens report={tokens.data} />}
               <NemoComparison />
+              {hasDoctypes && <DocumentTypes report={doctypes.data} />}
               <PiiSection summary={summary} />
               <Documents documents={summary.documents || []} />
               <SimilaritySearch />
               <RunPipeline />
-            </>
+            </Fragment>
           )}
         </main>
       </div>

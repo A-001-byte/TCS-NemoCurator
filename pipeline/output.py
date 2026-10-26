@@ -56,7 +56,8 @@ def main():
         "removed": docs_in - docs_out,
         "reason_counts": {},
         "total_chars": total_chars,
-        "output_path": str(OUT_PATH),
+        # Relative on purpose: an absolute path leaks the machine's folders into every shared summary.
+        "output_path": f"data/output/{OUT_PATH.name}",
     }
     STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
     print(json.dumps(record, indent=2))
