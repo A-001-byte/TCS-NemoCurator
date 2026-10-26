@@ -3,7 +3,7 @@
 ## Why not native Windows
 Native pip install fails: fasttext/cosmos-xenna wheel builds require
 Microsoft Visual C++ 14.0, not present on dev machines.
-See logs/nemo_curator_install.log for the exact error.
+See docs/archive/logs/nemo_curator_install.log for the exact error.
 
 ## Working setup: WSL2 Ubuntu 22.04
 
