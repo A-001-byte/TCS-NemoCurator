@@ -69,7 +69,7 @@ flowchart LR
 
 PII redaction runs **after** dedup on purpose: dedup relies on stable content hashes, and redacting first would write different placeholder text per occurrence and silently break duplicate detection. Heal runs **before** dedup for the reason in the table.
 
-Each stage writes a record `{stage, docs_in, docs_out, removed, reason_counts}`; output lines carry `{text, metadata}`. These two shapes are frozen: fields may be added, never renamed or removed. The metadata of an output line is `chunk_id, doc_id, source_file, pii_redacted, regulatory_tagged, regulatory_keywords_found, regulatory_density_score, quality_classifier_label`.
+Each stage writes a record `{stage, docs_in, docs_out, removed, reason_counts}`; output lines carry `{text, metadata}`. These two shapes are frozen: fields may be added, never renamed or removed. The metadata of an output line is `chunk_id, doc_id, source_file, page_start, page_end, pii_redacted, regulatory_tagged, regulatory_keywords_found, regulatory_density_score, quality_classifier_label`. `page_start` and `page_end` (1-based, inclusive) say which PDF pages the chunk came from, so a sentence can be traced back to its place; they are `null` when a chunk cannot be located, never a guess.
 
 ## Install
 

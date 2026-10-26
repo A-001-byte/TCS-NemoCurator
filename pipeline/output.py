@@ -38,6 +38,9 @@ def main():
                     "chunk_id": chunk["chunk_id"],
                     "doc_id": chunk["doc_id"],
                     "source_file": chunk["source_file"],
+                    # Where the chunk came from in the PDF (1-based, inclusive); null when it could not be located.
+                    "page_start": chunk.get("page_start"),
+                    "page_end": chunk.get("page_end"),
                     "pii_redacted": chunk.get("pii_redacted", False),
                     # Stream B: regulatory tagging fields
                     "regulatory_tagged": chunk.get("regulatory_tagged", False),
