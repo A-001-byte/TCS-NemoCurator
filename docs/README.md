@@ -14,6 +14,7 @@ Start with the top-level `README.md` (what the project is and how to run it), `S
 
 | File | What it shows |
 |---|---|
+| `PII_RECALL.md` | **Generated** by `python -m pipeline.eval_pii`: how many PII values the rules hide on a labelled synthetic set, per type, with every miss and false alarm listed. |
 | `A1_2_pii_gliner_comparison.md` | NVIDIA's GLiNER-PII model compared with our regex and spaCy rules. |
 | `A1_3_dedup_gpu_finding.md` | Real NeMo Curator dedup needs a GPU (`cudf`); ours runs on the CPU. |
 | `A1_4_quality_classifier_comparison.md` | Why NVIDIA's quality classifier is not used as a filter (about 17 times stricter, judges layout). |
