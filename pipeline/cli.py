@@ -33,6 +33,11 @@ def build_parser() -> argparse.ArgumentParser:
         default="off",
         help="default: off; model adds labels but does not filter",
     )
+    run_cmd.add_argument(
+        "--ocr",
+        action="store_true",
+        help="read scanned pages (no text layer) with Tesseract OCR; needs pytesseract and the tesseract program",
+    )
     run_cmd.add_argument("-v", "--verbose", action="store_true", help="on failure, print the pipeline's full log")
 
     serve_cmd = commands.add_parser("serve", help="start the local API the dashboard talks to")
@@ -51,6 +56,7 @@ def _run(args) -> int:
             args.device,
             pii_engine=args.pii_engine,
             quality_signal=args.quality_signal,
+            ocr=args.ocr,
         )
     except (FileNotFoundError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)

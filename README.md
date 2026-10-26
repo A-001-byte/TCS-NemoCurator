@@ -43,7 +43,9 @@ The PII figure is mostly official contact details printed in public documents (g
 
 **Document-type classifier (small, honestly scored).** A nearest-centroid classifier over 6 document types, built on the clause-search TF-IDF (`dashboard/src/doctype.js`). It is scored with each document's whole near-copy family held out; the table above has the score and the guessing baseline. Four combinations were scored on the same 34 documents and two types were merged after seeing the confusion table, so treat the score as the optimistic end; `fiu_reporting_spec` is still 0%. It is not a trained fraud or anomaly model. Results: `dashboard/public/doctype_eval.json`.
 
-**Not built:** OCR for scanned PDFs, any model training, a hosted/cloud service. GPU use is limited to the optional GLiNER and DeBERTa models; the default pipeline, including dedup, runs on the CPU.
+**Optional, off by default: OCR for scanned PDFs** (`bfsi-curate run --ocr`; needs the Tesseract program and `requirements-ocr.txt`, see `SETUP.md`). Pages with no text layer are drawn and read with Tesseract. It is tested with a stubbed OCR engine on the corpus's one scanned PDF; a real Tesseract run on it has not been done yet, and OCR text is noisier than a text layer.
+
+**Not built:** any model training, a hosted/cloud service. GPU use is limited to the optional GLiNER and DeBERTa models; the default pipeline, including dedup, runs on the CPU.
 
 ## How it works: 7 stages (the order matters)
 
@@ -90,6 +92,7 @@ python3 -m pytest -q                                 # all tests, no network nee
 | `requirements-ml.txt` | torch, transformers, GLiNER | the optional PII and quality models |
 | `requirements-gpu.txt` | the above plus cuDF | an NVIDIA GPU and driver |
 | `requirements-nemo.txt` | real NeMo Curator 1.3.0 | `pipeline/nemo_compare.py`, Linux or WSL2 only |
+| `requirements-ocr.txt` | pytesseract (and you install the Tesseract program) | `bfsi-curate run --ocr` for scanned PDFs |
 
 [`SETUP.md`](SETUP.md) has the step-by-step Linux/WSL2 install, the GPU notes and the known pitfalls.
 
