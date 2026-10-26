@@ -16,6 +16,7 @@ TOKEN_RE = re.compile(r"[a-z0-9]+")
 RUN = 6  # words in the run that is looked up
 STEP = 3  # how far to slide the run when it is not found
 TRIES = 6  # how many runs to try at each end of the chunk
+SLACK = 60  # extra words allowed between a chunk's start and its end, beyond twice its length
 
 
 def tokens(text: str) -> list:
@@ -36,13 +37,27 @@ class PageIndex:
         for i in range(len(self.words) - RUN + 1):
             self.runs[tuple(self.words[i : i + RUN])].append(i)
 
-    def _find(self, run: tuple, at_or_after: int) -> Optional[int]:
-        """The first place `run` occurs at or after `at_or_after`; failing that, anywhere (chunks can repeat boilerplate)."""
+    def _find(self, run: tuple, at_or_after: int, limit: Optional[int] = None) -> Optional[int]:
+        """The first place `run` occurs at or after `at_or_after`.
+
+        Without `limit`, failing that, anywhere (chunks can repeat boilerplate). With `limit`, only places up to `limit`:
+        the end of a chunk must be near its start, or a phrase repeated on a later page would stretch the chunk across
+        hundreds of pages."""
         places = self.runs.get(run)
         if not places:
             return None
         k = bisect_left(places, at_or_after)
+        if limit is not None:
+            return places[k] if k < len(places) and places[k] <= limit else None
         return places[k] if k < len(places) else places[0]
+
+    def _find_start(self, words: list, cursor: int, limit: Optional[int]) -> Optional[int]:
+        """Where the chunk starts, found by any of several short runs near its beginning, or None."""
+        for k in range(0, min(len(words) - RUN + 1, TRIES * STEP), STEP):
+            found = self._find(tuple(words[k : k + RUN]), cursor, limit)
+            if found is not None:
+                return max(found - k, 0)
+        return None
 
     def locate(self, chunk_text: str, cursor: int = 0) -> Optional[tuple]:
         """(first page, last page, word position of the chunk's start) or None when the chunk cannot be found.
@@ -51,19 +66,21 @@ class PageIndex:
         words = tokens(chunk_text)
         if len(words) < RUN or not self.words:
             return None
-        start = None
-        for k in range(0, min(len(words) - RUN + 1, TRIES * STEP), STEP):
-            found = self._find(tuple(words[k : k + RUN]), cursor)
-            if found is not None:
-                start = max(found - k, 0)
-                break
+        # Chunks are consecutive windows, so this one starts shortly after the previous one: look near the cursor first,
+        # and only then anywhere in the document (a wrong far-away match would drag every later chunk with it).
+        near = cursor + 4 * len(words) + SLACK
+        start = self._find_start(words, cursor, near)
+        if start is None:
+            start = self._find_start(words, cursor, None)
         if start is None:
             return None
         end = min(start + len(words) - 1, len(self.words) - 1)
+        # Cleaning and healing remove or add a few words, so the chunk's end is near start + its length, not exactly there.
+        limit = start + 2 * len(words) + SLACK
         for back in range(0, min(len(words) - RUN + 1, TRIES * STEP), STEP):
             k = len(words) - RUN - back
-            found = self._find(tuple(words[k : k + RUN]), start)
-            if found is not None and found >= start:
+            found = self._find(tuple(words[k : k + RUN]), start, limit)
+            if found is not None:
                 end = min(found + RUN - 1 + back, len(self.words) - 1)
                 break
         first, last = self.page_of[start], self.page_of[end]
