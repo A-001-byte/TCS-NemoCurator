@@ -20,7 +20,10 @@ Numbers in parentheses are pull requests. Before-and-after figures for each pipe
 - CI (lint, format check, tests with coverage, package smoke test, dashboard checks), requirements split into core,
   `ml`, `gpu`, `nemo` and `dev`, a packaging consistency test, `CONTRIBUTING.md`, `SECURITY.md`, a pull-request
   template and this changelog.
-- `scripts/make_final_numbers.py`: `docs/FINAL_NUMBERS.md` is generated from the snapshots (#24).
+- `scripts/make_final_numbers.py`: `docs/FINAL_NUMBERS.md` is generated from the snapshots (#24). It now also writes
+  the README's numbers table, and `--check` reports a stale file; a test fails when either is out of date.
+- A test that every link and file path in the documents exists (`tests/test_docs.py`).
+- API reference table, architecture diagram and configuration table in the README.
 
 ### Changed
 - Page-splice healing runs inside the main pipeline, before dedup (#8).
@@ -33,6 +36,8 @@ Numbers in parentheses are pull requests. Before-and-after figures for each pipe
 - The repository root holds only what a visitor needs; planning papers moved to `docs/archive/`; the dashboard's
   1,504-line `App.jsx` is split into one file per section (#26).
 - `requires-python` is `>=3.11`, the version everything is tested on.
+- `SETUP.md` rewritten around the split requirements files (install, GPU, NeMo, troubleshooting); the README's typed
+  numbers are replaced by the generated table.
 
 ### Fixed
 - Uploaded or listed PDFs with an upper-case extension (`REPORT.PDF`) were skipped on Linux; folders named `x.pdf` were
