@@ -14,3 +14,5 @@ en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_
 
 # Torch (CPU) — required by nemo-curator's quality classifier
 torch==2.14.0
+# Token statistics (pipeline/token_stats.py)
+tiktoken==X.Y.Z
