@@ -4,6 +4,7 @@ A refresh runs the whole pipeline (minutes), so the HTTP request that starts it 
 `RefreshJob.start()` returns at once; `status()` says whether the job is idle, running, succeeded or
 failed, and how long it has been running.
 """
+
 import logging
 import threading
 import time
@@ -52,11 +53,13 @@ class RefreshJob:
             log.exception("snapshot refresh failed")
             self._finish({"state": FAILED, "error": f"{type(exc).__name__}: {exc}"})
         else:
-            self._finish({
-                "state": SUCCEEDED,
-                "chunks": summary.get("final_output_chunks"),
-                "pii_entities": summary.get("pii_entities_redacted"),
-            })
+            self._finish(
+                {
+                    "state": SUCCEEDED,
+                    "chunks": summary.get("final_output_chunks"),
+                    "pii_entities": summary.get("pii_entities_redacted"),
+                }
+            )
 
     def _finish(self, outcome: dict) -> None:
         with self._lock:

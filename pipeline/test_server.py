@@ -2,6 +2,7 @@
 
 Run: venv/Scripts/python -m pipeline.test_server
 """
+
 import base64
 import json
 
@@ -36,7 +37,13 @@ def main():
         summary = result["summary"]
         rows = [json.loads(line) for line in result["curated_jsonl"].splitlines() if line.strip()]
         assert [s["stage"] for s in summary["stages"]] == [
-            "extract", "clean_langid", "heal", "dedup", "quality_filter", "pii_redact", "output",
+            "extract",
+            "clean_langid",
+            "heal",
+            "dedup",
+            "quality_filter",
+            "pii_redact",
+            "output",
         ]
         heal_stage = summary["stages"][2]
         assert heal_stage["docs_in"] == heal_stage["docs_out"] == 1 and heal_stage["removed"] == 0

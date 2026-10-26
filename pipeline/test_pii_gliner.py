@@ -4,6 +4,7 @@ Run: python -m pipeline.test_pii_gliner
 A stub stands in for the model so overlap resolution, the PERSON guard, the label
 restriction and the lazy-import error are tested with synthetic spans.
 """
+
 import sys
 
 from pipeline import pii

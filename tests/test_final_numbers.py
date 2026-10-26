@@ -1,4 +1,5 @@
 """Tests for scripts/make_final_numbers.py: every number comes from a snapshot, nothing is invented."""
+
 import importlib.util
 import json
 import shutil

@@ -12,6 +12,7 @@ actual policy change. The same pairs are diffed on raw text too, as a noise base
 
 Run: python -m pipeline.changelog
 """
+
 import difflib
 import json
 import re
@@ -67,10 +68,7 @@ def find_families(docs: dict) -> list:
     for i, a in enumerate(ids):
         for b in ids[i + 1 :]:
             small, big = sorted((len(sh[a]), len(sh[b])))
-            if (
-                small / big >= FAMILY_MIN_SIZE_RATIO
-                and len(sh[a] & sh[b]) / small >= FAMILY_CONTAINMENT
-            ):
+            if small / big >= FAMILY_MIN_SIZE_RATIO and len(sh[a] & sh[b]) / small >= FAMILY_CONTAINMENT:
                 parent[root(a)] = root(b)
 
     groups = {}
@@ -148,10 +146,15 @@ def diff_versions(old_text: str, new_text: str) -> dict:
         best = max(range(len(pool)), key=scores.__getitem__, default=None)
         if best is not None and scores[best] >= MODIFIED_SIMILARITY:
             n, _ = pool.pop(best)
-            changes.append({
-                "type": "modified", "kind": classify_edit(o, n),
-                "before": o, "after": n, "diff": word_diff(o, n),
-            })
+            changes.append(
+                {
+                    "type": "modified",
+                    "kind": classify_edit(o, n),
+                    "before": o,
+                    "after": n,
+                    "diff": word_diff(o, n),
+                }
+            )
         else:
             changes.append({"type": "removed", "before": o})
     changes += [{"type": "added", "after": n} for n, _ in pool]
@@ -178,18 +181,20 @@ def main():
         for old_id, new_id in zip(ordered, ordered[1:]):
             result = diff_versions(healed[old_id], healed[new_id])
             baseline = diff_versions(raw[old_id], raw[new_id])
-            changelog.append({
-                "family": ordered,
-                "from": old_id,
-                "to": new_id,
-                "from_year": version_year(healed[old_id]),
-                "to_year": version_year(healed[new_id]),
-                "sentences": result["sentences"],
-                "substantive_changes": result["substantive_changes"],
-                "cosmetic_changes": result["cosmetic_changes"],
-                "raw_text_total_changes": baseline["substantive_changes"] + baseline["cosmetic_changes"],
-                "changes": result["changes"],
-            })
+            changelog.append(
+                {
+                    "family": ordered,
+                    "from": old_id,
+                    "to": new_id,
+                    "from_year": version_year(healed[old_id]),
+                    "to_year": version_year(healed[new_id]),
+                    "sentences": result["sentences"],
+                    "substantive_changes": result["substantive_changes"],
+                    "cosmetic_changes": result["cosmetic_changes"],
+                    "raw_text_total_changes": baseline["substantive_changes"] + baseline["cosmetic_changes"],
+                    "changes": result["changes"],
+                }
+            )
 
     OUT_PATH.write_text(json.dumps(changelog, indent=2, ensure_ascii=False), encoding="utf-8")
     for e in changelog:

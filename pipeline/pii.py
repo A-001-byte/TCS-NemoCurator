@@ -38,6 +38,7 @@ Equivalent-logic stage: NVIDIA's shipped PII path uses GLiNER-PII
 (gliner_pii_redaction.ipynb in the Curator repo). We use spaCy NER + regex here.
 Labelled as such in the dashboard/README.
 """
+
 import json
 import logging
 import re
@@ -199,15 +200,26 @@ def _pincode_verdict(text: str, start: int, end: int) -> str:
 # but an Aadhaar label nearby -> still redact, flagged for review (typo or OCR error).
 # Otherwise it is just a digit run (a reference number, a table value).
 _VERHOEFF_D = (
-    (0, 1, 2, 3, 4, 5, 6, 7, 8, 9), (1, 2, 3, 4, 0, 6, 7, 8, 9, 5), (2, 3, 4, 0, 1, 7, 8, 9, 5, 6),
-    (3, 4, 0, 1, 2, 8, 9, 5, 6, 7), (4, 0, 1, 2, 3, 9, 5, 6, 7, 8), (5, 9, 8, 7, 6, 0, 4, 3, 2, 1),
-    (6, 5, 9, 8, 7, 1, 0, 4, 3, 2), (7, 6, 5, 9, 8, 2, 1, 0, 4, 3), (8, 7, 6, 5, 9, 3, 2, 1, 0, 4),
+    (0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+    (1, 2, 3, 4, 0, 6, 7, 8, 9, 5),
+    (2, 3, 4, 0, 1, 7, 8, 9, 5, 6),
+    (3, 4, 0, 1, 2, 8, 9, 5, 6, 7),
+    (4, 0, 1, 2, 3, 9, 5, 6, 7, 8),
+    (5, 9, 8, 7, 6, 0, 4, 3, 2, 1),
+    (6, 5, 9, 8, 7, 1, 0, 4, 3, 2),
+    (7, 6, 5, 9, 8, 2, 1, 0, 4, 3),
+    (8, 7, 6, 5, 9, 3, 2, 1, 0, 4),
     (9, 8, 7, 6, 5, 4, 3, 2, 1, 0),
 )
 _VERHOEFF_P = (
-    (0, 1, 2, 3, 4, 5, 6, 7, 8, 9), (1, 5, 7, 6, 2, 8, 3, 0, 9, 4), (5, 8, 0, 3, 7, 9, 6, 1, 4, 2),
-    (8, 9, 1, 6, 0, 4, 3, 5, 2, 7), (9, 4, 5, 3, 1, 2, 6, 8, 7, 0), (4, 2, 8, 6, 5, 7, 3, 9, 0, 1),
-    (2, 7, 9, 3, 8, 0, 6, 4, 1, 5), (7, 0, 4, 6, 9, 1, 3, 2, 5, 8),
+    (0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+    (1, 5, 7, 6, 2, 8, 3, 0, 9, 4),
+    (5, 8, 0, 3, 7, 9, 6, 1, 4, 2),
+    (8, 9, 1, 6, 0, 4, 3, 5, 2, 7),
+    (9, 4, 5, 3, 1, 2, 6, 8, 7, 0),
+    (4, 2, 8, 6, 5, 7, 3, 9, 0, 1),
+    (2, 7, 9, 3, 8, 0, 6, 4, 1, 5),
+    (7, 0, 4, 6, 9, 1, 3, 2, 5, 8),
 )
 AADHAAR_CUE_WINDOW = 60
 AADHAAR_CUE_RE = re.compile(r"(?:aadhaar|aadhar|\bUID\b|UIDAI)", re.IGNORECASE)
@@ -282,17 +294,79 @@ _SPACY_ERROR = None  # why person-name detection is off, when it is (reported, n
 # Words that make an otherwise name-shaped span very likely a building/org/field-label,
 # not a person -- spaCy's small model frequently mistags these in dense KYC/legal tables.
 _NAME_BLOCKLIST_WORDS = {
-    "bhavan", "building", "house", "tower", "floor", "road", "branch", "office",
-    "title", "retail", "corporate", "banking", "sanctions", "conduct", "shell",
-    "banks", "department", "division", "ministry", "government", "committee",
-    "authority", "reserve", "bank", "india", "limited", "ltd", "pvt", "private",
-    "directorate", "unit", "cell", "wing", "section", "annexure", "schedule",
-    "location", "court", "magistrate", "judge", "embassy", "notary", "public",
-    "signatory", "authorized", "transaction", "transfer", "wire", "batch",
-    "beneficiary", "customer", "account", "officer", "manager", "principal",
-    "regulator", "regulation", "policy", "circular", "direction", "act",
-    "chapter", "clause", "paragraph", "appendix", "form", "format", "board",
-    "risk", "compliance", "monitoring", "reporting", "identification",
+    "bhavan",
+    "building",
+    "house",
+    "tower",
+    "floor",
+    "road",
+    "branch",
+    "office",
+    "title",
+    "retail",
+    "corporate",
+    "banking",
+    "sanctions",
+    "conduct",
+    "shell",
+    "banks",
+    "department",
+    "division",
+    "ministry",
+    "government",
+    "committee",
+    "authority",
+    "reserve",
+    "bank",
+    "india",
+    "limited",
+    "ltd",
+    "pvt",
+    "private",
+    "directorate",
+    "unit",
+    "cell",
+    "wing",
+    "section",
+    "annexure",
+    "schedule",
+    "location",
+    "court",
+    "magistrate",
+    "judge",
+    "embassy",
+    "notary",
+    "public",
+    "signatory",
+    "authorized",
+    "transaction",
+    "transfer",
+    "wire",
+    "batch",
+    "beneficiary",
+    "customer",
+    "account",
+    "officer",
+    "manager",
+    "principal",
+    "regulator",
+    "regulation",
+    "policy",
+    "circular",
+    "direction",
+    "act",
+    "chapter",
+    "clause",
+    "paragraph",
+    "appendix",
+    "form",
+    "format",
+    "board",
+    "risk",
+    "compliance",
+    "monitoring",
+    "reporting",
+    "identification",
 }
 _TITLECASE_TOKEN_RE = re.compile(r"^[A-Z][a-z]+$")
 
@@ -338,14 +412,57 @@ _INITIAL_RE = re.compile(r"[A-Z]\.")
 _CAPS_RE = re.compile(r"[A-Z]{2,}")
 _WORD_NAME_RE = re.compile(r"[A-Z][a-z]+")
 _JOB_TITLE_WORDS = {
-    "managing", "director", "joint", "secretary", "chairman", "chairperson", "chief",
-    "executive", "general", "deputy", "assistant", "senior", "vice", "president", "head",
-    "governor", "additional", "special", "under", "nodal", "designated",
+    "managing",
+    "director",
+    "joint",
+    "secretary",
+    "chairman",
+    "chairperson",
+    "chief",
+    "executive",
+    "general",
+    "deputy",
+    "assistant",
+    "senior",
+    "vice",
+    "president",
+    "head",
+    "governor",
+    "additional",
+    "special",
+    "under",
+    "nodal",
+    "designated",
 }
 _COMMON_WORDS = {
-    "the", "and", "for", "that", "this", "note", "see", "not", "are", "all", "any", "with",
-    "from", "shall", "should", "may", "must", "will", "also", "only", "each", "such",
-    "their", "these", "none", "nil", "yes", "no",
+    "the",
+    "and",
+    "for",
+    "that",
+    "this",
+    "note",
+    "see",
+    "not",
+    "are",
+    "all",
+    "any",
+    "with",
+    "from",
+    "shall",
+    "should",
+    "may",
+    "must",
+    "will",
+    "also",
+    "only",
+    "each",
+    "such",
+    "their",
+    "these",
+    "none",
+    "nil",
+    "yes",
+    "no",
 }
 _NOT_A_NAME = _NAME_BLOCKLIST_WORDS | _JOB_TITLE_WORDS | _COMMON_WORDS
 
@@ -430,6 +547,7 @@ def _record_example(examples: list, label: str, doc_id: str, before: str, contex
 def redact_regex(text: str, entity_counts: dict, examples: list, doc_id: str, validation: dict):
     redacted = text
     for label, pattern in PATTERNS:
+
         def _sub(match, label=label):
             # match.string is the text actually being scanned this pass, so context
             # windows stay correct even after earlier patterns changed span lengths.
@@ -454,9 +572,7 @@ def redact_regex(text: str, entity_counts: dict, examples: list, doc_id: str, va
                     validation["account_rejected"] = validation.get("account_rejected", 0) + 1
                     return match.group(0)
                 if verdict == "needs_review":
-                    validation["account_needs_review"] = (
-                        validation.get("account_needs_review", 0) + 1
-                    )
+                    validation["account_needs_review"] = validation.get("account_needs_review", 0) + 1
 
             elif label == "SWIFT_BIC" and not _has_swift_cue(scanned, match.start()):
                 validation["swift_no_cue"] = validation.get("swift_no_cue", 0) + 1
@@ -506,10 +622,7 @@ def redact_names_batch(texts: list, doc_ids: list, entity_counts: dict, examples
     results = []
     for text, doc_id, spans in zip(texts, doc_ids, spacy_spans):
         # initials / ALL-CAPS names after a title; skip any span spaCy already found
-        extra = [
-            s for s in _title_gated_names(text)
-            if not any(s[0] < end and start < s[1] for start, end, _ in spans)
-        ]
+        extra = [s for s in _title_gated_names(text) if not any(s[0] < end and start < s[1] for start, end, _ in spans)]
         results.append(_apply_name_spans(text, spans + extra, entity_counts, examples, doc_id))
     return results
 
@@ -647,9 +760,7 @@ def redact_pii_gliner(text: str, entity_counts: dict, examples: list, doc_id: st
 
     spans = []
     for window_text, offset in _gliner_windows(text):
-        for ent in _gliner_model.predict_entities(
-            window_text, GLINER_LABELS, threshold=GLINER_CONFIDENCE_THRESHOLD
-        ):
+        for ent in _gliner_model.predict_entities(window_text, GLINER_LABELS, threshold=GLINER_CONFIDENCE_THRESHOLD):
             label = GLINER_LABEL_MAP.get(ent["label"], ent["label"].upper().replace(" ", "_"))
             span = {
                 "label": label,
@@ -673,11 +784,14 @@ def redact_pii_gliner(text: str, entity_counts: dict, examples: list, doc_id: st
     for span in reversed(resolved):
         entity_counts[span["label"]] = entity_counts.get(span["label"], 0) + 1
         _record_example(
-            examples, span["label"], doc_id, span["text"],
-            text[max(0, span["start"] - 40):span["start"]],
-            text[span["end"]:span["end"] + 40],
+            examples,
+            span["label"],
+            doc_id,
+            span["text"],
+            text[max(0, span["start"] - 40) : span["start"]],
+            text[span["end"] : span["end"] + 40],
         )
-        redacted = redacted[:span["start"]] + f"[REDACTED_{span['label']}]" + redacted[span["end"]:]
+        redacted = redacted[: span["start"]] + f"[REDACTED_{span['label']}]" + redacted[span["end"] :]
     return redacted, bool(resolved)
 
 
@@ -707,18 +821,14 @@ def main():
             chunks_in += 1
             chunk_validation = {}
             if USE_GLINER_PII:
-                chunk["text"], _ = redact_pii_gliner(
-                    chunk["text"], entity_counts, examples, chunk["chunk_id"]
-                )
+                chunk["text"], _ = redact_pii_gliner(chunk["text"], entity_counts, examples, chunk["chunk_id"])
             else:
                 chunk["text"] = redact_regex(
                     chunk["text"], entity_counts, examples, chunk["chunk_id"], chunk_validation
                 )
             # Additive field per the frozen chunk contract: "needs_review" means PII was
             # redacted but its surrounding context didn't confirm the entity type.
-            needs_review = chunk_validation.get("account_needs_review") or chunk_validation.get(
-                "aadhaar_needs_review"
-            )
+            needs_review = chunk_validation.get("account_needs_review") or chunk_validation.get("aadhaar_needs_review")
             chunk["validation_flag"] = "needs_review" if needs_review else "confident"
             for key, count in chunk_validation.items():
                 validation_totals[key] = validation_totals.get(key, 0) + count
@@ -744,9 +854,7 @@ def main():
     EXAMPLES_PATH.write_text(json.dumps(examples, indent=2, ensure_ascii=False), encoding="utf-8")
 
     validation_report = build_validation_report(out_chunks)
-    VALIDATION_REPORT_PATH.write_text(
-        json.dumps(validation_report, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    VALIDATION_REPORT_PATH.write_text(json.dumps(validation_report, indent=2, ensure_ascii=False), encoding="utf-8")
 
     total_entities = sum(entity_counts.values())
     record = {
@@ -773,9 +881,7 @@ def main():
         "aadhaar_needs_review": validation_totals.get("aadhaar_needs_review", 0),
         "documents_with_pii": sum(1 for d in validation_report if d["pii_entities"]),
         "validation_report_path": VALIDATION_REPORT_PATH.relative_to(REDACTED_DIR.parent.parent).as_posix(),
-        "chunks_needing_review": sum(
-            1 for c in out_chunks if c.get("validation_flag") == "needs_review"
-        ),
+        "chunks_needing_review": sum(1 for c in out_chunks if c.get("validation_flag") == "needs_review"),
     }
     STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
     print(json.dumps(record, indent=2))

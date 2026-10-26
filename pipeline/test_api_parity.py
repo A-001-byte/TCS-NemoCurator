@@ -3,6 +3,7 @@
 Run: python -m pipeline.test_api_parity
 All three doors call pipeline.api, so any difference means one of them stopped doing so.
 """
+
 import base64
 import json
 import os
@@ -48,7 +49,10 @@ def main():
             env = {**os.environ, "PYTHONIOENCODING": "utf-8"}
             cli = subprocess.run(
                 [sys.executable, "-m", "pipeline.cli", "run", str(pdfs), "-o", str(tmp / "cli")],
-                capture_output=True, text=True, cwd=run.ROOT, env=env,
+                capture_output=True,
+                text=True,
+                cwd=run.ROOT,
+                env=env,
             )
             assert cli.returncode == 0, cli.stderr
             assert "chunks written:" in cli.stdout
@@ -58,11 +62,16 @@ def main():
             server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
             threading.Thread(target=server.serve_forever, daemon=True).start()
             try:
-                body = json.dumps({"files": [
-                    {"name": n, "data": base64.b64encode((pdfs / n).read_bytes()).decode()} for n in SAMPLES
-                ]}).encode()
+                body = json.dumps(
+                    {
+                        "files": [
+                            {"name": n, "data": base64.b64encode((pdfs / n).read_bytes()).decode()} for n in SAMPLES
+                        ]
+                    }
+                ).encode()
                 request = urllib.request.Request(
-                    f"http://127.0.0.1:{server.server_address[1]}/api/run", body, {"Content-Type": "application/json"})
+                    f"http://127.0.0.1:{server.server_address[1]}/api/run", body, {"Content-Type": "application/json"}
+                )
                 with urllib.request.urlopen(request, timeout=900) as response:
                     api = json.load(response)
             finally:

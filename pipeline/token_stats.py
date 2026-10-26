@@ -4,6 +4,7 @@ Reads curated JSONL records and computes token counts grouped per source documen
 and total corpus counts using an available tokenizer hierarchy (tiktoken cl100k_base,
 locally cached HF tokenizer, or whitespace words).
 """
+
 import argparse
 import json
 import os
@@ -29,6 +30,7 @@ def resolve_tokenizer(preference: str = "auto") -> Tuple[str, Callable[[str], in
     if pref in ("auto", "tiktoken", "cl100k_base", "tiktoken:cl100k_base"):
         try:
             import tiktoken
+
             enc = tiktoken.get_encoding("cl100k_base")
             return "tiktoken:cl100k_base", lambda text: len(enc.encode(text, disallowed_special=()))
         except Exception as exc:
@@ -39,6 +41,7 @@ def resolve_tokenizer(preference: str = "auto") -> Tuple[str, Callable[[str], in
     if pref == "auto":
         try:
             from transformers import AutoTokenizer
+
             for candidate in ("gpt2", "meta-llama/Llama-2-7b", "nvidia/quality-classifier-deberta"):
                 try:
                     tok = AutoTokenizer.from_pretrained(candidate, local_files_only=True)
@@ -128,11 +131,13 @@ def compute_token_stats(
 
     per_document: List[Dict[str, Any]] = []
     for doc in sorted(chunks_per_doc.keys()):
-        per_document.append({
-            "source_file": doc,
-            "chunks": chunks_per_doc[doc],
-            "tokens": tokens_per_doc[doc],
-        })
+        per_document.append(
+            {
+                "source_file": doc,
+                "chunks": chunks_per_doc[doc],
+                "tokens": tokens_per_doc[doc],
+            }
+        )
 
     total_tokens = sum(d["tokens"] for d in per_document)
 

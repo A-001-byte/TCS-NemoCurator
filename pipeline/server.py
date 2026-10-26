@@ -20,6 +20,7 @@ own temp data/ folder, so the committed corpus is untouched. A refresh re-runs t
 (minutes) in a background thread and republishes the dashboard snapshots. There is no
 authentication: keep the default loopback address unless the network is trusted.
 """
+
 import argparse
 import base64
 import binascii
@@ -224,7 +225,9 @@ def make_server(host: str = DEFAULT_HOST, port: int = DEFAULT_PORT) -> Threading
 
 def _address(argv):
     """(host, port) from flags, then CURATOR_HOST / CURATOR_PORT, then the defaults."""
-    parser = argparse.ArgumentParser(prog="python -m pipeline.server", description="Local pipeline API for the dashboard.")
+    parser = argparse.ArgumentParser(
+        prog="python -m pipeline.server", description="Local pipeline API for the dashboard."
+    )
     parser.add_argument("--host", default=os.environ.get("CURATOR_HOST", DEFAULT_HOST))
     parser.add_argument("--port", type=int, default=None)
     args = parser.parse_args(argv)
@@ -243,7 +246,9 @@ def main(argv=None) -> int:
     host, port = _address(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     if host not in LOOPBACK_HOSTS:
-        log.warning("Listening on %s: this API has no authentication; use %s unless the network is trusted.", host, DEFAULT_HOST)
+        log.warning(
+            "Listening on %s: this API has no authentication; use %s unless the network is trusted.", host, DEFAULT_HOST
+        )
     try:
         httpd = make_server(host, port)
     except OSError as exc:

@@ -5,6 +5,7 @@ Run: python -m pipeline.test_quality_signal
 The signal must never remove a chunk, must be off by default, must key its cache by
 SHA-256 of the chunk text, and must degrade cleanly when the model is unavailable.
 """
+
 import contextlib
 import hashlib
 import io
@@ -31,9 +32,18 @@ def run_quality(workdir: Path, texts: list, mode: str, scorer):
         calls.append(text)
         return scorer(text)
 
-    saved = {name: getattr(quality, name) for name in (
-        "IN_PATH", "OUT_PATH", "FILTERED_DIR", "STAGE_RECORD_PATH", "QUALITY_SIGNAL_CACHE_PATH",
-        "QUALITY_SIGNAL_MODE", "_classifier_label")}
+    saved = {
+        name: getattr(quality, name)
+        for name in (
+            "IN_PATH",
+            "OUT_PATH",
+            "FILTERED_DIR",
+            "STAGE_RECORD_PATH",
+            "QUALITY_SIGNAL_CACHE_PATH",
+            "QUALITY_SIGNAL_MODE",
+            "_classifier_label",
+        )
+    }
     try:
         quality.FILTERED_DIR = workdir / "filtered"
         quality.IN_PATH = workdir / "in.jsonl"
@@ -80,8 +90,10 @@ def main():
         assert record["docs_in"] == record["docs_out"] == 2 and record["removed"] == 0
         assert record["quality_signal_labels"] == {"High": 1, "Low": 1}
         cache = json.loads(cache_path.read_text(encoding="utf-8"))
-        assert cache == {hashlib.sha256(GOOD.encode()).hexdigest(): "High",
-                         hashlib.sha256(JUNKY.encode()).hexdigest(): "Low"}
+        assert cache == {
+            hashlib.sha256(GOOD.encode()).hexdigest(): "High",
+            hashlib.sha256(JUNKY.encode()).hexdigest(): "Low",
+        }
 
         # --- model again: everything is a cache hit, the model is not called --------------
         out, _, calls = run_quality(work, [JUNKY, GOOD], "model", label_of)

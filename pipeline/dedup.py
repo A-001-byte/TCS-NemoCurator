@@ -34,6 +34,7 @@ Stream B adds:
 
 NeMo-Curator-equivalent stage, library integration pending (Stream A).
 """
+
 import hashlib
 import json
 import sys
@@ -68,6 +69,7 @@ CHUNK_WORDS = 180
 # ---------------------------------------------------------------------------
 # HELPERS (existing logic, preserved)
 # ---------------------------------------------------------------------------
+
 
 def split_into_chunks(text: str):
     """Split into fixed-size word windows.
@@ -104,6 +106,7 @@ def minhash_for(text: str) -> MinHash:
 # EXISTING EXACT DEDUP (v1, preserved unchanged)
 # ---------------------------------------------------------------------------
 
+
 def _exact_dedup(chunks: list) -> tuple:
     """
     Remove exact duplicates by SHA-256 hash of normalised text.
@@ -125,6 +128,7 @@ def _exact_dedup(chunks: list) -> tuple:
 # ---------------------------------------------------------------------------
 # STREAM B: BOILERPLATE-AWARE FUZZY DEDUP  (B0.5-B0.7)
 # ---------------------------------------------------------------------------
+
 
 def _fuzzy_dedup_with_boilerplate_awareness(chunks: list) -> tuple:
     """
@@ -168,7 +172,7 @@ def _fuzzy_dedup_with_boilerplate_awareness(chunks: list) -> tuple:
 
         if duplicate_of is not None:
             # Classify the duplicate
-            this_doc  = chunk["doc_id"]
+            this_doc = chunk["doc_id"]
             other_doc = chunk_by_id[duplicate_of]["doc_id"]
             if this_doc != other_doc:
                 removed_cross_doc += 1
@@ -185,6 +189,7 @@ def _fuzzy_dedup_with_boilerplate_awareness(chunks: list) -> tuple:
 # ---------------------------------------------------------------------------
 # MAIN ENTRY POINT (called by pipeline/run.py)
 # ---------------------------------------------------------------------------
+
 
 def _load_documents(directory: Path) -> list:
     """Document records in `directory`. data/healed also holds heal_report.json and
@@ -231,8 +236,7 @@ def main():
     after_exact, exact_removed = _exact_dedup(all_chunks)
 
     # Stage 2: boilerplate-aware fuzzy dedup (Stream B)
-    fuzzy_survivors, cross_doc_removed, intra_doc_removed = \
-        _fuzzy_dedup_with_boilerplate_awareness(after_exact)
+    fuzzy_survivors, cross_doc_removed, intra_doc_removed = _fuzzy_dedup_with_boilerplate_awareness(after_exact)
 
     with OUT_PATH.open("w", encoding="utf-8") as f:
         for chunk in fuzzy_survivors:

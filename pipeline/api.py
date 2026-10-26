@@ -7,6 +7,7 @@
 Every run happens in its own temporary data/ folder: each stage's module-level paths are rebased
 there for the duration of the run, so the committed corpus under data/ is never touched.
 """
+
 import contextlib
 import io
 import json
@@ -97,7 +98,9 @@ def _pipeline_rooted_at(tmp_root: Path):
                     setattr(mod, name, value)
 
 
-def run_isolated(files=(), raw_dir: Optional[Path] = None, output_dir: Optional[Path] = None, wait: bool = True) -> tuple:
+def run_isolated(
+    files=(), raw_dir: Optional[Path] = None, output_dir: Optional[Path] = None, wait: bool = True
+) -> tuple:
     """Run every stage in a throwaway data/ folder.
 
     `files` is a list of (name, bytes) PDFs written into that folder; alternatively `raw_dir`
@@ -161,7 +164,9 @@ def curate(input_dir: Union[str, Path], output_dir: Union[str, Path], device: st
         raise RuntimeError(f"{stop_reason(pipeline_log)}\n{pipeline_log}")
     summary = result["summary"]
     if not summary.get("name_detection_available", True):
-        log.warning("Person-name detection is OFF on this run: the spaCy model did not load, so names are not redacted.")
+        log.warning(
+            "Person-name detection is OFF on this run: the spaCy model did not load, so names are not redacted."
+        )
     return CurateResult(
         summary, output_dir / "curated.jsonl", output_dir / "pipeline_summary.json", resolved, pipeline_log
     )

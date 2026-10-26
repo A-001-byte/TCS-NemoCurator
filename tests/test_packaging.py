@@ -1,4 +1,5 @@
 """The packaging metadata, the requirements files and the code's real imports must agree."""
+
 import ast
 import re
 import sys
@@ -16,9 +17,16 @@ PYPROJECT = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
 
 # import name -> distribution name, for the third-party modules the code uses
 DISTRIBUTION = {
-    "datasketch": "datasketch", "langdetect": "langdetect", "pdfplumber": "pdfplumber", "spacy": "spacy",
-    "tiktoken": "tiktoken", "torch": "torch", "transformers": "transformers", "gliner": "gliner",
-    "huggingface_hub": "huggingface-hub", "nemo_curator": "nemo-curator",
+    "datasketch": "datasketch",
+    "langdetect": "langdetect",
+    "pdfplumber": "pdfplumber",
+    "spacy": "spacy",
+    "tiktoken": "tiktoken",
+    "torch": "torch",
+    "transformers": "transformers",
+    "gliner": "gliner",
+    "huggingface_hub": "huggingface-hub",
+    "nemo_curator": "nemo-curator",
 }
 CORE = {"datasketch", "langdetect", "pdfplumber", "spacy", "tiktoken"}
 OPTIONAL_ONLY = {"torch", "transformers", "gliner", "huggingface_hub", "nemo_curator"}
@@ -64,17 +72,23 @@ def test_every_core_dependency_is_pinned_in_requirements_inside_its_declared_ran
         if requirement.url:
             assert pinned[key] == requirement.url
         else:
-            assert Version(pinned[key]) in requirement.specifier, f"{key}=={pinned[key]} is outside {requirement.specifier}"
+            assert Version(pinned[key]) in requirement.specifier, (
+                f"{key}=={pinned[key]} is outside {requirement.specifier}"
+            )
 
 
 def test_pyproject_declares_every_core_package_the_code_imports():
     """`pip install .` must give a package that imports: nothing the code needs may be missing from pyproject."""
     declared = {Requirement(spec).name.lower().replace("_", "-") for spec in PYPROJECT["project"]["dependencies"]}
     for module in sorted(CORE):
-        assert DISTRIBUTION[module] in declared, f"{module} is imported by the code but {DISTRIBUTION[module]} is not in pyproject"
+        assert DISTRIBUTION[module] in declared, (
+            f"{module} is imported by the code but {DISTRIBUTION[module]} is not in pyproject"
+        )
 
 
-@pytest.mark.parametrize("extra,file", [("ml", "requirements-ml.txt"), ("nemo", "requirements-nemo.txt"), ("dev", "requirements-dev.txt")])
+@pytest.mark.parametrize(
+    "extra,file", [("ml", "requirements-ml.txt"), ("nemo", "requirements-nemo.txt"), ("dev", "requirements-dev.txt")]
+)
 def test_every_extra_matches_its_requirements_file(extra, file):
     pinned = pins(file)
     for spec in PYPROJECT["project"]["optional-dependencies"][extra]:
@@ -129,11 +143,19 @@ def test_every_third_party_module_the_code_uses_is_declared_somewhere():
     for module in used:
         distribution = DISTRIBUTION.get(module)
         assert distribution, f"unknown third-party import {module!r}: add it to DISTRIBUTION and a requirements file"
-        assert distribution in declared | transitive, f"{module} is imported but {distribution} is in no requirements file"
+        assert distribution in declared | transitive, (
+            f"{module} is imported but {distribution} is in no requirements file"
+        )
 
 
 def test_the_requirement_files_have_no_duplicate_or_unpinned_entries():
-    for name in ("requirements.txt", "requirements-dev.txt", "requirements-ml.txt", "requirements-nemo.txt", "requirements-gpu.txt"):
+    for name in (
+        "requirements.txt",
+        "requirements-dev.txt",
+        "requirements-ml.txt",
+        "requirements-nemo.txt",
+        "requirements-gpu.txt",
+    ):
         entries = requirement_lines(name)
         names = [e.name.lower() for e in entries]
         assert len(names) == len(set(names)), f"duplicate entry in {name}"

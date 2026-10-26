@@ -2,6 +2,7 @@
 
 Run: python -m pipeline.test_dedup_versions
 """
+
 from pipeline import dedup
 from pipeline.versioning import document_year, filename_year, newest_first, version_year
 

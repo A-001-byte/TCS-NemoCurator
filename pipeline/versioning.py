@@ -12,6 +12,7 @@ Year source, in priority order:
 Caveat: ``version_year`` takes the MAX year in the text, so a document that cites a
 future deadline ("by 2027") would be mis-ordered. That is why the filename wins.
 """
+
 import re
 
 YEAR_RE = re.compile(r"\b(20[0-3]\d)\b")

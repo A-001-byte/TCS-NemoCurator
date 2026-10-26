@@ -4,6 +4,7 @@ Run: python -m pipeline.test_pii_rules
 Strings marked (real) are spans from the actual corpus; Aadhaar numbers are generated with
 the Verhoeff algorithm, never hard-coded guesses (the corpus has no Aadhaar numbers).
 """
+
 import re
 
 from pipeline.pii import redact_regex, verhoeff_valid
@@ -87,8 +88,11 @@ def main():
 
     # --- AADHAAR: checksum-valid is redacted; no review flag ----------------------------
     good = aadhaar("23456789012")
-    for text in (f"number {spaced(good)} on file", f"number {good} on file",
-                 f"number {good[:4]}-{good[4:8]}-{good[8:]} on file"):
+    for text in (
+        f"number {spaced(good)} on file",
+        f"number {good} on file",
+        f"number {good[:4]}-{good[4:8]}-{good[8:]} on file",
+    ):
         out, counts, validation = run(text)
         assert counts == {"AADHAAR": 1} and "aadhaar_needs_review" not in validation, text
 

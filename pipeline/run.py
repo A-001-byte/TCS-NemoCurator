@@ -10,6 +10,7 @@ Writes data/output/pipeline_summary.json. The dashboard reads its own committed
 snapshot (dashboard/public/pipeline_summary.json), which Stream D refreshes on
 purpose -- a pipeline run never overwrites it.
 """
+
 import json
 import sys
 from pathlib import Path

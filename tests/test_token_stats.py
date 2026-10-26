@@ -3,6 +3,7 @@
 Validates grouping, chunk counting, total sums, strict line-numbered failure on
 malformed JSON or missing fields, atomic file writing on failure, and tokenizer labels.
 """
+
 import json
 from pathlib import Path
 
@@ -178,6 +179,7 @@ if __name__ == "__main__":
     test_fallback_to_words()
     test_tiktoken_label_and_encoding()
     import tempfile
+
     with tempfile.TemporaryDirectory() as tmp:
         test_atomic_write_preserves_previous_file_on_failure(Path(tmp))
         test_cli_execution(Path(tmp))

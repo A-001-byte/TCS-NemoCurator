@@ -4,6 +4,7 @@ Run: python -m pipeline.test_pii_validation
 Strings below are real spans from the corpus (public RBI/MHA circulars and bank policy
 PDFs), plus synthetic account-context cases the corpus does not contain.
 """
+
 from pipeline.pii import (
     PATTERNS,
     _account_number_verdict,
@@ -33,8 +34,8 @@ def main():
     # CIN: both real corpus values match, near-misses do not.
     assert CIN_RE.search("CIN No. U65923UR1922PLC000234, website")
     assert CIN_RE.search("Corporate Identity Number or CIN : U74140WB1983PTC036093)")
-    assert not CIN_RE.search("U65923UR1922PLC00023")     # 5 trailing digits, not 6
-    assert not CIN_RE.search("X65923UR1922PLC000234")    # must start L or U
+    assert not CIN_RE.search("U65923UR1922PLC00023")  # 5 trailing digits, not 6
+    assert not CIN_RE.search("X65923UR1922PLC000234")  # must start L or U
     assert not CIN_RE.search("400001 Mumbai 9820320181")  # pincode + mobile, not a CIN
 
     # Telecom context -> not an account number (every real corpus hit is this case).
@@ -60,13 +61,24 @@ def main():
     assert not _swift_accepted("the CBIC shall advise ANNEXURE dealers")
 
     # Document-level report: counts entities from placeholders, sorts most-exposed first.
-    report = build_validation_report([
-        {"doc_id": "doc_a", "source_file": "doc_a.pdf", "text": "x", "pii_redacted": False,
-         "validation_flag": "confident"},
-        {"doc_id": "doc_b", "source_file": "doc_b.pdf",
-         "text": "at [REDACTED_PINCODE] and [REDACTED_EMAIL] plus [REDACTED_PINCODE]",
-         "pii_redacted": True, "validation_flag": "needs_review"},
-    ])
+    report = build_validation_report(
+        [
+            {
+                "doc_id": "doc_a",
+                "source_file": "doc_a.pdf",
+                "text": "x",
+                "pii_redacted": False,
+                "validation_flag": "confident",
+            },
+            {
+                "doc_id": "doc_b",
+                "source_file": "doc_b.pdf",
+                "text": "at [REDACTED_PINCODE] and [REDACTED_EMAIL] plus [REDACTED_PINCODE]",
+                "pii_redacted": True,
+                "validation_flag": "needs_review",
+            },
+        ]
+    )
     assert [d["doc_id"] for d in report] == ["doc_b", "doc_a"], "most-exposed doc first"
     b, a = report
     assert b["pii_entities"] == 3 and b["distinct_entity_types"] == 2
@@ -82,7 +94,7 @@ def main():
     windows = _gliner_windows(long_text)
     assert len(windows) > 1, "500 words must split into more than one window"
     for window_text, offset in windows:
-        assert long_text[offset:offset + len(window_text)] == window_text, (
+        assert long_text[offset : offset + len(window_text)] == window_text, (
             "window text must match the original text at its reported offset"
         )
     covered = set()

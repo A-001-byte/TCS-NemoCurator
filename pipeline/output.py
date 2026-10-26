@@ -2,6 +2,7 @@
 Reads data/redacted/chunks.jsonl, writes data/output/curated.jsonl.
 Each line is a valid JSON object with a `text` field, ready for SFT-style fine-tuning.
 """
+
 import json
 import sys
 from pathlib import Path

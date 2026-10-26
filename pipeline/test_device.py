@@ -1,6 +1,7 @@
 """Self-check for pipeline.device — runs with no real GPU needed.
 Fakes torch so we can test all branches: auto/cpu/cuda/env-override/crash/missing-torch.
 """
+
 import contextlib
 import os
 import sys
@@ -64,6 +65,7 @@ def _remove_fake_torch():
 def _reload_device():
     sys.modules.pop("pipeline.device", None)
     import pipeline.device as device
+
     return device
 
 
@@ -128,6 +130,7 @@ def test_missing_torch_falls_back_to_cpu():
         return real_import(name, *args, **kwargs)
 
     import builtins
+
     builtins.__import__ = blocked_import
     try:
         device = _reload_device()

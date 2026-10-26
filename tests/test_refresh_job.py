@@ -1,4 +1,5 @@
 """Tests for the background refresh: the job's states and the /api/refresh routes."""
+
 import json
 import threading
 import time
@@ -79,7 +80,9 @@ def api(monkeypatch):
     port = httpd.server_address[1]
 
     def call(method, path):
-        request = urllib.request.Request(f"http://127.0.0.1:{port}{path}", method=method, data=b"" if method == "POST" else None)
+        request = urllib.request.Request(
+            f"http://127.0.0.1:{port}{path}", method=method, data=b"" if method == "POST" else None
+        )
         try:
             with urllib.request.urlopen(request, timeout=5) as response:
                 return response.status, json.load(response)

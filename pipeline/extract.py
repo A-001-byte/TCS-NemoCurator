@@ -1,4 +1,5 @@
 """Stage 1: PDF text extraction. Real RBI/bank PDFs in data/raw -> plain text in data/extracted."""
+
 import json
 import sys
 from pathlib import Path
