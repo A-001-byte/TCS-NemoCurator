@@ -68,6 +68,29 @@ jobs:
           bfsi-curate --version
           python -c "import pipeline, pipeline.api, pipeline.server, pipeline.cli; print('imports ok', pipeline.__version__)"
 
+  docker:
+    name: Docker (build the image, curate a PDF inside it)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the image
+        run: docker build -t bfsi-curate:ci .
+
+      - name: The command runs
+        run: docker run --rm bfsi-curate:ci --version
+
+      - name: Curate a real PDF in the container, as an ordinary user, with mounted folders
+        run: |
+          mkdir -p "$RUNNER_TEMP/in" "$RUNNER_TEMP/out"
+          cp data/raw/fiu_india_brochure.pdf "$RUNNER_TEMP/in/"
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v "$RUNNER_TEMP/in:/in:ro" -v "$RUNNER_TEMP/out:/out" \
+            bfsi-curate:ci run /in -o /out
+          test "$(wc -l < "$RUNNER_TEMP/out/curated.jsonl")" -eq 10
+          test -s "$RUNNER_TEMP/out/pipeline_summary.json"
+
   dashboard:
     name: Dashboard (lint, tests, build)
     runs-on: ubuntu-latest
