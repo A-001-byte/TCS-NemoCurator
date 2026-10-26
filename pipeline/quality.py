@@ -43,7 +43,7 @@ import re
 import sys
 from collections import Counter
 from pathlib import Path
-from pipeline.device import pick, describe
+from pipeline.device import describe
 
 # ---------------------------------------------------------------------------
 # PATHS (match existing codebase convention)
@@ -287,6 +287,7 @@ def main():
         for chunk in survivors:
             f.write(json.dumps(chunk, ensure_ascii=False) + "\n")
 
+    classifier_ran = USE_REAL_QUALITY_CLASSIFIER or _SIGNAL_STATE["computed"] > 0
     record = {
         "stage": "quality_filter",
         "docs_in": chunks_in,
@@ -301,7 +302,9 @@ def main():
         "quality_signal_mode": QUALITY_SIGNAL_MODE,
         "quality_signal_labels": dict(signal_counts),
         "quality_signal_model_error": _SIGNAL_STATE["model_error"],
-        "device": describe(pick()),
+        # The heuristics always run on the CPU; a GPU is only used when the DeBERTa classifier
+        # actually ran in this run (hard filter on, or the signal computed labels, not cache hits).
+        "device": describe(_classifier_device) if classifier_ran and _classifier_device else "cpu",
     }
     STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
     print(json.dumps(record, indent=2))
