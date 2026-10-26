@@ -137,7 +137,7 @@ Limits and safety: at most 10 files and 30 MB per upload; one run at a time; **n
 | `CURATOR_DEVICE` | `cpu`, `cuda` | forces the compute device for the optional models; default is auto-detect with CPU fallback (`--device` on the CLI wins) |
 | `CURATOR_HOST`, `CURATOR_PORT` | address, port | where the server listens; the `--host` and `--port` flags win |
 
-Two optional models are switched on by editing a constant in the code, not by an environment variable (both need `requirements-ml.txt`): `USE_GLINER_PII = True` in `pipeline/pii.py` (GLiNER instead of regex + spaCy), and `QUALITY_SIGNAL_MODE` in `pipeline/quality.py` (the DeBERTa label, which never removes a chunk). Both are off by default.
+The optional models are off by default. After installing `requirements-ml.txt` with a CUDA-enabled PyTorch build, use `bfsi-curate run pdfs/ -o out/ --device cuda --pii-engine gliner --quality-signal model` to use both. GLiNER replaces regex + spaCy and has different validation behavior. The DeBERTa signal adds labels without filtering chunks. The other pipeline stages still run on CPU. See [`SETUP.md`](SETUP.md) for the one-time GPU install.
 
 A full run takes about 5.5 minutes on a quiet laptop CPU and up to about 12 minutes on a busy one.
 

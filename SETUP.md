@@ -71,16 +71,19 @@ The dashboard reads the snapshots in `dashboard/public/`; its refresh button (or
 
 ## 4. GPU (optional)
 
-The default pipeline always runs on the CPU. The GPU is used only by two optional models, GLiNER (PII) and the DeBERTa quality label, and the automatic choice of device (`pipeline/device.py`) applies to the quality stage. GPU deduplication is **not** claimed: cuDF installs and runs on an RTX 4050, but the real NeMo dedup import and runtime check has not passed yet (`docs/team/evidence/gpu_benchmark.md`).
+The default pipeline always runs on the CPU. The GPU is used only by two optional models, GLiNER (PII) and the DeBERTa quality label, and the automatic choice of device (`pipeline/device.py`) applies to both optional models. GPU deduplication is **not** claimed: cuDF installs and runs on an RTX 4050, but the real NeMo dedup import and runtime check has not passed yet (`docs/team/evidence/gpu_benchmark.md`).
 
 On a machine with an NVIDIA GPU and driver (inside WSL2, `nvidia-smi` must work first):
 
 ```bash
-pip install -r requirements-gpu.txt          # torch must be a CUDA build; use the PyTorch index that matches your driver
-python3 -c "import torch; print(torch.cuda.is_available())"
+source venv/bin/activate
+python -m pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cu126
+python -m pip install -r requirements-ml.txt
+python -c "import torch; print(torch.__version__, torch.cuda.is_available())"  # True
+bfsi-curate run data/raw -o out-gpu --device cuda --pii-engine gliner --quality-signal model
 ```
 
-Force a device with `CURATOR_DEVICE=cpu` or `CURATOR_DEVICE=cuda` (or `bfsi-curate run ... --device cpu|cuda`). The run's summary and the dashboard show which device was used.
+This installs the optional model dependencies once in the active environment. Repeat only the last command for later runs. Use `requirements-gpu.txt` only if you also need cuDF; the optional PII and quality models do not need it. `--pii-engine gliner` replaces regex + spaCy and does not apply all of its cross-field checks. `--quality-signal model` adds a DeBERTa label to each surviving chunk; it does not filter chunks. Model weights download on first use and are cached. `--device cuda` fails clearly if CUDA-enabled PyTorch is absent. The run's summary records the PII engine and quality model device.
 
 Notes:
 - torch pulls in the NVIDIA CUDA libraries even on a CPU-only machine. The download is large, so install it once while online.

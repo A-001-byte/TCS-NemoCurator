@@ -1,6 +1,7 @@
 """bfsi-curate: run the curation pipeline from the terminal.
 
-    bfsi-curate run PDF_DIR -o OUT_DIR [--device auto|cpu|cuda] [--verbose]
+    bfsi-curate run PDF_DIR -o OUT_DIR [--device auto|cpu|cuda] [--pii-engine regex|gliner]
+                    [--quality-signal off|model] [--verbose]
     bfsi-curate serve [--host 127.0.0.1] [--port 8000]       the local API for the dashboard
     bfsi-curate --version
     python -m pipeline.cli ...                                same thing, without installing
@@ -25,6 +26,13 @@ def build_parser() -> argparse.ArgumentParser:
     run_cmd.add_argument("pdf_dir", help="folder containing the .pdf files")
     run_cmd.add_argument("-o", "--output", required=True, help="folder for curated.jsonl and pipeline_summary.json")
     run_cmd.add_argument("--device", choices=("auto", "cpu", "cuda"), default="auto", help="default: auto-detect")
+    run_cmd.add_argument("--pii-engine", choices=("regex", "gliner"), default="regex", help="default: regex + spaCy")
+    run_cmd.add_argument(
+        "--quality-signal",
+        choices=("off", "model"),
+        default="off",
+        help="default: off; model adds labels but does not filter",
+    )
     run_cmd.add_argument("-v", "--verbose", action="store_true", help="on failure, print the pipeline's full log")
 
     serve_cmd = commands.add_parser("serve", help="start the local API the dashboard talks to")
@@ -37,7 +45,13 @@ def _run(args) -> int:
     from pipeline.api import curate  # imported late: --help and --version stay instant
 
     try:
-        result = curate(args.pdf_dir, args.output, args.device)
+        result = curate(
+            args.pdf_dir,
+            args.output,
+            args.device,
+            pii_engine=args.pii_engine,
+            quality_signal=args.quality_signal,
+        )
     except (FileNotFoundError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
@@ -55,6 +69,13 @@ def _run(args) -> int:
     print(f"chunks written: {result.summary['final_output_chunks']}")
     print(f"PII entities redacted: {result.summary['pii_entities_redacted']}")
     print(f"output: {result.output_path}")
+    for stage in result.summary["stages"]:
+        if stage["stage"] == "pii_redact":
+            print(f"PII engine: {stage.get('pii_engine', 'unknown')}")
+        if stage["stage"] == "quality_filter":
+            print(f"quality signal: {stage.get('quality_signal_mode', 'off')} ({stage.get('device', 'cpu')})")
+    if result.device.startswith("cuda") and args.pii_engine == "regex" and args.quality_signal != "model":
+        print("note: no GPU model is enabled; the default pipeline stages run on CPU.", file=sys.stderr)
     if not result.summary.get("name_detection_available", True):
         print(
             "warning: person-name detection is OFF (the spaCy model did not load), so names are not redacted.",

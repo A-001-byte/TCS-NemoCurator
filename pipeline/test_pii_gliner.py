@@ -40,6 +40,26 @@ def redact_with(text, entities, **settings):
 
 
 def main():
+    # Punctuation-heavy PDF text has far more GLiNER tokens than whitespace words.
+    # Every token must reach at least one prediction window without truncation.
+    dense = ("Regulation (KYC); " * 220) + "Mr. Anil Rao signed the last page"
+    windows = pii._gliner_windows(dense)
+    assert len(windows) > 1
+    tokens = list(pii._GLINER_TOKEN_RE.finditer(dense))
+    assert all(
+        len(list(pii._GLINER_TOKEN_RE.finditer(window))) <= pii.GLINER_MAX_WINDOW_TOKENS for window, _ in windows
+    )
+    assert all(
+        any(offset <= token.start() and token.end() <= offset + len(window) for window, offset in windows)
+        for token in tokens
+    )
+    assert any("Anil Rao" in window for window, _ in windows)
+
+    def splitter(value):
+        return ((match.group(), match.start(), match.end()) for match in pii._GLINER_TOKEN_RE.finditer(value))
+
+    assert pii._gliner_windows(dense, splitter) == windows
+
     # --- Overlap resolution: higher score wins, then longer, then earlier -----------------
     span = lambda s, e, score: {"start": s, "end": e, "score": score}  # noqa: E731
     kept = pii._resolve_overlaps([span(0, 10, 0.5), span(5, 15, 0.9)])

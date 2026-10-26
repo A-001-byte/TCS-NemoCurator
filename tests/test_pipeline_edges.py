@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from pipeline import api, extract, pii
+from pipeline import api, extract, output, pii, quality, run
 
 ROOT = Path(__file__).resolve().parent.parent
 SMALL_PDF = ROOT / "data" / "raw" / "fiu_india_brochure.pdf"
@@ -74,6 +74,42 @@ def test_a_caller_that_will_not_wait_is_told_the_pipeline_is_busy():
         api.RUN_LOCK.release()
     assert api.RUN_LOCK.acquire(blocking=False), "the lock must be free again after a refused call"
     api.RUN_LOCK.release()
+
+
+def test_optional_model_modes_are_scoped_to_one_run(monkeypatch):
+    seen = []
+
+    def fake_main():
+        seen.append((pii.USE_GLINER_PII, quality.QUALITY_SIGNAL_MODE, quality.QUALITY_SIGNAL_STRICT))
+        output.OUT_PATH.write_text("", encoding="utf-8")
+        run.SUMMARY_PATH.write_text("{}", encoding="utf-8")
+
+    monkeypatch.setattr(run, "main", fake_main)
+    original = (pii.USE_GLINER_PII, quality.QUALITY_SIGNAL_MODE, quality.QUALITY_SIGNAL_STRICT)
+    result, _ = api.run_isolated(pii_engine="gliner", quality_signal="model")
+    assert result is not None
+    assert seen == [(True, "model", True)]
+    assert (pii.USE_GLINER_PII, quality.QUALITY_SIGNAL_MODE, quality.QUALITY_SIGNAL_STRICT) == original
+
+
+def test_explicit_quality_model_failure_is_reported(monkeypatch):
+    monkeypatch.setattr(quality, "QUALITY_SIGNAL_MODE", "model")
+    monkeypatch.setattr(quality, "QUALITY_SIGNAL_STRICT", True)
+    monkeypatch.setattr(quality, "_SIGNAL_STATE", {"computed": 0, "model_error": None})
+
+    def unavailable(_text):
+        raise ImportError("missing optional model")
+
+    monkeypatch.setattr(quality, "_classifier_label", unavailable)
+    with pytest.raises(RuntimeError, match="Quality signal model failed: ImportError"):
+        quality.quality_signal_label("Regulatory text", {})
+
+
+def test_explicit_cuda_reports_a_missing_cuda_environment(monkeypatch, tmp_path):
+    (tmp_path / "sample.pdf").write_bytes(b"%PDF-1.4")
+    monkeypatch.setattr(api, "pick", lambda requested: "cpu")
+    with pytest.raises(RuntimeError, match="CUDA-enabled PyTorch is unavailable"):
+        api.curate(tmp_path, tmp_path / "out", device="cuda", pii_engine="gliner")
 
 
 # --- name detection must fail loudly --------------------------------------------------------------------

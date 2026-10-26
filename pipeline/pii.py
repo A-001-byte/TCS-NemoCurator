@@ -678,34 +678,39 @@ GLINER_LABEL_MAP = {
 GLINER_LABELS = list(GLINER_LABEL_MAP.keys())
 GLINER_CONFIDENCE_THRESHOLD = 0.3  # NVIDIA's own eval used this threshold
 
-# GLiNER's encoder has a ~384 subword-token limit; predict_entities silently
-# stops finding anything past that on a single unwindowed call rather than
-# erroring, so long chunks would quietly lose PII coverage. Window by word
-# count (conservative proxy for subword tokens) with overlap so an entity
-# straddling a window boundary is still caught in at least one window.
-GLINER_MAX_WINDOW_WORDS = 220
-GLINER_WINDOW_OVERLAP_WORDS = 30
-_WORD_RE = re.compile(r"\S+")
+# The model truncates after 384 GLiNER word tokens, which can greatly exceed
+# a whitespace word count in punctuation-heavy PDFs. Keep each window below
+# that limit. Adjacent windows overlap to preserve boundary entities.
+GLINER_MAX_WINDOW_TOKENS = 300
+GLINER_WINDOW_OVERLAP_TOKENS = 40
+# GLiNER's default whitespace splitter; used only by the synthetic stub tests.
+_GLINER_TOKEN_RE = re.compile(r"\w+(?:[-_]\w+)*|\S")
 
 
-def _gliner_windows(text: str) -> list:
-    """Split into overlapping (window_text, char_offset) pairs, each under
-    GLINER_MAX_WINDOW_WORDS words, so span offsets can be translated back to
-    the original text. Returns [(text, 0)] unchanged if already short enough.
+def _gliner_windows(text: str, splitter=None, max_tokens: int = GLINER_MAX_WINDOW_TOKENS) -> list:
+    """Split with GLiNER's own token offsets to stay below its word-token limit.
+
+    Return (window_text, original_char_offset) pairs. The regex fallback has
+    the same boundaries as GLiNER's default whitespace splitter.
     """
-    words = list(_WORD_RE.finditer(text))
-    if len(words) <= GLINER_MAX_WINDOW_WORDS:
+    if max_tokens <= 0:
+        raise ValueError("GLiNER window size must be positive")
+    offsets = (
+        [(start, end) for _, start, end in splitter(text)]
+        if splitter is not None
+        else [match.span() for match in _GLINER_TOKEN_RE.finditer(text)]
+    )
+    if len(offsets) <= max_tokens:
         return [(text, 0)]
-    step = GLINER_MAX_WINDOW_WORDS - GLINER_WINDOW_OVERLAP_WORDS
+    overlap = min(GLINER_WINDOW_OVERLAP_TOKENS, max_tokens // 4)
+    step = max_tokens - overlap
     windows = []
-    i = 0
-    while i < len(words):
-        group = words[i : i + GLINER_MAX_WINDOW_WORDS]
-        start, end = group[0].start(), group[-1].end()
+    for i in range(0, len(offsets), step):
+        group = offsets[i : i + max_tokens]
+        start, end = group[0][0], group[-1][1]
         windows.append((text[start:end], start))
-        if i + GLINER_MAX_WINDOW_WORDS >= len(words):
+        if i + max_tokens >= len(offsets):
             break
-        i += step
     return windows
 
 
@@ -758,8 +763,13 @@ def redact_pii_gliner(text: str, entity_counts: dict, examples: list, doc_id: st
     """
     _load_gliner()
 
+    processor = getattr(_gliner_model, "data_processor", None)
+    splitter = getattr(processor, "words_splitter", None)
+    model_max_len = getattr(getattr(_gliner_model, "config", None), "max_len", GLINER_MAX_WINDOW_TOKENS)
+    windows = _gliner_windows(text, splitter, min(GLINER_MAX_WINDOW_TOKENS, model_max_len))
+
     spans = []
-    for window_text, offset in _gliner_windows(text):
+    for window_text, offset in windows:
         for ent in _gliner_model.predict_entities(window_text, GLINER_LABELS, threshold=GLINER_CONFIDENCE_THRESHOLD):
             label = GLINER_LABEL_MAP.get(ent["label"], ent["label"].upper().replace(" ", "_"))
             span = {

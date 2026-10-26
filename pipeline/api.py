@@ -99,7 +99,12 @@ def _pipeline_rooted_at(tmp_root: Path):
 
 
 def run_isolated(
-    files=(), raw_dir: Optional[Path] = None, output_dir: Optional[Path] = None, wait: bool = True
+    files=(),
+    raw_dir: Optional[Path] = None,
+    output_dir: Optional[Path] = None,
+    wait: bool = True,
+    pii_engine: Optional[str] = None,
+    quality_signal: Optional[str] = None,
 ) -> tuple:
     """Run every stage in a throwaway data/ folder.
 
@@ -110,6 +115,11 @@ def run_isolated(
     if a stage stopped the pipeline. Only one run happens at a time: with wait=False a second
     caller gets PipelineBusy at once instead of queueing behind a run that takes minutes.
     """
+    if pii_engine not in (None, "regex", "gliner"):
+        raise ValueError(f"Unknown PII engine: {pii_engine}")
+    if quality_signal not in (None, "off", "cache", "model"):
+        raise ValueError(f"Unknown quality signal mode: {quality_signal}")
+
     with _exclusive(wait), tempfile.TemporaryDirectory(prefix="kyc_run_") as tmp:
         tmp_root = Path(tmp)
         for sub in STAGE_DIRS:
@@ -119,6 +129,11 @@ def run_isolated(
 
         log = io.StringIO()
         with _pipeline_rooted_at(tmp_root), contextlib.redirect_stdout(log):
+            if pii_engine is not None:
+                pii.USE_GLINER_PII = pii_engine == "gliner"
+            if quality_signal is not None:
+                quality.QUALITY_SIGNAL_MODE = quality_signal
+                quality.QUALITY_SIGNAL_STRICT = quality_signal == "model"
             if raw_dir is not None:
                 extract.RAW_DIR = Path(raw_dir)
             try:
@@ -137,7 +152,14 @@ def run_isolated(
         return result, log.getvalue()
 
 
-def curate(input_dir: Union[str, Path], output_dir: Union[str, Path], device: str = "auto") -> CurateResult:
+def curate(
+    input_dir: Union[str, Path],
+    output_dir: Union[str, Path],
+    device: str = "auto",
+    *,
+    pii_engine: str = "regex",
+    quality_signal: str = "off",
+) -> CurateResult:
     """Run the full pipeline on every PDF in `input_dir`; write the results to `output_dir`.
 
     Raises FileNotFoundError (no such folder), ValueError (no PDFs in it), PipelineBusy (another run
@@ -151,10 +173,20 @@ def curate(input_dir: Union[str, Path], output_dir: Union[str, Path], device: st
         raise ValueError(f"No .pdf files in {input_dir}")
 
     resolved = pick(device)
+    if device == "cuda" and resolved == "cpu":
+        raise RuntimeError(
+            "CUDA requested but CUDA-enabled PyTorch is unavailable in this Python environment. "
+            "Install the CUDA PyTorch build and try again."
+        )
     previous = os.environ.get(DEVICE_ENV)
     os.environ[DEVICE_ENV] = resolved
     try:
-        result, pipeline_log = run_isolated(raw_dir=input_dir, output_dir=output_dir)
+        result, pipeline_log = run_isolated(
+            raw_dir=input_dir,
+            output_dir=output_dir,
+            pii_engine=pii_engine,
+            quality_signal=quality_signal,
+        )
     finally:
         if previous is None:
             os.environ.pop(DEVICE_ENV, None)
