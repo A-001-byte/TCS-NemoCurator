@@ -72,19 +72,20 @@ export function Topbar({ sections, active, device, onRefresh, refreshing, elapse
             Quality: {device || "not reported"}
           </span>
         )}
-        <span className="pill">
+        <span className="pill pill-snapshot" title="The file the numbers on this page are read from">
           <span className="dot" />
           Snapshot: pipeline_summary.json
         </span>
 
         <button
           type="button"
-          className="btn btn-ghost"
+          className="btn btn-secondary"
           onClick={onRefresh}
           disabled={refreshing}
+          title="Runs all the source PDFs through the pipeline again and refreshes every number on this page"
         >
-          <RefreshCw size={16} />
-          {refreshing ? `Re-running pipeline… ${duration(elapsed)}` : "Re-run pipeline and refresh numbers"}
+          <RefreshCw size={14} className={refreshing ? "spin" : undefined} />
+          {refreshing ? `Re-running… ${duration(elapsed)}` : "Re-run pipeline"}
         </button>
       </div>
     </header>

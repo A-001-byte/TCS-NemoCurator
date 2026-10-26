@@ -136,26 +136,28 @@ export default function NemoComparison() {
           </p>
         </article>
 
-        <article className="card">
+        <article className="card card-fill">
           <h3>Removed chunks by document</h3>
-          <table className="table table-wrap">
-            <thead>
-              <tr>
-                <th>Document</th>
-                <th className="right">NeMo</th>
-                <th className="right">Ours</th>
-              </tr>
-            </thead>
-            <tbody>
-              {docs.map((d) => (
-                <tr key={d.doc}>
-                  <td className="cell-title">{d.doc}</td>
-                  <td className={`right num ${d.nemo ? "" : "muted"}`}>{fmt(d.nemo)}</td>
-                  <td className={`right num ${d.ours ? "" : "muted"}`}>{fmt(d.ours)}</td>
+          <div className="table-scroll-tall">
+            <table className="table table-wrap">
+              <thead>
+                <tr>
+                  <th>Document</th>
+                  <th className="right">NeMo</th>
+                  <th className="right">Ours</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {docs.map((d) => (
+                  <tr key={d.doc}>
+                    <td className="cell-title">{d.doc}</td>
+                    <td className={`right num ${d.nemo ? "" : "muted"}`}>{fmt(d.nemo)}</td>
+                    <td className={`right num ${d.ours ? "" : "muted"}`}>{fmt(d.ours)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </article>
       </div>
     </section>
