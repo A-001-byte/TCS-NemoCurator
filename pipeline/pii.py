@@ -39,9 +39,12 @@ Equivalent-logic stage: NVIDIA's shipped PII path uses GLiNER-PII
 Labelled as such in the dashboard/README.
 """
 import json
+import logging
 import re
 import sys
 from pathlib import Path
+
+log = logging.getLogger(__name__)
 
 FILTERED_DIR = Path(__file__).resolve().parent.parent / "data" / "filtered"
 REDACTED_DIR = Path(__file__).resolve().parent.parent / "data" / "redacted"
@@ -274,6 +277,7 @@ def build_validation_report(chunks: list) -> list:
 
 _NLP = None
 _SPACY_AVAILABLE = False
+_SPACY_ERROR = None  # why person-name detection is off, when it is (reported, never swallowed)
 
 # Words that make an otherwise name-shaped span very likely a building/org/field-label,
 # not a person -- spaCy's small model frequently mistags these in dense KYC/legal tables.
@@ -387,7 +391,7 @@ def _title_gated_names(text: str) -> list:
 
 
 def _load_spacy():
-    global _NLP, _SPACY_AVAILABLE
+    global _NLP, _SPACY_AVAILABLE, _SPACY_ERROR
     try:
         import spacy
 
@@ -401,9 +405,12 @@ def _load_spacy():
             # Keep its NER weights and use spaCy's default English tokenizer.
             _NLP = spacy.load("en_core_web_sm", disable=disabled, exclude=["tokenizer"])
         _SPACY_AVAILABLE = True
-    except Exception:
+        _SPACY_ERROR = None
+    except Exception as exc:  # any load failure turns name detection off, but never silently
         _NLP = None
         _SPACY_AVAILABLE = False
+        _SPACY_ERROR = f"{type(exc).__name__}: {exc}"
+        log.warning("Person-name detection is OFF: spaCy model 'en_core_web_sm' did not load (%s)", _SPACY_ERROR)
 
 
 def _record_example(examples: list, label: str, doc_id: str, before: str, context_before: str, context_after: str):
@@ -752,6 +759,7 @@ def main():
         "entity_type_counts": entity_counts,
         "chunks_with_pii": chunks_with_pii,
         "name_detection_available": USE_GLINER_PII or _SPACY_AVAILABLE,
+        "name_detection_error": None if (USE_GLINER_PII or _SPACY_AVAILABLE) else _SPACY_ERROR,
         "pii_engine": "gliner" if USE_GLINER_PII else "regex+spacy",
         # Cross-field validation outcomes (Stream C)
         "account_numbers_suppressed": validation_totals.get("account_suppressed", 0),

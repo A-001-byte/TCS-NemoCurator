@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bfsi-curator"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Curate banking and KYC regulatory PDFs into redacted, deduplicated fine-tuning JSONL."
 requires-python = ">=3.10"
 # ponytail: dependencies are installed from requirements.txt (Aditi's task B2); point this at it once it exists.
@@ -15,3 +15,6 @@ bfsi-curate = "pipeline.cli:main"
 
 [tool.setuptools]
 packages = ["pipeline"]
+
+[tool.setuptools.dynamic]
+version = {attr = "pipeline.__version__"}

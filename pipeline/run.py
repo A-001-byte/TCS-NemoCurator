@@ -130,6 +130,7 @@ def main():
         "pii_entities_redacted": pii_stage.get("pii_entities_redacted", 0),
         "pii_entity_type_counts": pii_stage.get("entity_type_counts", {}),
         "name_detection_available": pii_stage.get("name_detection_available", False),
+        "name_detection_error": pii_stage.get("name_detection_error"),
         "pii_examples": pii_examples,
         # Stream B: regulatory tagging stats
         "regulatory_tagged_count": quality_stage.get("regulatory_tagged_count", 0),

@@ -109,8 +109,11 @@ def test_the_refresh_routes_start_a_job_report_busy_and_report_the_result(api):
     assert status == 200 and body["chunks"] == 3325
 
 
-def test_the_old_blocking_get_route_is_gone_and_unknown_paths_are_404(api):
+def test_a_get_on_the_refresh_route_is_refused_and_never_starts_a_run(api):
     call, _ = api
-    assert call("GET", "/api/refresh")[0] == 404, "a GET must never start a pipeline run"
+    status, body = call("GET", "/api/refresh")
+    assert status == 405 and "POST" in body["error"]
+    assert call("GET", "/api/refresh/status") == (200, {"state": "idle"}), "the GET must not have started a job"
     assert call("POST", "/api/nothing")[0] == 404
-    assert call("GET", "/api/health") == (200, {"ok": True})
+    status, body = call("GET", "/api/health")
+    assert status == 200 and body["ok"] is True

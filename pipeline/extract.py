@@ -10,6 +10,12 @@ EXTRACTED_DIR = Path(__file__).resolve().parent.parent / "data" / "extracted"
 STAGE_RECORD_PATH = EXTRACTED_DIR / "_stage_record.json"
 
 
+def list_pdfs(folder: Path) -> list:
+    """The input PDFs in `folder`, sorted: regular files whose extension is .pdf in any letter case.
+    (Path.glob("*.pdf") is case-sensitive on Linux but not on Windows, and also matches folders.)"""
+    return sorted(p for p in Path(folder).iterdir() if p.is_file() and p.suffix.lower() == ".pdf")
+
+
 def extract_pdf_text(pdf_path: Path) -> str:
     pages = []
     with pdfplumber.open(pdf_path) as pdf:
@@ -21,7 +27,7 @@ def extract_pdf_text(pdf_path: Path) -> str:
 
 def main():
     EXTRACTED_DIR.mkdir(parents=True, exist_ok=True)
-    pdfs = sorted(RAW_DIR.glob("*.pdf"))
+    pdfs = list_pdfs(RAW_DIR)
     docs_in = len(pdfs)
     docs_out = 0
     failures = []

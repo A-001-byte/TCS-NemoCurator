@@ -295,6 +295,18 @@ function Overview({ summary }) {
           ; NVIDIA's reference path uses GLiNER-PII. No model was fine-tuned in this run.
         </p>
       </div>
+
+      {summary.name_detection_available === false && (
+        <div className="card empty" role="alert">
+          <TriangleAlert size={18} />
+          <p>
+            <strong>Person-name detection is off in this run</strong>, so names are not redacted and the
+            PII count is lower than with the model loaded.
+            {summary.name_detection_error ? ` Reason: ${summary.name_detection_error}.` : ""} Install the
+            spaCy model with <code>python -m spacy download en_core_web_sm</code> and run again.
+          </p>
+        </div>
+      )}
     </section>
   );
 }

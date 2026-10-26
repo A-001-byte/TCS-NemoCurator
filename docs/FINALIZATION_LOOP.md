@@ -42,11 +42,11 @@ Phases are ordered by **demo impact first, tidiness second**, so that if time ru
 
 ## Phase 2: backend hardening (the API and the library)
 
-- [ ] 2.1 Server: `logging` instead of `print`, host and port from environment or flags, one error shape for every failure, 405 for wrong methods, clean shutdown, `bfsi-curate serve`
-- [ ] 2.2 Endpoint tests: `/api/health`, `/api/run` (bad JSON, not a PDF, too large, too many files, success), `/api/refresh` (accepted, busy, status)
-- [ ] 2.3 **No silent degradation:** if spaCy or its model cannot load, the stage record, the CLI and the dashboard say "name detection off" (this is what turned 68 into 66 on two machines)
-- [ ] 2.4 Library hygiene: no stray `print` in importable code, type hints on public functions, `bfsi-curate --version`, clear exit codes documented
-- [ ] 2.5 `curate()` input checks match the server's (only real PDFs, size limits)
+- [x] 2.1 Server: `logging` instead of `print`, host and port from environment or flags, one error shape for every failure, 405 for wrong methods, clean shutdown, `bfsi-curate serve` — `pipeline/server.py` rewritten; real process checked with curl (200, 405 + Allow, 400 JSON errors, structured log); `bfsi-curate serve`
+- [x] 2.2 Endpoint tests: `/api/health`, `/api/run` (bad JSON, not a PDF, too large, too many files, success), `/api/refresh` (accepted, busy, status) — `tests/test_server_endpoints.py` (45 tests, 8 rules mutation-checked), `tests/test_refresh_job.py` (4)
+- [x] 2.3 **No silent degradation:** if spaCy or its model cannot load, the stage record, the CLI and the dashboard say "name detection off" (this is what turned 68 into 66 on two machines) — `pii.py` keeps the reason, `run.py` summary carries `name_detection_error`, CLI warns on stderr, dashboard shows an alert; tests in `tests/test_pipeline_edges.py` (11 tests, 7 mutations)
+- [x] 2.4 Library hygiene: no stray `print` in importable code, type hints on public functions, `bfsi-curate --version`, clear exit codes documented — `--version`, `--verbose`, exit codes 0/1/2/130 documented and tested (`tests/test_cli.py`, 15 tests); `pipeline/__init__.py` holds the version
+- [x] 2.5 `curate()` input checks match the server's (only real PDFs, size limits) — `extract.list_pdfs` (any-case extension, regular files only) used by `curate()` and the extract stage; busy lock and clear stop reason shared by library, CLI and API
 
 ## Phase 3: repository hygiene and structure
 

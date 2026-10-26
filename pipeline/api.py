@@ -10,14 +10,20 @@ there for the duration of the run, so the committed corpus under data/ is never 
 import contextlib
 import io
 import json
+import logging
 import os
+import re
 import shutil
 import tempfile
 import threading
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional, Union
 
 from pipeline import clean, dedup, extract, heal, output, pii, quality, run
+from pipeline.device import pick
+
+log = logging.getLogger(__name__)
 
 DATA_DIR = run.ROOT / "data"
 STAGE_DIRS = ("raw", "extracted", "cleaned", "healed", "deduped", "filtered", "redacted", "output")
@@ -26,6 +32,35 @@ DEVICE_ENV = "CURATOR_DEVICE"
 
 # ponytail: one run at a time, because runs patch module globals; a job queue if this ever serves more than one user.
 RUN_LOCK = threading.Lock()
+
+
+class PipelineBusy(RuntimeError):
+    """Another run holds the pipeline; try again when it has finished."""
+
+
+_STOPPED_RE = re.compile(r"Pipeline stopped: stage '([^']+)' failed")
+
+
+def stop_reason(pipeline_log: str) -> str:
+    """One plain sentence on why the pipeline stopped, read from its log."""
+    match = _STOPPED_RE.search(pipeline_log)
+    stage = match.group(1) if match else None
+    if stage == "extract":
+        return "The pipeline stopped at the extract stage: no PDF yielded any text (scanned, empty or damaged files)."
+    if stage:
+        return f"The pipeline stopped at the {stage} stage."
+    return "The pipeline stopped before finishing."
+
+
+@contextlib.contextmanager
+def _exclusive(wait: bool):
+    """Hold the one-run-at-a-time lock; with wait=False raise PipelineBusy instead of queueing."""
+    if not RUN_LOCK.acquire(blocking=wait):
+        raise PipelineBusy("Another pipeline run is in progress; try again when it has finished.")
+    try:
+        yield
+    finally:
+        RUN_LOCK.release()
 
 
 @dataclass(frozen=True)
@@ -62,16 +97,17 @@ def _pipeline_rooted_at(tmp_root: Path):
                     setattr(mod, name, value)
 
 
-def run_isolated(files=(), raw_dir=None, output_dir=None):
+def run_isolated(files=(), raw_dir: Optional[Path] = None, output_dir: Optional[Path] = None, wait: bool = True) -> tuple:
     """Run every stage in a throwaway data/ folder.
 
     `files` is a list of (name, bytes) PDFs written into that folder; alternatively `raw_dir`
     points the extract stage straight at an existing folder of PDFs (nothing is copied).
     With `output_dir`, curated.jsonl and pipeline_summary.json are copied there before the
     throwaway folder is deleted. Returns ({"summary", "curated_jsonl"}, log), or (None, log)
-    if a stage stopped the pipeline.
+    if a stage stopped the pipeline. Only one run happens at a time: with wait=False a second
+    caller gets PipelineBusy at once instead of queueing behind a run that takes minutes.
     """
-    with RUN_LOCK, tempfile.TemporaryDirectory(prefix="kyc_run_") as tmp:
+    with _exclusive(wait), tempfile.TemporaryDirectory(prefix="kyc_run_") as tmp:
         tmp_root = Path(tmp)
         for sub in STAGE_DIRS:
             (tmp_root / "data" / sub).mkdir(parents=True)
@@ -98,35 +134,34 @@ def run_isolated(files=(), raw_dir=None, output_dir=None):
         return result, log.getvalue()
 
 
-def _resolve_device(requested: str) -> str:
-    """'cpu' / 'cuda:0'. Uses pipeline.device once it exists; until then nothing runs on a GPU."""
-    try:
-        from pipeline.device import pick
-    except ImportError:
-        return "cpu" if requested == "auto" else requested
-    return pick(requested)
+def curate(input_dir: Union[str, Path], output_dir: Union[str, Path], device: str = "auto") -> CurateResult:
+    """Run the full pipeline on every PDF in `input_dir`; write the results to `output_dir`.
 
-
-def curate(input_dir, output_dir, device: str = "auto") -> CurateResult:
-    """Run the full pipeline on every *.pdf in `input_dir`; write the results to `output_dir`."""
+    Raises FileNotFoundError (no such folder), ValueError (no PDFs in it), PipelineBusy (another run
+    holds the pipeline; it waits its turn instead, see run_isolated) or RuntimeError with a one-line
+    reason first when a stage stops the pipeline (for example, no PDF could be read).
+    """
     input_dir, output_dir = Path(input_dir), Path(output_dir)
     if not input_dir.is_dir():
         raise FileNotFoundError(f"Input folder not found: {input_dir}")
-    if not any(input_dir.glob("*.pdf")):
+    if not extract.list_pdfs(input_dir):
         raise ValueError(f"No .pdf files in {input_dir}")
 
-    resolved = _resolve_device(device)
+    resolved = pick(device)
     previous = os.environ.get(DEVICE_ENV)
     os.environ[DEVICE_ENV] = resolved
     try:
-        result, log = run_isolated(raw_dir=input_dir, output_dir=output_dir)
+        result, pipeline_log = run_isolated(raw_dir=input_dir, output_dir=output_dir)
     finally:
         if previous is None:
             os.environ.pop(DEVICE_ENV, None)
         else:
             os.environ[DEVICE_ENV] = previous
     if result is None:
-        raise RuntimeError(f"The pipeline stopped before finishing.\n{log}")
+        raise RuntimeError(f"{stop_reason(pipeline_log)}\n{pipeline_log}")
+    summary = result["summary"]
+    if not summary.get("name_detection_available", True):
+        log.warning("Person-name detection is OFF on this run: the spaCy model did not load, so names are not redacted.")
     return CurateResult(
-        result["summary"], output_dir / "curated.jsonl", output_dir / "pipeline_summary.json", resolved, log
+        summary, output_dir / "curated.jsonl", output_dir / "pipeline_summary.json", resolved, pipeline_log
     )
