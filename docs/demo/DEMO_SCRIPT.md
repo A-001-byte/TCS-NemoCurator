@@ -1,4 +1,4 @@
-﻿# Demo script (10 minutes)
+# Demo script (10 minutes)
 
 For the in-person review with TCS. Demo machine: Kunal's Linux laptop (WSL2 Ubuntu, RTX 4050). The numbers below are from `docs/FINAL_NUMBERS.md`, which is generated from the snapshots; if the corpus or a rule changes, regenerate it and update this page.
 

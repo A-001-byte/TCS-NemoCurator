@@ -1,0 +1,12 @@
+# Line endings: LF in the repository and in every checkout, on every platform.
+# (A Windows checkout used to show "LF will be replaced by CRLF" warnings on every file.)
+* text=auto eol=lf
+
+# Binary files: never converted
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.woff binary
+*.woff2 binary

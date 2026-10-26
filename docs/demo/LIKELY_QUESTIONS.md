@@ -1,4 +1,4 @@
-﻿# Likely questions, with honest answers
+# Likely questions, with honest answers
 
 Numbers are from `docs/FINAL_NUMBERS.md`. If a question is not covered, say what we know and what we have not tested.
 
