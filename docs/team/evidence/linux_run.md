@@ -1,6 +1,6 @@
 # Linux Run — Aditi
 
-**Date:** 20 Oct 2026
+**Date:** 20 Oct 2026 (re-run on merged main: 26 Oct 2026)
 **OS:** Ubuntu 22.04.5 LTS (WSL2)
 **Python version:** Python 3.11.0rc1
 **Venv:** venv-curator
@@ -28,4 +28,5 @@ python3 -m pipeline.run
 - Environment matches SETUP.md (Ubuntu 22.04 on WSL2) and produced identical results.
 
 
-- Re-run on current main (25 Oct 2026) gives 66 PII items instead of 68. main's pii.py changed after this baseline. This branch does not touch pii.py.
+- Re-run on merged main (26 Oct 2026, commit 3738a36) matches the baseline above: 35 PDFs in, 34 readable, 3,726 to 3,396 to 3,325 chunks, 68 PII, quality_filter device = cpu. An interim run on 25 Oct, before the final merges, gave 66 PII; that cause was not investigated, and merged main reproduces 68.
+- Fresh-venv check (26 Oct 2026): a new venv installed from requirements-dev.txt passed test_server, test_device and pytest (29 passed).

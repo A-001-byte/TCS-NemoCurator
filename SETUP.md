@@ -91,3 +91,24 @@ source venv-curator/bin/activate
   runs). Every other stage, including deduplication, runs on the CPU. GPU deduplication is not
   claimed: cuDF installs and runs on an RTX 4050, but the NeMo dedup import and runtime checks
   have not passed yet (docs/team/evidence/gpu_benchmark.md). Override with CURATOR_DEVICE=cpu|cuda.
+
+## Verified install (26 Oct 2026, Ubuntu 22.04 on WSL2)
+
+CPU install with tests:
+
+    python3.11 -m venv venv-curator
+    source venv-curator/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements-dev.txt
+    python3 -m pipeline.test_server
+    python3 -m pipeline.test_device
+    python3 -m pytest -q
+
+Expected: `ok`, `ok`, then `29 passed`. Use `requirements.txt` instead if you do not need the tests.
+
+Notes:
+- torch pulls in the NVIDIA CUDA libraries even on a CPU-only machine. The download is large, so install once while online.
+- GPU: on a machine with an NVIDIA GPU and driver, run `pip install -r requirements-gpu.txt`. The default pipeline still runs on CPU. The GPU is used only by the optional GLiNER and DeBERTa models (see docs/team/evidence/gpu_benchmark.md). Override with `CURATOR_DEVICE=cpu` or `CURATOR_DEVICE=cuda`.
+- The real NeMo GPU dedup has not been run yet (see gpu_benchmark.md).
+- tiktoken may download its encoding on first use, so run the token statistics once while online.
+- WSL: if git says "Could not resolve host", run `echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf` (it resets when WSL restarts).
