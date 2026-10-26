@@ -39,7 +39,7 @@ The PII figure is mostly official contact details printed in public documents (g
 **Our own implementations ("equivalent-logic" stages), not calls into NeMo**
 - **Dedup:** SHA-256 exact matching plus MinHash/LSH fuzzy matching (`datasketch`), run on the CPU. NeMo's own dedup needs a GPU ([`docs/A1_3_dedup_gpu_finding.md`](docs/A1_3_dedup_gpu_finding.md)). When several versions of one policy exist, the newest is kept.
 - **Quality filter:** heuristics (alpha ratio, symbol ratio, lexical diversity, minimum words) plus regulatory-keyword tagging. NVIDIA's DeBERTa quality classifier was tested and **rejected as a filter** because it is about 17x stricter and judges layout, not quality ([`docs/A1_4_quality_classifier_comparison.md`](docs/A1_4_quality_classifier_comparison.md)). It remains as an optional, off-by-default label (`QUALITY_SIGNAL_MODE`) that never removes a chunk.
-- **PII:** regex plus spaCy, with context checks: dates only after a birth cue, PIN codes only with an address context, Aadhaar by Verhoeff checksum, SWIFT only with a label, and account numbers only with a bank cue and not inside numeric tables. GLiNER is available behind `USE_GLINER_PII` (off by default).
+- **PII:** regex plus spaCy, with context checks: dates only after a birth cue, PIN codes only with an address context, Aadhaar by Verhoeff checksum, SWIFT only with a label, and account numbers only with a bank cue and not inside numeric tables. GLiNER is available behind `USE_GLINER_PII` (off by default). **Recall is measured, and it is not perfect:** on a labelled synthetic set (`python -m pipeline.eval_pii`) the rules miss grouped phone numbers, written-out birth months, lower-case PANs and names that have no honorific; every miss is listed in [`docs/PII_RECALL.md`](docs/PII_RECALL.md). That set is synthetic, so it is not a measure of performance on real customer documents.
 
 **Document-type classifier (small, honestly scored).** A nearest-centroid classifier over 6 document types, built on the clause-search TF-IDF (`dashboard/src/doctype.js`). It is scored with each document's whole near-copy family held out; the table above has the score and the guessing baseline. Four combinations were scored on the same 34 documents and two types were merged after seeing the confusion table, so treat the score as the optimistic end; `fiu_reporting_spec` is still 0%. It is not a trained fraud or anomaly model. Results: `dashboard/public/doctype_eval.json`.
 
@@ -92,6 +92,15 @@ python3 -m pytest -q                                 # all tests, no network nee
 | `requirements-nemo.txt` | real NeMo Curator 1.3.0 | `pipeline/nemo_compare.py`, Linux or WSL2 only |
 
 [`SETUP.md`](SETUP.md) has the step-by-step Linux/WSL2 install, the GPU notes and the known pitfalls.
+
+**With Docker instead of Python** (nothing to install but Docker; CPU only, no GPU models):
+
+```bash
+docker build -t bfsi-curate .
+docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/data" bfsi-curate run /data/pdfs -o /data/out
+```
+
+The image runs the `bfsi-curate` command as an ordinary user; your PDFs and the output live in the mounted folder. To use the dashboard's API from the container, publish the port on your own machine only: `docker run --rm -p 127.0.0.1:8000:8000 bfsi-curate serve --host 0.0.0.0`. CI builds the image and curates a real PDF in it on every pull request.
 
 ## Use it three ways
 
