@@ -3,7 +3,6 @@
 import importlib.util
 import json
 import shutil
-import sys
 from pathlib import Path
 
 import pytest
@@ -86,10 +85,68 @@ def test_a_run_without_name_detection_or_device_says_so(copy):
     assert "| Compute device (quality stage) | not reported |" in text
 
 
-def test_main_writes_a_file_with_unix_line_endings(copy, tmp_path, monkeypatch):
+@pytest.fixture
+def readme(tmp_path):
+    """A temporary README with the two marker lines around stale text."""
+    path = tmp_path / "README.md"
+    path.write_text(f"intro\n\n{numbers.README_START}\n\nstale\n\n{numbers.README_END}\n\noutro\n", encoding="utf-8")
+    return path
+
+
+def run_main(copy, out, readme, *extra):
+    return numbers.main(["--snapshots", str(copy), "--out", str(out), "--readme", str(readme), *extra])
+
+
+def test_main_writes_both_files_with_unix_line_endings(copy, readme, tmp_path):
     out = tmp_path / "FINAL_NUMBERS.md"
-    monkeypatch.setattr(sys, "argv", ["make_final_numbers", "--snapshots", str(copy), "--out", str(out)])
-    numbers.main()
+    assert run_main(copy, out, readme) == 0
     data = out.read_bytes()
     assert data.startswith(b"# Final numbers") and b"\r" not in data
     assert data.decode("utf-8") == numbers.build(copy)
+    text = readme.read_text(encoding="utf-8")
+    assert text.startswith("intro\n") and text.endswith("outro\n") and "stale" not in text
+    assert numbers.readme_block(copy) in text and "\r" not in text
+
+
+def test_the_readme_table_equals_the_snapshots():
+    summary, tokens, doctypes, nemo = (read(name) for name in FILES)
+    block = numbers.readme_block(SNAPSHOTS)
+
+    assert f"{summary['final_output_chunks']:,} (" in block
+    assert f"| Personal-data items hidden | {summary['pii_entities_redacted']:,} (" in block
+    assert f"{tokens['total_tokens']:,}" in block
+    assert f"{100 * doctypes['accuracy']['by_family']:.1f}%" in block
+    assert f"{nemo['nemo']['removed']:,} (" in block and f"{nemo['ours']['removed']:,} (" in block
+    for bad in ("None", "nan", "undefined", "n/a"):
+        assert bad not in block, bad
+
+
+def test_the_committed_readme_and_final_numbers_are_up_to_date():
+    # Fails when a snapshot changed and `python scripts/make_final_numbers.py` was not run.
+    assert numbers.main(["--check"]) == 0
+
+
+def test_check_reports_a_stale_file_and_writes_nothing(copy, readme, tmp_path, capsys):
+    out = tmp_path / "FINAL_NUMBERS.md"
+    before = readme.read_bytes()
+    assert run_main(copy, out, readme, "--check") == 1
+    assert "out of date" in capsys.readouterr().out
+    assert readme.read_bytes() == before and not out.exists()
+
+    run_main(copy, out, readme)
+    assert run_main(copy, out, readme, "--check") == 0
+
+
+def test_updating_the_readme_twice_changes_nothing(copy, readme, tmp_path):
+    out = tmp_path / "FINAL_NUMBERS.md"
+    run_main(copy, out, readme)
+    first = readme.read_bytes()
+    run_main(copy, out, readme)
+    assert readme.read_bytes() == first
+
+
+def test_a_readme_without_markers_is_refused():
+    with pytest.raises(ValueError, match="marker"):
+        numbers.update_readme("no markers here", "table")
+    with pytest.raises(ValueError, match="marker"):
+        numbers.update_readme(f"{numbers.README_END}\n{numbers.README_START}", "table")

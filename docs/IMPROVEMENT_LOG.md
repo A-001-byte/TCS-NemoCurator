@@ -54,7 +54,7 @@ header comment says the dashboard snapshot "Stream D refreshes on purpose". The 
 | `nemo_comparison.json` | `python -m pipeline.nemo_compare` run on the Ubuntu VM, then `scp` | created in PR #6 |
 
 Consequence: the dashboard can silently drift from the code. Plan: Phase 8 adds
-`scripts/refresh_dashboard_snapshot.py` (applies PII masking) and a "Re-run pipeline" button
+a snapshot refresh (built as `pipeline/refresh_snapshots.py`; applies PII masking) and a "Re-run pipeline" button
 on the dashboard backed by `pipeline/server.py`, with a test. It is deferred to Phase 8 on
 purpose: the refresh has to apply the Phase 8 masking and see the Phase 1 heal stage.
 
@@ -374,3 +374,30 @@ Per-document tagged share at threshold 2, lowest first: `rbi_fraud_master_direct
 Verified on the real run: `regulatory_tagged` is true exactly when a chunk has at least 2 distinct keywords, for all 2047 chunks.
 `test_quality_tags.py` was fixed to check the found keywords rather than assuming a threshold of 1, and now also pins the default to 2 and checks repeats count once.
 The tag is still only a label; nothing in the pipeline filters on it (see the explanation in Phase 4).
+
+## Finalisation: from "all tasks merged" to a releasable project (2026-10-26)
+
+Everything above changed what the pipeline outputs. This entry is different on purpose: **the curated output did not change.**
+The full run on the 35 PDFs gave 3,325 chunks and 68 PII items (names on) before and after the phases below, and the
+curated-file hash prefix `8e2b6954e85ac3fd` was confirmed unchanged by the real refresh in phase 1. What changed is whether the project is safe to demonstrate, install and hand over.
+The plan and the evidence for every task are in `docs/FINALIZATION_LOOP.md`.
+
+| Phase (PR) | What was wrong or missing | What changed | Check |
+|---|---|---|---|
+| 1 Demo-critical (#24) | The published snapshot masked everything with `[REDACTED]`, rewrote 21 public fax numbers as `[AADHAAR REDACTED]` and leaked a local `C:\Users\...` path. Refresh was a GET that blocked for minutes. | Snapshots mask only the original PII value. Refresh is a background job (`POST /api/refresh`, `GET /api/refresh/status`). New dashboard panels for document types, tokens and device. `docs/FINAL_NUMBERS.md` is generated. | `tests/test_refresh.py` (7), `tests/test_refresh_job.py` (4), both mutation-checked; a real refresh reproduced the same hash |
+| 2 Backend (#25) | Upper-case `.PDF` files were skipped on Linux. A spaCy failure silently turned name detection off (68 became 66 on two machines). Malformed API requests could drop the connection. | One error shape and the right status for every failure. Name detection off is reported by the pipeline, the CLI and the dashboard. `bfsi-curate --version`, `serve`, exit codes 0/1/2/130. | `tests/test_server_endpoints.py` (45), `tests/test_cli.py` (15), `tests/test_pipeline_edges.py` (11) |
+| 3 Hygiene (#26) | A 1,504-line `App.jsx`, planning papers in the repository root, mixed line endings. | `App.jsx` is 92 lines plus one file per section; planning papers moved to `docs/archive/`; `.gitattributes`, `.editorconfig`. | A before/after fingerprint of the rendered dashboard was identical |
+| 4 Quality gates (#27) | One requirements file pulled torch for everyone; no lint, CI or coverage number. | Requirements split into core, `ml`, `gpu`, `nemo`, `dev`; real dependencies in `pyproject.toml`; ruff; CI with three jobs; coverage measured at 85.5% with an 80% floor. | `tests/test_packaging.py` (42); a clean virtual environment installs with no heavy packages and passes all tests; CI green on Ubuntu |
+| 5 Documentation (this) | README numbers were typed by hand, `SETUP.md` still said "29 passed" and mixed three setups, nothing checked that documents point at real files. | README rewritten (install, three ways to use it, API table, diagram); its numbers table is generated from the snapshots and a test fails when it goes stale; `SETUP.md` rewritten against the requirements files; a test checks every link and file path in the documents. | `tests/test_final_numbers.py`, `tests/test_docs.py`, both mutation-checked; the docs test found two stale paths on its first run |
+
+### What was learnt
+
+- A silently degraded stage is worse than a failing one. The 68 versus 66 difference we reproduced came from the spaCy model not loading; the fix was to say so, loudly, in every interface.
+- Typed numbers drift. The README, the dashboard and the slides now all read the same snapshot files, and a test compares them.
+- Mutation-checking finds gaps that coverage does not: breaking a dependency declaration on purpose showed that no test noticed it was missing from `pyproject.toml`, and `tests/test_packaging.py` now does.
+
+### Still open at the end of this entry
+
+- The licence (the owner has not chosen one, so none is added).
+- The 649 chunks only NeMo removes have not been hand-checked.
+- The real NeMo GPU dedup import check (Aditi) and the manual run on Linux, which is the next step.
