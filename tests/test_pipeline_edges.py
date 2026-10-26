@@ -1,4 +1,5 @@
 """Edge cases at the pipeline's boundaries: what counts as an input, a busy pipeline, a failing name model."""
+
 import json
 import logging
 import shutil
@@ -16,6 +17,7 @@ SMALL_PDF = ROOT / "data" / "raw" / "fiu_india_brochure.pdf"
 
 # --- what counts as an input PDF -------------------------------------------------------------------
 
+
 def test_list_pdfs_takes_regular_files_with_a_pdf_extension_in_any_case(tmp_path):
     for name in ("a.pdf", "B.PDF", "c.Pdf", "notes.txt", "d.pdf.bak", "pdf"):
         (tmp_path / name).write_bytes(b"x")
@@ -32,7 +34,9 @@ def test_a_folder_named_like_a_pdf_and_a_fake_pdf_are_handled_not_fatal(tmp_path
 
     result = api.curate(inputs, tmp_path / "out", device="cpu")
     extract_stage = result.summary["stages"][0]
-    assert (extract_stage["docs_in"], extract_stage["docs_out"]) == (2, 1), "the folder is not an input; the fake PDF is a counted failure"
+    assert (extract_stage["docs_in"], extract_stage["docs_out"]) == (2, 1), (
+        "the folder is not an input; the fake PDF is a counted failure"
+    )
     assert result.summary["final_output_chunks"] > 0
     assert "name_detection_error" in result.summary, "the summary must carry the reason when names are off"
 
@@ -46,16 +50,20 @@ def test_when_no_pdf_can_be_read_the_error_says_why_in_its_first_line(tmp_path):
     assert "Pipeline stopped: stage 'extract' failed" in log
 
 
-@pytest.mark.parametrize("log,expected", [
-    ("noise\nPipeline stopped: stage 'extract' failed (exit 1)", "extract stage: no PDF yielded any text"),
-    ("Pipeline stopped: stage 'dedup' failed (exit 3)", "stopped at the dedup stage."),
-    ("nothing recognisable", "The pipeline stopped before finishing."),
-])
+@pytest.mark.parametrize(
+    "log,expected",
+    [
+        ("noise\nPipeline stopped: stage 'extract' failed (exit 1)", "extract stage: no PDF yielded any text"),
+        ("Pipeline stopped: stage 'dedup' failed (exit 3)", "stopped at the dedup stage."),
+        ("nothing recognisable", "The pipeline stopped before finishing."),
+    ],
+)
 def test_stop_reason_names_the_stage_that_failed(log, expected):
     assert expected in api.stop_reason(log)
 
 
 # --- one run at a time -------------------------------------------------------------------------------
+
 
 def test_a_caller_that_will_not_wait_is_told_the_pipeline_is_busy():
     assert api.RUN_LOCK.acquire(blocking=False)
@@ -69,6 +77,7 @@ def test_a_caller_that_will_not_wait_is_told_the_pipeline_is_busy():
 
 
 # --- name detection must fail loudly --------------------------------------------------------------------
+
 
 @pytest.fixture
 def fake_spacy(monkeypatch):
@@ -118,12 +127,19 @@ def test_the_stage_record_says_names_are_off_and_why(fake_spacy, tmp_path, monke
     redacted.mkdir(parents=True)
     filtered = tmp_path / "data" / "filtered"
     filtered.mkdir()
-    chunk = {"chunk_id": "d__0", "doc_id": "d", "source_file": "d.pdf",
-             "text": "Write to someone@bank.example.in about the reporting entity policy."}
+    chunk = {
+        "chunk_id": "d__0",
+        "doc_id": "d",
+        "source_file": "d.pdf",
+        "text": "Write to someone@bank.example.in about the reporting entity policy.",
+    }
     (filtered / "chunks.jsonl").write_text(json.dumps(chunk) + "\n", encoding="utf-8")
     for name, value in (
-        ("REDACTED_DIR", redacted), ("IN_PATH", filtered / "chunks.jsonl"), ("OUT_PATH", redacted / "chunks.jsonl"),
-        ("STAGE_RECORD_PATH", redacted / "_stage_record.json"), ("EXAMPLES_PATH", redacted / "pii_examples.json"),
+        ("REDACTED_DIR", redacted),
+        ("IN_PATH", filtered / "chunks.jsonl"),
+        ("OUT_PATH", redacted / "chunks.jsonl"),
+        ("STAGE_RECORD_PATH", redacted / "_stage_record.json"),
+        ("EXAMPLES_PATH", redacted / "pii_examples.json"),
         ("VALIDATION_REPORT_PATH", redacted / "validation_report.json"),
     ):
         monkeypatch.setattr(pii, name, value)

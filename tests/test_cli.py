@@ -1,4 +1,5 @@
 """Tests for the bfsi-curate command line: exit codes, messages, flags, and the serve command."""
+
 import logging
 import threading
 import urllib.request
@@ -81,6 +82,7 @@ def test_serve_hands_its_flags_to_the_server(monkeypatch):
 
 # --- the server's own start-up -------------------------------------------------------------------
 
+
 def test_the_address_comes_from_flags_then_the_environment_then_the_defaults(monkeypatch):
     monkeypatch.delenv("CURATOR_HOST", raising=False)
     monkeypatch.delenv("CURATOR_PORT", raising=False)
@@ -91,7 +93,9 @@ def test_the_address_comes_from_flags_then_the_environment_then_the_defaults(mon
     assert server._address(["--host", "127.0.0.1", "--port", "9200"]) == ("127.0.0.1", 9200), "a flag wins"
 
 
-@pytest.mark.parametrize("argv,env", [(["--port", "0"], None), (["--port", "70000"], None), ([], "abc"), (["--port", "x"], None)])
+@pytest.mark.parametrize(
+    "argv,env", [(["--port", "0"], None), (["--port", "70000"], None), ([], "abc"), (["--port", "x"], None)]
+)
 def test_a_bad_port_is_a_usage_error(monkeypatch, argv, env):
     monkeypatch.delenv("CURATOR_PORT", raising=False)
     if env:

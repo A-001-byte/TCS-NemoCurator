@@ -37,12 +37,14 @@ the real nvidia/quality-classifier-deberta was tested and rejected as a hard fil
 (docs/A1_4_quality_classifier_comparison.md); it is available only as an optional SIGNAL field
 (QUALITY_SIGNAL_MODE below), never as a filter.
 """
+
 import hashlib
 import json
 import re
 import sys
 from collections import Counter
 from pathlib import Path
+
 from pipeline.device import describe
 
 # ---------------------------------------------------------------------------
@@ -77,7 +79,7 @@ ALPHA_RE = re.compile(r"[A-Za-z]")
 # (a single "FIU" in a form field was enough). 2 tags 56.5%; chosen by the owner from the
 # distribution in docs/IMPROVEMENT_LOG.md (N=3 would be 38.4%).
 MIN_KEYWORD_MATCHES_FOR_TAG = 2
-HIGH_DENSITY_THRESHOLD = 0.05   # 5% of words are regulatory-keyword-bearing
+HIGH_DENSITY_THRESHOLD = 0.05  # 5% of words are regulatory-keyword-bearing
 
 # ---------------------------------------------------------------------------
 # REGULATORY KEYWORD LIST  (B0.1)
@@ -91,58 +93,108 @@ HIGH_DENSITY_THRESHOLD = 0.05   # 5% of words are regulatory-keyword-bearing
 # foundation 1, structuring 1, the rest 0; see docs/IMPROVEMENT_LOG.md.)
 REGULATORY_KEYWORDS = {
     # Core KYC/AML programme terms
-    "kyc", "aml", "cft", "aml/cft", "anti-money laundering",
-    "counter financing of terrorism", "counter-terrorism financing",
+    "kyc",
+    "aml",
+    "cft",
+    "aml/cft",
+    "anti-money laundering",
+    "counter financing of terrorism",
+    "counter-terrorism financing",
     "know your customer",
-
     # Reporting instrument types
-    "str", "ctr", "sar", "suspicious transaction report",
-    "cash transaction report", "suspicious activity report",
-    "ntr", "ccr", "rtr",
-
+    "str",
+    "ctr",
+    "sar",
+    "suspicious transaction report",
+    "cash transaction report",
+    "suspicious activity report",
+    "ntr",
+    "ccr",
+    "rtr",
     # Customer due diligence tiers
-    "cdd", "edd", "sdd", "customer due diligence",
-    "enhanced due diligence", "simplified due diligence",
-
+    "cdd",
+    "edd",
+    "sdd",
+    "customer due diligence",
+    "enhanced due diligence",
+    "simplified due diligence",
     # Beneficial ownership & political exposure
-    "ubo", "beneficial owner", "beneficial ownership",
-    "pep", "politically exposed person",
-    "close associate", "family member of pep",
-
+    "ubo",
+    "beneficial owner",
+    "beneficial ownership",
+    "pep",
+    "politically exposed person",
+    "close associate",
+    "family member of pep",
     # Watchlist / sanctions
-    "sanctions", "sanctioned", "ofac", "un sanctions",
-    "fatf", "blacklist", "grey list",
-    "designated entity", "designated individual",
-
+    "sanctions",
+    "sanctioned",
+    "ofac",
+    "un sanctions",
+    "fatf",
+    "blacklist",
+    "grey list",
+    "designated entity",
+    "designated individual",
     # Indian regulatory bodies & instruments
-    "rbi", "fiu-ind", "fiu", "pmla", "prevention of money laundering",
-    "sebi", "irdai", "pfrda",
-    "master direction", "master circular", "rbi circular",
-
+    "rbi",
+    "fiu-ind",
+    "fiu",
+    "pmla",
+    "prevention of money laundering",
+    "sebi",
+    "irdai",
+    "pfrda",
+    "master direction",
+    "master circular",
+    "rbi circular",
     # Account & transaction surveillance
-    "high risk", "high-risk", "risk categorisation", "risk category",
-    "risk based approach", "risk profile",
-    "unusual transaction", "suspicious transaction",
+    "high risk",
+    "high-risk",
+    "risk categorisation",
+    "risk category",
+    "risk based approach",
+    "risk profile",
+    "unusual transaction",
+    "suspicious transaction",
     "large cash transaction",
     "smurfing",
-
     # Identity document types (Indian)
-    "aadhaar", "pan card", "voter id", "driving licence",
-    "ckycr", "ckyc", "central kyc",
-
+    "aadhaar",
+    "pan card",
+    "voter id",
+    "driving licence",
+    "ckycr",
+    "ckyc",
+    "central kyc",
     # Customer categories with elevated scrutiny
-    "nri", "foreign national", "non-resident", "correspondent banking",
-    "shell company", "shell bank", "nominee director",
+    "nri",
+    "foreign national",
+    "non-resident",
+    "correspondent banking",
+    "shell company",
+    "shell bank",
+    "nominee director",
     "ngo",
-
     # Process / compliance terms
-    "onboarding", "re-kyc", "re kyc", "periodic review", "periodic updation",
-    "account opening", "due diligence",
-    "customer identification", "customer identification procedure", "cip",
-    "record keeping", "record retention",
-    "training and awareness", "compliance officer",
-    "internal audit", "concurrent audit",
-    "reporting entity", "principal officer",
+    "onboarding",
+    "re-kyc",
+    "re kyc",
+    "periodic review",
+    "periodic updation",
+    "account opening",
+    "due diligence",
+    "customer identification",
+    "customer identification procedure",
+    "cip",
+    "record keeping",
+    "record retention",
+    "training and awareness",
+    "compliance officer",
+    "internal audit",
+    "concurrent audit",
+    "reporting entity",
+    "principal officer",
     "designated director",
 }
 
@@ -150,9 +202,7 @@ REGULATORY_KEYWORDS = {
 # and ends on a word boundary, found with a zero-width lookahead so candidates may overlap;
 # overlaps are then resolved in _keyword_spans (longest wins).
 _KEYWORD_PATTERN = re.compile(
-    r"(?<!\w)(?=("
-    + "|".join(re.escape(kw) for kw in sorted(REGULATORY_KEYWORDS, key=len, reverse=True))
-    + r")(?!\w))",
+    r"(?<!\w)(?=(" + "|".join(re.escape(kw) for kw in sorted(REGULATORY_KEYWORDS, key=len, reverse=True)) + r")(?!\w))",
     re.IGNORECASE,
 )
 
@@ -161,6 +211,7 @@ _KEYWORD_PATTERN = re.compile(
 # RULE 1 — Regulatory-keyword tagger  (B0.1-B0.4)
 # RULE 2 — Regulatory-density score   (B1.1)
 # ---------------------------------------------------------------------------
+
 
 def _keyword_spans(text: str) -> list:
     """Non-overlapping keyword matches as (start, end, keyword), longest match wins (earlier on
@@ -200,6 +251,7 @@ def tag_regulatory_keywords(text: str) -> dict:
 # EXISTING HEURISTIC QUALITY FILTER (v1, preserved unchanged)
 # ---------------------------------------------------------------------------
 
+
 def quality_reason(text: str):
     """
     Returns rejection reason string, or None if chunk passes.
@@ -228,6 +280,7 @@ def quality_reason(text: str):
 # MAIN ENTRY POINT (called by pipeline/run.py)
 # ---------------------------------------------------------------------------
 
+
 def main():
     FILTERED_DIR.mkdir(parents=True, exist_ok=True)
     if not IN_PATH.exists():
@@ -254,16 +307,18 @@ def main():
             chunks_in += 1
 
             # --- Existing heuristic filter ---
-            reason = quality_reason_curator(chunk["text"]) if USE_REAL_QUALITY_CLASSIFIER else quality_reason(chunk["text"])
+            reason = (
+                quality_reason_curator(chunk["text"]) if USE_REAL_QUALITY_CLASSIFIER else quality_reason(chunk["text"])
+            )
             if reason:
                 reason_counts[reason] = reason_counts.get(reason, 0) + 1
                 continue
 
             # --- Stream B: regulatory keyword tagging (additive fields only) ---
             tag_info = tag_regulatory_keywords(chunk["text"])
-            chunk["regulatory_tagged"]         = tag_info["regulatory_tagged"]
+            chunk["regulatory_tagged"] = tag_info["regulatory_tagged"]
             chunk["regulatory_keywords_found"] = tag_info["regulatory_keywords_found"]
-            chunk["regulatory_density_score"]  = tag_info["regulatory_density_score"]
+            chunk["regulatory_density_score"] = tag_info["regulatory_density_score"]
 
             if tag_info["regulatory_tagged"]:
                 regulatory_tagged_count += 1
@@ -313,7 +368,6 @@ def main():
         sys.exit(1)
 
 
-
 # ---------------------------------------------------------------------------
 # STREAM A — Real quality classifier (nvidia/quality-classifier-deberta)
 #
@@ -338,9 +392,9 @@ def _load_quality_classifier():
     if _classifier_model is not None:
         return
     import torch
-    from torch import nn
-    from transformers import AutoModel, AutoTokenizer, AutoConfig
     from huggingface_hub import PyTorchModelHubMixin
+    from torch import nn
+    from transformers import AutoConfig, AutoModel, AutoTokenizer
 
     class QualityModel(nn.Module, PyTorchModelHubMixin):
         def __init__(self, config):
@@ -355,6 +409,7 @@ def _load_quality_classifier():
             return torch.softmax(self.fc(dropped)[:, 0, :], dim=1)
 
     from pipeline.device import pick
+
     _classifier_device = pick()
     _classifier_config = AutoConfig.from_pretrained("nvidia/quality-classifier-deberta")
     _classifier_tokenizer = AutoTokenizer.from_pretrained("nvidia/quality-classifier-deberta")
@@ -366,10 +421,11 @@ def _classifier_label(text: str) -> str:
     """Real nvidia/quality-classifier-deberta inference (CPU) for one chunk: 'Low', 'Medium'
     or 'High'. The only place the model is called; needs torch + transformers + the weights."""
     import torch
+
     _load_quality_classifier()
-    inputs = _classifier_tokenizer(
-        [text], return_tensors="pt", padding="longest", truncation=True
-    ).to(_classifier_device)
+    inputs = _classifier_tokenizer([text], return_tensors="pt", padding="longest", truncation=True).to(
+        _classifier_device
+    )
     with torch.no_grad():
         outputs = _classifier_model(inputs["input_ids"], inputs["attention_mask"])
     predicted_class = torch.argmax(outputs, dim=1).item()

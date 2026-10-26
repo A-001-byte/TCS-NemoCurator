@@ -2,6 +2,7 @@
 
 pick() never raises — any failure anywhere falls back to CPU.
 """
+
 import os
 
 
@@ -23,6 +24,7 @@ def pick(requested: str = "auto") -> str:
 
     try:
         import torch
+
         if torch.cuda.is_available():
             return "cuda:0"
     except Exception:
@@ -38,6 +40,7 @@ def describe(device: str) -> str:
 
     try:
         import torch
+
         if device.startswith("cuda") and torch.cuda.is_available():
             idx = 0
             if ":" in device:

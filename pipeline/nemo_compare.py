@@ -9,6 +9,7 @@ not part of pipeline/run.py. Output is a snapshot the dashboard reads:
 DEDUPED_CHUNKS = data/deduped/chunks.jsonl (input to our quality filter)
 CURATED        = data/output/curated.jsonl (our final output; chunk_ids we kept)
 """
+
 import json
 import sys
 import tempfile
@@ -45,10 +46,34 @@ FILTERS = [
     ("numbers", "Digit ratio ≤ 0.15", NumbersFilter, {}, None),
     ("words_without_alphabets", "≥ 80% of words contain a letter", WordsWithoutAlphabetsFilter, {}, None),
     ("mean_word_length", "Mean word length 3–10", MeanWordLengthFilter, {}, None),
-    ("top_2grams", "Top 2-gram share ≤ 0.20", RepeatingTopNGramsFilter, {"n": 2, "max_repeating_ngram_ratio": 0.20}, "low_lexical_diversity"),
-    ("top_3grams", "Top 3-gram share ≤ 0.18", RepeatingTopNGramsFilter, {"n": 3, "max_repeating_ngram_ratio": 0.18}, "low_lexical_diversity"),
-    ("top_4grams", "Top 4-gram share ≤ 0.16", RepeatingTopNGramsFilter, {"n": 4, "max_repeating_ngram_ratio": 0.16}, "low_lexical_diversity"),
-    ("dup_5grams", "Duplicated 5-gram share ≤ 0.15", RepeatingDuplicateNGramsFilter, {"n": 5, "max_repeating_duplicate_ngram_ratio": 0.15}, "low_lexical_diversity"),
+    (
+        "top_2grams",
+        "Top 2-gram share ≤ 0.20",
+        RepeatingTopNGramsFilter,
+        {"n": 2, "max_repeating_ngram_ratio": 0.20},
+        "low_lexical_diversity",
+    ),
+    (
+        "top_3grams",
+        "Top 3-gram share ≤ 0.18",
+        RepeatingTopNGramsFilter,
+        {"n": 3, "max_repeating_ngram_ratio": 0.18},
+        "low_lexical_diversity",
+    ),
+    (
+        "top_4grams",
+        "Top 4-gram share ≤ 0.16",
+        RepeatingTopNGramsFilter,
+        {"n": 4, "max_repeating_ngram_ratio": 0.16},
+        "low_lexical_diversity",
+    ),
+    (
+        "dup_5grams",
+        "Duplicated 5-gram share ≤ 0.15",
+        RepeatingDuplicateNGramsFilter,
+        {"n": 5, "max_repeating_duplicate_ngram_ratio": 0.15},
+        "low_lexical_diversity",
+    ),
     ("boilerplate", "Boilerplate strings (terms of use, cookies…)", BoilerPlateStringFilter, {}, None),
 ]
 
@@ -88,10 +113,15 @@ def main(chunks_path, curated_path, out_path):
         filt = cls(**params)
         removed = {c["chunk_id"] for c in chunks if not filt.keep_document(filt.score_document(c["text"]))}
         nemo_removed |= removed
-        per_filter.append({
-            "key": key, "label": label, "comparable_to": ours, "removed": len(removed),
-            "also_removed_by_ours": len(removed & ours_removed),
-        })
+        per_filter.append(
+            {
+                "key": key,
+                "label": label,
+                "comparable_to": ours,
+                "removed": len(removed),
+                "also_removed_by_ours": len(removed & ours_removed),
+            }
+        )
 
     pipeline_kept, seconds = run_nemo_pipeline(chunks_path, [cls(**params) for _, _, cls, params, _ in FILTERS])
     pipeline_removed = all_ids - pipeline_kept

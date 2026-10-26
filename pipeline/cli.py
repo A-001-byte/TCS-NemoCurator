@@ -8,6 +8,7 @@
 Exit codes: 0 success; 1 the pipeline stopped (the reason is printed; --verbose adds its log);
 2 a bad input folder or bad arguments; 130 interrupted with Ctrl+C.
 """
+
 import argparse
 import sys
 from typing import Optional
@@ -55,7 +56,10 @@ def _run(args) -> int:
     print(f"PII entities redacted: {result.summary['pii_entities_redacted']}")
     print(f"output: {result.output_path}")
     if not result.summary.get("name_detection_available", True):
-        print("warning: person-name detection is OFF (the spaCy model did not load), so names are not redacted.", file=sys.stderr)
+        print(
+            "warning: person-name detection is OFF (the spaCy model did not load), so names are not redacted.",
+            file=sys.stderr,
+        )
     return 0
 
 

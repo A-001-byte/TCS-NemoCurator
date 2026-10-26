@@ -2,6 +2,7 @@
 
 Run: python -m pipeline.test_heal_changelog
 """
+
 import json
 import tempfile
 from collections import Counter
@@ -55,28 +56,49 @@ def main():
 
     # --- Edit classification: cosmetic vs substantive ----------------------------------
     assert classify_edit("1. ―Know Your Customer", "1. “Know Your Customer") == "typography"
-    assert classify_edit("Customer Identification Procedure (CIP) 15-47 4.",
-                         "Customer Identification Procedure (CIP) 15-48 4.") == "pagination"
-    assert classify_edit(
-        "Procedure for implementation of Section 51A of 99 - 109 the Unlawful Activities Act, 1967 15.",
-        "Procedure for implementation of Section 51A of 100 - 110 the Unlawful Activities Act, 1967 15.",
-    ) == "pagination", "uniform +1 shift across a long TOC line"
-    assert classify_edit(
-        "incorporating amendments notified by Reserve Bank of India till 04.01.2024 in its Master Direction",
-        "incorporating amendments notified by Reserve Bank of India till 06.11.2024 in its Master Direction",
-    ) == "numeric", "a real date change must stay substantive"
-    assert classify_edit(
-        "cash transactions above Rs. 50,000 in a single day shall be reported to the principal officer",
-        "cash transactions above Rs. 1,00,000 in a single day shall be reported to the principal officer",
-    ) == "numeric", "a threshold change must stay substantive"
-    assert classify_edit("there should be no need for a fresh CDD exercise",
-                         "there shall be no need for a fresh CDD exercise") == "wording"
+    assert (
+        classify_edit(
+            "Customer Identification Procedure (CIP) 15-47 4.", "Customer Identification Procedure (CIP) 15-48 4."
+        )
+        == "pagination"
+    )
+    assert (
+        classify_edit(
+            "Procedure for implementation of Section 51A of 99 - 109 the Unlawful Activities Act, 1967 15.",
+            "Procedure for implementation of Section 51A of 100 - 110 the Unlawful Activities Act, 1967 15.",
+        )
+        == "pagination"
+    ), "uniform +1 shift across a long TOC line"
+    assert (
+        classify_edit(
+            "incorporating amendments notified by Reserve Bank of India till 04.01.2024 in its Master Direction",
+            "incorporating amendments notified by Reserve Bank of India till 06.11.2024 in its Master Direction",
+        )
+        == "numeric"
+    ), "a real date change must stay substantive"
+    assert (
+        classify_edit(
+            "cash transactions above Rs. 50,000 in a single day shall be reported to the principal officer",
+            "cash transactions above Rs. 1,00,000 in a single day shall be reported to the principal officer",
+        )
+        == "numeric"
+    ), "a threshold change must stay substantive"
+    assert (
+        classify_edit(
+            "there should be no need for a fresh CDD exercise", "there shall be no need for a fresh CDD exercise"
+        )
+        == "wording"
+    )
 
     # --- Diff: an edited clause that also MOVED pairs as one modification --------------
-    old = ("Scope applies to all accounts. High risk accounts need closer monitoring. "
-           "If an existing customer opens another account in the same bank, no fresh CDD is needed.")
-    new = ("If an existing customer opens another account or product at any branch, no fresh CDD is needed. "
-           "Scope applies to all accounts. CDD shall be applied at the UCIC level.")
+    old = (
+        "Scope applies to all accounts. High risk accounts need closer monitoring. "
+        "If an existing customer opens another account in the same bank, no fresh CDD is needed."
+    )
+    new = (
+        "If an existing customer opens another account or product at any branch, no fresh CDD is needed. "
+        "Scope applies to all accounts. CDD shall be applied at the UCIC level."
+    )
     result = diff_versions(old, new)
     kinds = Counter(c.get("kind", c["type"]) for c in result["changes"])
     assert kinds == {"wording": 1, "removed": 1, "added": 1}, kinds
@@ -110,7 +132,9 @@ def main():
     assert stage["docs_in"] == stage["docs_out"] == 2 and stage["removed"] == 0
     assert stage["reason_counts"]["furniture_lines_removed"] == 24, "one footer per page, two docs"
     assert set(stage["reason_counts"]) == {"furniture_lines_removed", "furniture_signatures", "ocr_splits_repaired"}
-    assert set(stage["before"]) == set(stage["after"]) and stage["before"]["total_chars"] > stage["after"]["total_chars"]
+    assert (
+        set(stage["before"]) == set(stage["after"]) and stage["before"]["total_chars"] > stage["after"]["total_chars"]
+    )
     assert all("FIU-IND" not in d["text"] for d in healed_docs)
     for after_doc in healed_docs:
         assert after_doc["char_count"] == len(after_doc["text"])

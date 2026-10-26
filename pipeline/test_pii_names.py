@@ -4,6 +4,7 @@ Run: python -m pipeline.test_pii_names
 Positives must be found; negatives (job titles, common words, shapes that belong to the
 spaCy path) must NOT be. If a negative ever regresses, revert the rule: precision first.
 """
+
 from pipeline import pii
 from pipeline.pii import _title_gated_names, redact_names_batch
 
@@ -25,16 +26,16 @@ NEGATIVES = [
     "Dr. Principal Officer",
     "Smt. DIRECTOR GENERAL",
     "Shri Joint Secretary (IS.I)",
-    "Ms. A. Section 12",           # initial + blocklisted word
+    "Ms. A. Section 12",  # initial + blocklisted word
     "Dr. NOTE THAT the customer",  # common words in capitals
     "MR. THE BANK shall",
-    "MS OFFICE SUITE installed",   # "MS" without a dot is not a title
-    "Shri R. K. by the bank",      # initials only, no surname
-    "Mr. A. will attend",          # lowercase continuation, single initial
-    "Mr. Suresh Kumar",            # plain Title-Case: the spaCy path's job, not this rule's
+    "MS OFFICE SUITE installed",  # "MS" without a dot is not a title
+    "Shri R. K. by the bank",  # initials only, no surname
+    "Mr. A. will attend",  # lowercase continuation, single initial
+    "Mr. Suresh Kumar",  # plain Title-Case: the spaCy path's job, not this rule's
     "Mr. Customer Identification",
     "Mr. [REDACTED_EMAIL]",
-    "Mr.\nR. K. Sharma",           # a title at the end of a line does not reach the next one
+    "Mr.\nR. K. Sharma",  # a title at the end of a line does not reach the next one
     "the Managing Director and R. K. Sharma",  # no title directly before the name
 ]
 

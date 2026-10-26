@@ -4,6 +4,7 @@ group out together, otherwise a copy of the test document sits in the training s
 
 Run: python -m pipeline.doctype_families      (needs data/healed from a pipeline run)
 """
+
 import json
 from pathlib import Path
 

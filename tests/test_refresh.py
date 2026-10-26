@@ -1,4 +1,5 @@
 """Tests for the dashboard snapshot refresh: masked examples, no leaked paths, all-or-nothing publish."""
+
 import json
 import re
 from pathlib import Path
@@ -61,7 +62,9 @@ def test_absolute_paths_become_file_names_and_relative_paths_stay():
     }
     cleaned = rs.without_local_paths(data)
     assert [stage["output_path"] for stage in cleaned["stages"]] == [
-        "curated.jsonl", "curated.jsonl", "data/output/curated.jsonl",
+        "curated.jsonl",
+        "curated.jsonl",
+        "data/output/curated.jsonl",
     ]
     assert cleaned["ratio"] == 0.5
     assert data["stages"][0]["output_path"].startswith("C:"), "the input must not be changed"
@@ -74,7 +77,10 @@ def test_find_residual_pii_flags_what_the_pipeline_would_still_redact():
 
 
 def write_curated(path: Path, texts: list) -> None:
-    rows = [{"text": text, "metadata": {"chunk_id": f"c{i}", "doc_id": "d", "source_file": "d.pdf"}} for i, text in enumerate(texts)]
+    rows = [
+        {"text": text, "metadata": {"chunk_id": f"c{i}", "doc_id": "d", "source_file": "d.pdf"}}
+        for i, text in enumerate(texts)
+    ]
     path.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
 
 
@@ -92,8 +98,15 @@ def test_publish_writes_both_files_unchanged_and_leaves_no_temporary_files(tmp_p
     write_curated(curated, ["The bank shall keep records for five years.", "Hello [REDACTED_EMAIL]"])
     summary = {
         "stages": [{"stage": "output", "output_path": "C:\\Users\\someone\\x\\curated.jsonl"}],
-        "pii_examples": [{"doc_id": "d", "entity_type": "EMAIL", "before": "officer@bank.example.in",
-                          "context_before": "to ", "context_after": " now"}],
+        "pii_examples": [
+            {
+                "doc_id": "d",
+                "entity_type": "EMAIL",
+                "before": "officer@bank.example.in",
+                "context_before": "to ",
+                "context_after": " now",
+            }
+        ],
     }
     out = tmp_path / "out"
     published = rs.publish_snapshots(summary, curated, out)
@@ -120,7 +133,13 @@ def test_a_real_sample_publishes_the_pipeline_output_with_masked_examples(tmp_pa
     summary_text = (out / "pipeline_summary.json").read_text(encoding="utf-8")
 
     assert [stage["stage"] for stage in published["stages"]] == [
-        "extract", "clean_langid", "heal", "dedup", "quality_filter", "pii_redact", "output",
+        "extract",
+        "clean_langid",
+        "heal",
+        "dedup",
+        "quality_filter",
+        "pii_redact",
+        "output",
     ]
     assert (out / "curated.jsonl").read_bytes() == result.output_path.read_bytes(), "output is published unchanged"
     assert published["final_output_chunks"] == len((out / "curated.jsonl").read_text(encoding="utf-8").splitlines())

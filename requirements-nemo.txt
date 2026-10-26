@@ -1,0 +1,6 @@
+# Real NVIDIA NeMo Curator, used only by pipeline/nemo_compare.py (the side-by-side comparison on
+# the dashboard). Linux or WSL2 only: native Windows cannot build its dependencies (see SETUP.md).
+# Usage: pip install -r requirements-nemo.txt
+-r requirements.txt
+
+nemo-curator[text_cpu]==1.3.0

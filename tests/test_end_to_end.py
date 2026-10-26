@@ -5,13 +5,9 @@ stage contracts, document-to-chunk unit transitions, stage-to-stage continuity,
 JSONL structure, PII redaction (requiring the 'en_core_web_sm' spaCy model for
 PERSON_NAME detection), and byte-for-byte run determinism.
 """
-import json
-import sys
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+import json
+from pathlib import Path
 
 from pipeline import run
 from pipeline.api import curate
@@ -117,9 +113,7 @@ def test_end_to_end(tmp_path: Path):
         assert "text" in rec and isinstance(rec["text"], str) and len(rec["text"]) > 0, (
             f"Record {idx} missing or empty text"
         )
-        assert "metadata" in rec and isinstance(rec["metadata"], dict), (
-            f"Record {idx} missing metadata dict"
-        )
+        assert "metadata" in rec and isinstance(rec["metadata"], dict), f"Record {idx} missing metadata dict"
         meta = rec["metadata"]
         for key in ("chunk_id", "doc_id", "source_file", "pii_redacted"):
             assert key in meta, f"Record {idx} metadata missing key: {key}"
@@ -150,9 +144,7 @@ def test_end_to_end(tmp_path: Path):
     assert c1 is not None, "Expected chunk bank_of_baroda_kyc__1 not found"
     assert "[REDACTED_PERSON_NAME]" in c1["text"]
     raw_person_name = "Pankaj Mittal"
-    assert raw_person_name not in c1["text"], (
-        "Verified person name was not redacted in chunk bank_of_baroda_kyc__1"
-    )
+    assert raw_person_name not in c1["text"], "Verified person name was not redacted in chunk bank_of_baroda_kyc__1"
 
     # Global redaction check for other verified raw PII entities across curated output
     global_raw_pii = [
@@ -164,9 +156,7 @@ def test_end_to_end(tmp_path: Path):
         "gm.oQs.ho@bankofbaroda.com",
     ]
     for raw_val in global_raw_pii:
-        assert raw_val not in all_curated_text, (
-            "A verified input PII entity was not redacted in curated output"
-        )
+        assert raw_val not in all_curated_text, "A verified input PII entity was not redacted in curated output"
 
     assert summary1["pii_entities_redacted"] > 0
     assert any(rec["metadata"]["pii_redacted"] for rec in records)
@@ -211,6 +201,7 @@ def test_end_to_end(tmp_path: Path):
 
 if __name__ == "__main__":
     import tempfile
+
     with tempfile.TemporaryDirectory() as temp_dir:
         test_end_to_end(Path(temp_dir))
     print("ok: end-to-end test passed")

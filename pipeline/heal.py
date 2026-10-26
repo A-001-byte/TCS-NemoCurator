@@ -28,6 +28,7 @@ data/healed, which dedup reads). Set HEAL_ENABLED = False to reproduce the pre-h
 numbers: run.py then skips this stage and dedup reads data/cleaned.
 Standalone: python -m pipeline.heal
 """
+
 import json
 import re
 import statistics
@@ -215,9 +216,7 @@ def main():
         if stale.name not in keep:
             stale.unlink()
     for rec in healed_records:
-        (HEALED_DIR / f"{rec['doc_id']}.json").write_text(
-            json.dumps(rec, ensure_ascii=False), encoding="utf-8"
-        )
+        (HEALED_DIR / f"{rec['doc_id']}.json").write_text(json.dumps(rec, ensure_ascii=False), encoding="utf-8")
 
     STAGE_RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
     REPORT_PATH.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
