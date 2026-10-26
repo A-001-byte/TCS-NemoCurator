@@ -13,6 +13,16 @@ import { SectionHeader } from "../components/common";
 import { fmt } from "../format";
 
 const API_HINT = "Start it with: python -m pipeline.server (or: bfsi-curate serve)";
+// The same limits the server enforces (pipeline/server.py), so the form says so before anything is sent.
+const MAX_FILES = 10;
+const MAX_TOTAL_MB = 30;
+
+function limitMessage(files) {
+  if (files.length > MAX_FILES) return `At most ${MAX_FILES} files per run: remove ${files.length - MAX_FILES}.`;
+  const bytes = files.reduce((sum, f) => sum + f.size, 0);
+  if (bytes > MAX_TOTAL_MB * 1024 * 1024) return `Together the files are larger than ${MAX_TOTAL_MB} MB: remove some.`;
+  return null;
+}
 
 function readAsBase64(file) {
   return new Promise((resolve, reject) => {
@@ -234,7 +244,12 @@ export default function RunPipeline() {
         )}
 
         <div className="actions">
-          <button type="button" className="btn btn-primary" disabled={busy || files.length === 0} onClick={runPipeline}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={busy || files.length === 0 || Boolean(limitMessage(files))}
+            onClick={runPipeline}
+          >
             {busy ? <LoaderCircle size={16} className="spin" /> : <Play size={16} />}
             {busy ? "Running pipeline…" : "Run pipeline"}
           </button>
@@ -251,7 +266,7 @@ export default function RunPipeline() {
             Clear
           </button>
         </div>
-        {error && <p className="error-text">{error}</p>}
+        {(error || limitMessage(files)) && <p className="error-text">{error || limitMessage(files)}</p>}
       </article>
 
       {result && <RunResult result={result} />}

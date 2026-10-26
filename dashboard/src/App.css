@@ -130,6 +130,21 @@
   white-space: nowrap;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+/* One row height for the pills and the button, so the three controls line up. */
+.topbar-actions .btn {
+  height: 2rem;
+  padding: 0 0.75rem;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
 .dot {
   width: 0.5rem;
   height: 0.5rem;
@@ -299,6 +314,17 @@
 .grid-search,
 .grid-wide {
   grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+}
+
+/* A long list beside a table: the list takes the table's height and scrolls inside its card, so neither side has blank space. */
+.grid-wide > .card-fill {
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-wide > .card-fill > .table-scroll-tall {
+  flex: 1 1 0;
+  min-height: 12rem;
 }
 
 .grid-result {
@@ -724,6 +750,24 @@
 
 .table-scroll {
   overflow-x: auto;
+}
+
+/* A long table that scrolls inside its card, with the header kept in view. */
+.table-scroll-tall {
+  max-height: 34rem;
+  overflow: auto;
+}
+
+/* Inside a stretched card the card's height decides, not the 34rem cap. */
+.card-fill > .table-scroll-tall {
+  max-height: none;
+}
+
+.table-scroll-tall thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--card);
 }
 
 .table {
@@ -1160,6 +1204,11 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .grid-wide > .card-fill > .table-scroll-tall {
+    flex: none;
+    max-height: 30rem;
+  }
+
   .stage-side {
     padding-left: 0;
     padding-top: 1.5rem;
@@ -1169,6 +1218,13 @@
 
   .hero h1 {
     font-size: 1.75rem;
+  }
+}
+
+/* Keep the header on one line: the snapshot file name is the first thing to give way. */
+@media (max-width: 1180px) {
+  .pill-snapshot {
+    display: none;
   }
 }
 
