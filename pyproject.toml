@@ -60,8 +60,12 @@ known-first-party = ["pipeline"]
 [tool.coverage.run]
 source = ["pipeline"]
 branch = true
+# The self-check scripts live in pipeline/ too; measuring the tests with themselves would inflate the figure.
+omit = ["pipeline/test_*.py"]
 
 [tool.coverage.report]
 show_missing = true
 skip_covered = false
+# Measured on 26 Oct 2026 (see CHANGELOG / STATUS); a floor so it cannot erode, not a target.
+fail_under = 80
 exclude_also = ["if __name__ == .__main__.:"]

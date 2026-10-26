@@ -58,11 +58,11 @@ Phases are ordered by **demo impact first, tidiness second**, so that if time ru
 
 ## Phase 4: quality gates, packaging, CI
 
-- [ ] 4.1 Requirements split into core, NeMo (`nemo_compare` only), GPU and dev; `pyproject.toml` dependencies and extras from them; `pip install .` works in a clean virtualenv and `bfsi-curate --version` runs
-- [ ] 4.2 `ruff` config; lint and format check pass
-- [ ] 4.3 GitHub Actions: Python tests, and dashboard lint, test and build; status badge in the README
-- [ ] 4.4 `CONTRIBUTING.md`, `CHANGELOG.md`, PR template, a short PII and security note; licence per D1
-- [ ] 4.5 Coverage measured for `pipeline/` and the number stated as measured
+- [x] 4.1 Requirements split into core, NeMo (`nemo_compare` only), GPU and dev; `pyproject.toml` dependencies and extras from them; `pip install .` works in a clean virtualenv and `bfsi-curate --version` runs — requirements split into core / ml / gpu / nemo / dev; `pyproject.toml` declares dependencies and extras; `tests/test_packaging.py` (42 tests, mutation-checked); clean venv from `requirements-dev.txt`: 0 heavy packages, 160 tests pass; fresh `pip install .` gives a working `bfsi-curate`
+- [x] 4.2 `ruff` config; lint and format check pass — rules E, W, F, B, I (E501 and B905 ignored with reasons); 11 findings fixed; `ruff format` applied with the syntax trees of all 44 files proven identical before and after; both checks pass
+- [x] 4.3 GitHub Actions: Python tests, and dashboard lint, test and build; status badge in the README — `.github/workflows/ci.yml` (three jobs); structure validated locally, first real run is on this PR
+- [ ] 4.4 `CONTRIBUTING.md`, `CHANGELOG.md`, PR template, a short PII and security note; licence per D1 — **open: only the licence is missing (D1, awaiting the owner).** Done: `CONTRIBUTING.md`, `CHANGELOG.md`, `SECURITY.md`, PR template
+- [x] 4.5 Coverage measured for `pipeline/` and the number stated as measured — measured 85.5% (statements and branches, product code only, 160 tests); floor of 80% in `pyproject.toml`
 
 ## Phase 5: documentation and evidence
 
