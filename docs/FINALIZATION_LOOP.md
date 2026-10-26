@@ -50,11 +50,11 @@ Phases are ordered by **demo impact first, tidiness second**, so that if time ru
 
 ## Phase 3: repository hygiene and structure
 
-- [ ] 3.1 Root cleanup per D2; `DEMO_SCRIPT.md` and `LIKELY_QUESTIONS.md` move to `docs/demo/`; every reference updated
-- [ ] 3.2 `.gitattributes` (LF), `.editorconfig`, `.gitignore` audit, remove byte-order marks, stop the CRLF warnings
-- [ ] 3.3 Split `dashboard/src/App.jsx` (1,473 lines) into one file per section, none over 400 lines; fix the `oxlint` warning
-- [ ] 3.4 Dead code and unused imports removed (found by `ruff`)
-- [ ] 3.5 `docs/README.md` index so every document is findable
+- [x] 3.1 Root cleanup per D2; `DEMO_SCRIPT.md` and `LIKELY_QUESTIONS.md` move to `docs/demo/`; every reference updated — planning papers, blueprint and logs moved to `docs/archive/` (with an explanation file), demo documents to `docs/demo/`
+- [x] 3.2 `.gitattributes` (LF), `.editorconfig`, `.gitignore` audit, remove byte-order marks, stop the CRLF warnings — `.gitattributes`, `.editorconfig`, cleaned `.gitignore`; renormalising changes nothing; no byte-order marks left
+- [x] 3.3 Split `dashboard/src/App.jsx` (1,473 lines) into one file per section, none over 400 lines; fix the `oxlint` warning — App.jsx 1,504 → 92 lines, largest file 260; page fingerprint identical before and after (10 sections, 10 clicks, a search); lint 0 warnings
+- [x] 3.4 Dead code and unused imports removed (found by `ruff`) — ruff F and E9 over pipeline, tests and scripts: one unused import, removed
+- [x] 3.5 `docs/README.md` index so every document is findable — `docs/README.md`
 
 ## Phase 4: quality gates, packaging, CI
 
