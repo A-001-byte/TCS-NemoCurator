@@ -75,6 +75,8 @@ def _run(args) -> int:
     print(f"chunks written: {result.summary['final_output_chunks']}")
     print(f"PII entities redacted: {result.summary['pii_entities_redacted']}")
     print(f"output: {result.output_path}")
+    if result.manifest_path:
+        print(f"manifest: {result.manifest_path}")
     for stage in result.summary["stages"]:
         if stage["stage"] == "pii_redact":
             print(f"PII engine: {stage.get('pii_engine', 'unknown')}")
