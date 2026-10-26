@@ -4,7 +4,6 @@ Validates grouping, chunk counting, total sums, strict line-numbered failure on
 malformed JSON or missing fields, atomic file writing on failure, and tokenizer labels.
 """
 import json
-import re
 import sys
 from pathlib import Path
 

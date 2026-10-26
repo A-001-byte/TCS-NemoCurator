@@ -111,7 +111,8 @@ pipeline/        one module per stage, plus api.py (library), cli.py, server.py,
                  doc_type_labels.json, doc_type_families.json, test_*.py
 dashboard/       React (Vite) front end; src/doctype.js is the document-type classifier
 docs/            IMPROVEMENT_LOG.md (every change with before/after numbers), A1_* findings,
-                 evidence/stream-c/ (PII evidence), team/ (work plan)
+                 evidence/stream-c/ (PII evidence), team/ (the team's evidence), demo/, archive/;
+                 see docs/README.md for the index
 SETUP.md         Linux / WSL2 setup used for real NeMo Curator
 ```
 
