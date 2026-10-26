@@ -6,6 +6,6 @@ export default defineConfig({
   plugins: [react()],
   server: {
     // pipeline/server.py: runs uploaded PDFs through the pipeline
-    proxy: { '/api': 'http://127.0.0.1:8000' },
+    proxy: { '/api': `http://127.0.0.1:${process.env.CURATOR_API_PORT || '8000'}` },
   },
 })

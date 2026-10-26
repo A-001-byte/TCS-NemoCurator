@@ -98,6 +98,29 @@ def _pipeline_rooted_at(tmp_root: Path):
                     setattr(mod, name, value)
 
 
+@contextlib.contextmanager
+def _requested_device(device: Optional[str]):
+    """Apply a per-run device choice while the pipeline lock is held."""
+    if device is None:
+        yield
+        return
+    resolved = pick(device)
+    if device == "cuda" and resolved == "cpu":
+        raise RuntimeError(
+            "CUDA requested but CUDA-enabled PyTorch is unavailable in this Python environment. "
+            "Install the CUDA PyTorch build and try again."
+        )
+    previous = os.environ.get(DEVICE_ENV)
+    os.environ[DEVICE_ENV] = resolved
+    try:
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop(DEVICE_ENV, None)
+        else:
+            os.environ[DEVICE_ENV] = previous
+
+
 def run_isolated(
     files=(),
     raw_dir: Optional[Path] = None,
@@ -105,6 +128,7 @@ def run_isolated(
     wait: bool = True,
     pii_engine: Optional[str] = None,
     quality_signal: Optional[str] = None,
+    device: Optional[str] = None,
 ) -> tuple:
     """Run every stage in a throwaway data/ folder.
 
@@ -119,8 +143,10 @@ def run_isolated(
         raise ValueError(f"Unknown PII engine: {pii_engine}")
     if quality_signal not in (None, "off", "cache", "model"):
         raise ValueError(f"Unknown quality signal mode: {quality_signal}")
+    if device not in (None, "auto", "cpu", "cuda"):
+        raise ValueError(f"Unknown device: {device}")
 
-    with _exclusive(wait), tempfile.TemporaryDirectory(prefix="kyc_run_") as tmp:
+    with _exclusive(wait), _requested_device(device), tempfile.TemporaryDirectory(prefix="kyc_run_") as tmp:
         tmp_root = Path(tmp)
         for sub in STAGE_DIRS:
             (tmp_root / "data" / sub).mkdir(parents=True)

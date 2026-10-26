@@ -115,15 +115,20 @@ Exit codes: `0` success, `1` the pipeline stopped (a one-line reason is printed;
 
 **3. HTTP API and dashboard**
 ```bash
+./scripts/start_local.sh                            # one terminal; uses the active Python environment
+# Or start separately:
 python -m pipeline.server                          # API on 127.0.0.1:8000
-cd dashboard && npm install && npm run dev         # dashboard; /api is proxied to the server above
+cd dashboard && npm ci && npm run dev               # dashboard; /api is proxied to the server above
 ```
+
+Before a full-corpus refresh or uploaded-PDF run, the dashboard offers quality labels off/on and Auto/CPU/GPU. Defaults are labels off and Auto. GPU acceleration is used by the optional quality model when labels are on; the PII engine stays regex + spaCy. The header reports the quality stage's actual device in the saved snapshot.
 
 | Method and path | Purpose | Answers |
 |---|---|---|
 | `GET /api/health` | liveness and version | `200 {"ok": true, "version": ...}` |
+| `GET /api/capabilities` | report CUDA availability and GPU name for the device picker | `200` with `cuda_available` and `gpu_name` |
 | `POST /api/run` | curate uploaded PDFs: `{"files": [{"name": "x.pdf", "data": "<base64>"}]}` returns `{summary, curated_jsonl, log}` | `200`, `400` bad request, `409` another run is in progress, `413` too large, `422` the pipeline stopped, `500` |
-| `POST /api/refresh` | re-run the whole corpus in the background and republish the dashboard snapshots | `202` started, `409` already running |
+| `POST /api/refresh` | re-run the whole corpus with optional `device` and `quality_signal` JSON choices | `202` started, `409` already running |
 | `GET /api/refresh/status` | `{"state": "idle" \| "running" \| "succeeded" \| "failed", ...}` | `200` |
 
 A known path with the wrong method returns `405` with an `Allow` header, an unknown path `404`, and every error is `{"error": "<what went wrong>"}`.

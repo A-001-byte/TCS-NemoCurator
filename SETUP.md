@@ -67,13 +67,15 @@ python3 -m pipeline.server                   # terminal 1: API on 127.0.0.1:8000
 cd dashboard && npm install && npm run dev   # terminal 2: open the address it prints
 ```
 
-The dashboard reads the snapshots in `dashboard/public/`; its refresh button (or `POST /api/refresh`) re-runs the corpus and rewrites them. By default, refresh uses the CPU-only pipeline. To make the button run the optional DeBERTa quality label on a CUDA GPU while keeping the default regex + spaCy PII engine, start the server in its own terminal with:
+The dashboard reads the snapshots in `dashboard/public/`; its refresh button (or `POST /api/refresh`) re-runs the corpus and rewrites them. For one-command startup in WSL/Linux, use the project environment's Python:
 
 ```bash
-CURATOR_REFRESH_DEVICE=cuda CURATOR_REFRESH_QUALITY_SIGNAL=model bfsi-curate serve --host 127.0.0.1 --port 8000
+CURATOR_PYTHON="$HOME/nemo-kunal-venv313/bin/python" ./scripts/start_local.sh
 ```
 
-Keep that terminal open and start the dashboard in another one. Restart the server after changing these settings. A CUDA or model failure is shown as a failed refresh and does not replace the previous snapshot. The server has no authentication, so it listens on loopback only unless you pass `--host` or set `CURATOR_HOST`.
+The launcher starts both local servers on 127.0.0.1; Ctrl+C stops both. Replace the Python path with your own environment, or activate it first and omit `CURATOR_PYTHON`. Before refreshing the corpus or processing uploaded PDFs, choose **quality labels off/on** and **Auto/CPU/GPU** in the dashboard. Defaults are labels off and Auto, preserving the standard regex + spaCy PII run. The model device selector becomes available when labels are on. Auto uses CUDA when available; an explicit GPU request fails clearly if CUDA is unavailable. The saved snapshot shows the quality stage's actual device, not just the GPU detected on the machine. A failed run does not replace the previous snapshot.
+
+Headless refreshes can still set `CURATOR_REFRESH_DEVICE=cuda CURATOR_REFRESH_QUALITY_SIGNAL=model` on the API server. The server has no authentication, so it listens on loopback only unless you pass `--host` or set `CURATOR_HOST`.
 
 ## 4. GPU (optional)
 

@@ -164,6 +164,30 @@ def test_refresh_uses_configured_quality_device_and_default_pii(tmp_path, monkey
     assert json.loads((output_dir / "pipeline_summary.json").read_text()) == published
 
 
+def test_per_run_refresh_choice_overrides_server_default(tmp_path, monkeypatch):
+    pdfs = tmp_path / "pdfs"
+    pdfs.mkdir()
+    (pdfs / "sample.pdf").write_bytes(b"%PDF")
+    monkeypatch.setenv(rs.REFRESH_DEVICE_ENV, "cpu")
+    monkeypatch.setenv(rs.REFRESH_QUALITY_SIGNAL_ENV, "off")
+    seen = {}
+
+    def fake_curate(input_dir, run_output, *, device, pii_engine, quality_signal):
+        seen.update(device=device, pii_engine=pii_engine, quality_signal=quality_signal)
+        run_output.mkdir()
+        curated = run_output / "curated.jsonl"
+        write_curated(curated, ["Clean bank policy text."])
+        return SimpleNamespace(
+            summary={"stages": [], "pii_examples": [], "final_output_chunks": 1},
+            output_path=curated,
+            device="cuda:0",
+        )
+
+    monkeypatch.setattr(rs, "curate", fake_curate)
+    rs.refresh(pdfs, tmp_path / "out", device="cuda", quality_signal="model")
+    assert seen == {"device": "cuda", "pii_engine": "regex", "quality_signal": "model"}
+
+
 def test_a_real_sample_publishes_the_pipeline_output_with_masked_examples(tmp_path):
     pdfs = tmp_path / "pdfs"
     pdfs.mkdir()

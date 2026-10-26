@@ -42,9 +42,13 @@ export function useRefresh(onSucceeded) {
     }
   }, []);
 
-  const start = useCallback(async () => {
+  const start = useCallback(async (options = { device: "auto", quality_signal: "off" }) => {
     try {
-      const res = await fetch("/api/refresh", { method: "POST" });
+      const res = await fetch("/api/refresh", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(options),
+      });
       const body = await res.json().catch(() => ({}));
       // 202 = started, 409 = one is already running; either way follow it
       if (res.status !== 202 && res.status !== 409) throw new Error(body.error || `HTTP ${res.status}`);

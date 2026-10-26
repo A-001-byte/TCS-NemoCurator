@@ -130,8 +130,8 @@ def publish_snapshots(summary: dict, curated_path: Path, output_dir: Path) -> di
     return published
 
 
-def refresh(input_dir=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT) -> dict:
-    """Run the pipeline on `input_dir` and publish the snapshots into `output_dir`."""
+def refresh(input_dir=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT, *, device=None, quality_signal=None) -> dict:
+    """Run the pipeline and publish snapshots, accepting per-run choices over server defaults."""
     input_dir = Path(input_dir).resolve()
     output_dir = Path(output_dir).resolve()
     if not input_dir.is_dir():
@@ -139,8 +139,12 @@ def refresh(input_dir=DEFAULT_INPUT, output_dir=DEFAULT_OUTPUT) -> dict:
     if not any(input_dir.glob("*.pdf")):
         raise ValueError(f"No PDF files found in {input_dir}")
 
-    device = os.environ.get(REFRESH_DEVICE_ENV, "auto").strip().lower()
-    quality_signal = os.environ.get(REFRESH_QUALITY_SIGNAL_ENV, "off").strip().lower()
+    device = (device if device is not None else os.environ.get(REFRESH_DEVICE_ENV, "auto")).strip().lower()
+    quality_signal = (
+        (quality_signal if quality_signal is not None else os.environ.get(REFRESH_QUALITY_SIGNAL_ENV, "off"))
+        .strip()
+        .lower()
+    )
     if device not in ("auto", "cpu", "cuda"):
         raise ValueError(f"{REFRESH_DEVICE_ENV} must be auto, cpu or cuda")
     if quality_signal not in ("off", "model"):

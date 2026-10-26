@@ -120,3 +120,56 @@ def test_a_get_on_the_refresh_route_is_refused_and_never_starts_a_run(api):
     assert call("POST", "/api/nothing")[0] == 404
     status, body = call("GET", "/api/health")
     assert status == 200 and body["ok"] is True
+
+
+def test_refresh_job_passes_selected_options_to_the_run():
+    seen = {}
+
+    def run(**options):
+        seen.update(options)
+        return SUMMARY
+
+    job = RefreshJob(run)
+    assert job.start({"device": "cuda", "quality_signal": "model"})
+    wait_for(lambda: job.status()["state"] == SUCCEEDED)
+    assert seen == {"device": "cuda", "quality_signal": "model"}
+    assert job.status()["device"] == "cuda"
+
+
+def test_refresh_route_passes_settings_and_rejects_bad_values(monkeypatch):
+    seen = {}
+
+    class SpyJob:
+        def start(self, options):
+            seen.update(options)
+            return True
+
+        def status(self):
+            return {"state": "running"}
+
+    monkeypatch.setattr(server, "REFRESH_JOB", SpyJob())
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), server.Handler)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    try:
+        url = f"http://127.0.0.1:{httpd.server_address[1]}/api/refresh"
+
+        def post(payload):
+            request = urllib.request.Request(
+                url,
+                method="POST",
+                data=json.dumps(payload).encode(),
+                headers={"Content-Type": "application/json"},
+            )
+            try:
+                with urllib.request.urlopen(request, timeout=5) as response:
+                    return response.status, json.load(response)
+            except urllib.error.HTTPError as error:
+                return error.code, json.load(error)
+
+        assert post({"device": "cuda", "quality_signal": "model"})[0] == 202
+        assert seen == {"device": "cuda", "quality_signal": "model"}
+        status, body = post({"device": "not-a-gpu"})
+        assert status == 400 and "device must be one of" in body["error"]
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
