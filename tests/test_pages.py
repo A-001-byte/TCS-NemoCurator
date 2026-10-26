@@ -71,6 +71,25 @@ def test_a_repeated_clause_resolves_to_the_copy_after_the_cursor():
     assert idx.locate(clause, cursor=len(pages.tokens(" ".join(texts[:3]))))[0] == 4
 
 
+def test_a_phrase_repeated_on_a_far_page_does_not_stretch_the_chunk_across_the_document():
+    # Seen on the FIU form guides: a chunk's last words were changed by healing, but the same words recur 400 pages later.
+    texts = make_pages(count=40)
+    tail = "alpha beta gamma delta epsilon zeta eta theta"
+    texts[39] = texts[39] + " " + tail
+    chunk = words_of(texts, 110, 180) + " " + tail  # page 2, with an ending that is not on page 2
+    first, last, _ = pages.PageIndex(texts).locate(chunk)
+    assert (first, last) == (2, 2)
+
+
+def test_a_wrong_far_match_for_the_start_is_not_preferred_to_a_near_one():
+    texts = make_pages(count=40)
+    clause = words_of(texts, 510, 560)  # page 6
+    texts[30] = texts[30] + " " + clause  # the same words again on page 31
+    idx = pages.PageIndex(texts)
+    assert idx.locate(clause, cursor=500)[0] == 6
+    assert idx.locate(clause, cursor=0)[0] == 6
+
+
 def test_the_last_page_is_never_before_the_first(index):
     first, last, _ = index.locate(words_of(make_pages(), 95, 130))
     assert first <= last
