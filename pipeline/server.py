@@ -7,7 +7,7 @@ The address can also come from CURATOR_HOST and CURATOR_PORT; a flag wins over t
 
 Routes (JSON in, JSON out). Every failure is {"error": "<what went wrong>"} with a fitting status:
 
-  GET  /api/health          -> {"ok": true, "version": "0.1.0"}
+  GET  /api/health          -> {"ok": true, "version": "1.0.0"}
   POST /api/run  {"files": [{"name": "x.pdf", "data": "<base64>"}]}
       -> {"summary": <pipeline_summary.json>, "curated_jsonl": "<curated.jsonl text>", "log": "..."}
       400 bad request, 409 another run is in progress, 413 too large, 422 the pipeline stopped

@@ -60,7 +60,7 @@ Other ways to use it (the library, `bfsi-curate`, the HTTP API) are in the READM
 
 ## 3. The dashboard
 
-Needs Node.js 22 (the version CI uses) or newer.
+Needs Node.js 20.19 or newer (22.12 or newer on the 22 line); CI uses 22. Ubuntu 22.04's own `nodejs` package is version 12 and is too old, so install a current Node from nodejs.org, or run the dashboard on Windows and point it at the server in WSL (WSL's port 8000 is reachable from Windows as `127.0.0.1:8000`, which is what the dashboard's proxy uses).
 
 ```bash
 python3 -m pipeline.server                   # terminal 1: API on 127.0.0.1:8000
@@ -127,3 +127,12 @@ source venv-curator/bin/activate
 ## Verified
 
 Ubuntu 22.04.5 on WSL2, Python 3.11, 20 to 26 Oct 2026 (`docs/team/evidence/linux_run.md`): the full run matched the Windows run at every stage. The fresh-install check from `requirements-dev.txt` passed all tests; CI repeats it on Ubuntu for every pull request.
+
+Fresh clone, 27 Oct 2026, installed exactly as above:
+
+| Machine | Tests | Full run (CPU) | Result |
+|---|---|---|---|
+| WSL2, Ubuntu 22.04, 12 cores, 7.6 GB | 214 passed in 43 s | 4 min 18 s | 34 of 35 readable, 3,325 chunks, 68 PII items |
+| VMware VM, Ubuntu 24.04, Python 3.12, 6 virtual cores | 209 passed in 171 s | 40 min 30 s | identical |
+
+Both give a `curated.jsonl` with SHA-256 starting `0c238547804a8407`, the same as Windows. The VM is correct but about nine times slower; use WSL2 or native Linux for a demonstration. The server answered `/api/health`, a 400 for an empty run and a 405 for a wrong method, and a one-PDF upload through the API and through the dashboard returned 10 chunks in about 3 seconds.

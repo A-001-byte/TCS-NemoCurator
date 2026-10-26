@@ -73,7 +73,7 @@ Phases are ordered by **demo impact first, tidiness second**, so that if time ru
 
 ## Phase 6: release and manual Linux run (done together, step by step)
 
-- [ ] 6.1 Fresh clone on Linux; install exactly as the README says; tests; CLI; server; dashboard; live upload; timing
+- [x] 6.1 Fresh clone on Linux; install exactly as the README says; tests; CLI; server; dashboard; live upload; timing — WSL2 Ubuntu 22.04 (12 cores): 214 tests pass in 43 s, full run 4 min 18 s, 3,325 chunks, 68 PII, `curated.jsonl` hash `0c238547804a8407` (same on Windows after the line-ending fix, #30); server health 200, bad request 400, wrong method 405; one-PDF upload through the API and through the dashboard form: 10 chunks in about 3 s. The VMware VM gave the same output in 40 min 30 s (about nine times slower), so demonstrate on WSL2 or native Linux; the dashboard ran on Windows against the server in WSL (Node in WSL is v12, too old for Vite 8)
 - [ ] 6.2 GPU path on the RTX laptop: device badge shows the GPU, optional-model benchmark reproduced; NeMo GPU dedup import check (Aditi's open B4) either passes or is recorded as not done
 - [ ] 6.3 Rehearsal twice from a fresh clone (Kunal and Saachi); tag `v1.0.0` and `demo-ready`; release notes
 

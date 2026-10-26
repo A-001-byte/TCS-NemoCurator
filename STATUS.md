@@ -1,11 +1,11 @@
 # Project Status
 
-Last updated: Monday 26 Oct 2026, night. Review with TCS: Tuesday 27 Oct 2026, 10:30, in person.
+Last updated: Tuesday 27 Oct 2026, early morning. Review with TCS: Tuesday 27 Oct 2026, 10:30, in person.
 The plan from "all tasks merged" to the release is `docs/FINALIZATION_LOOP.md`; every change with before/after numbers is in `docs/IMPROVEMENT_LOG.md`. All headline numbers are in `docs/FINAL_NUMBERS.md`, generated from the dashboard snapshots.
 
 ## Where we are
 
-Phases 0 to 5 of the finalisation loop are done (PRs #23 to #27 merged, phase 5 in review). What remains is phase 6: running the project by hand on Linux, the GPU laptop check, two rehearsals, and the release tag. Two decisions and two checks are still open; they are listed under "Not done".
+Phases 0 to 5 of the finalisation loop are done (PRs #23 to #28 merged), and the fresh-clone run on Linux (6.1) passed. Version 1.0.0 is prepared. What remains of phase 6: a rehearsal from a fresh clone by Kunal and Saachi, the GPU run on Ankit's RTX 3050, and the tags `v1.0.0` and `demo-ready` once `main` is green. Two decisions and two checks are still open; they are listed under "Not done".
 
 ## Done (with the evidence)
 
@@ -23,7 +23,9 @@ Phases 0 to 5 of the finalisation loop are done (PRs #23 to #27 merged, phase 5 
 | Packaging: requirements split (core, ml, gpu, nemo, dev), real dependencies in `pyproject.toml`, `pip install .` gives a working `bfsi-curate` | `tests/test_packaging.py` (42 tests); clean-environment check in `docs/FINALIZATION_LOOP.md` item 4.1 |
 | Quality gates: ruff check and format, CI on Ubuntu (three jobs), coverage 85.5% with an 80% floor | `.github/workflows/ci.yml`, `pyproject.toml` |
 | Documentation: README (install, three ways to use it, API table, diagram), `SETUP.md` against the requirements files, generated numbers table, a test that every document link and file path exists | `tests/test_docs.py`, `tests/test_final_numbers.py` |
-| Tests | 209 pytest tests, 11 `pipeline.test_*` self-check scripts, 14 dashboard tests; all pass |
+| Fresh-clone run on Linux (WSL2 and a VMware VM): install from the README, tests, full run, server, live upload through the API and the dashboard | 26 to 27 Oct. WSL2 (12 cores): tests 43 s, full run 4 min 18 s; same numbers and hash as Windows (`SETUP.md`, last section) |
+| Optional GPU models behind CLI flags, run on an RTX 4050 | PR #29; stage counts unchanged, GLiNER reports 1,164 PII items against 68 for the default engine (it lacks our precision rules), so the headline stays 68 |
+| Tests | 214 pytest tests, 11 `pipeline.test_*` self-check scripts, 14 dashboard tests; all pass |
 
 ## Not done, and why
 
@@ -40,7 +42,7 @@ Phases 0 to 5 of the finalisation loop are done (PRs #23 to #27 merged, phase 5 
 - **The document-type score is optimistic.** Four combinations were scored on the same 34 documents, and bank and NBFC policy were merged after seeing the confusion table. `fiu_reporting_spec` scores 0%.
 - **The HTTP API has no authentication.** It listens on loopback by default and refuses nothing else; do not expose it on an untrusted network (`SECURITY.md`).
 - **One run at a time.** A second `POST /api/run` while one is running answers 409.
-- **Run time depends on machine load.** A full 35-PDF run on the CPU takes about 5.5 minutes on a quiet laptop and 11 to 12 minutes on a busy one; the terminal command is as fast as `python -m pipeline.run`.
+- **Run time depends on the machine.** A full 35-PDF run on the CPU took 4 min 18 s in WSL2 on a 12-core laptop, about 5.5 minutes on a quiet Windows laptop, 11 to 12 minutes on a busy one, and **40 min 30 s inside a VMware VM** (6 virtual cores). Demonstrate on WSL2 or native Linux, not a VM. The terminal command is as fast as `python -m pipeline.run`.
 - **Public contact details are redacted too.** Most of the PII items are government emails and office PIN codes printed in public documents.
 - **The tag keyword `fiu`** is counted inside FIU's own forms; left as is.
 
