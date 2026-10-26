@@ -93,6 +93,15 @@ python3 -m pytest -q                                 # all tests, no network nee
 
 [`SETUP.md`](SETUP.md) has the step-by-step Linux/WSL2 install, the GPU notes and the known pitfalls.
 
+**With Docker instead of Python** (nothing to install but Docker; CPU only, no GPU models):
+
+```bash
+docker build -t bfsi-curate .
+docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/data" bfsi-curate run /data/pdfs -o /data/out
+```
+
+The image runs the `bfsi-curate` command as an ordinary user; your PDFs and the output live in the mounted folder. To use the dashboard's API from the container, publish the port on your own machine only: `docker run --rm -p 127.0.0.1:8000:8000 bfsi-curate serve --host 0.0.0.0`. CI builds the image and curates a real PDF in it on every pull request.
+
 ## Use it three ways
 
 All three call the same function, `pipeline.api.curate`, and a test checks that they return identical output. Every library, CLI or API run happens in a temporary folder, so `data/` is not touched.
