@@ -1,5 +1,7 @@
 /* What each optional snapshot file must look like for its panel to show; anything else hides the panel. */
 
+export const isSummary = (data) => Boolean(data) && Array.isArray(data.stages) && data.stages.length > 0;
+
 export const isDocTypeReport = (data) =>
   Boolean(data) &&
   Array.isArray(data.per_document) &&

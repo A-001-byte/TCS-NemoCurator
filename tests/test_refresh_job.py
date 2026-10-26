@@ -1,0 +1,116 @@
+"""Tests for the background refresh: the job's states and the /api/refresh routes."""
+import json
+import threading
+import time
+import urllib.error
+import urllib.request
+from http.server import ThreadingHTTPServer
+
+import pytest
+
+from pipeline import server
+from pipeline.refresh_job import FAILED, IDLE, RUNNING, SUCCEEDED, RefreshJob
+
+SUMMARY = {"final_output_chunks": 3325, "pii_entities_redacted": 68}
+
+
+def wait_for(predicate, seconds=5.0):
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline:
+        if predicate():
+            return
+        time.sleep(0.01)
+    raise AssertionError("timed out waiting for the job")
+
+
+def gated_job():
+    """A job whose fake pipeline waits for `release` and returns SUMMARY, or raises if told to."""
+    release = threading.Event()
+    behaviour = {"error": None}
+
+    def run():
+        assert release.wait(5), "the test never released the fake pipeline"
+        if behaviour["error"]:
+            raise behaviour["error"]
+        return SUMMARY
+
+    return RefreshJob(run), release, behaviour
+
+
+def test_a_job_goes_from_idle_to_running_to_succeeded_and_never_runs_twice():
+    job, release, _ = gated_job()
+    assert job.status() == {"state": IDLE}
+
+    assert job.start() is True
+    running = job.status()
+    assert running["state"] == RUNNING and "started_at" in running and "elapsed_seconds" in running
+    assert job.start() is False, "a second start while running must be refused"
+
+    release.set()
+    wait_for(lambda: job.status()["state"] == SUCCEEDED)
+    done = job.status()
+    assert done["chunks"] == 3325 and done["pii_entities"] == 68
+    assert done["finished_at"] and done["elapsed_seconds"] >= 0
+    assert job.start() is True, "a finished job can be started again"
+    release.set()
+
+
+def test_a_failure_is_reported_and_does_not_block_the_next_run():
+    job, release, behaviour = gated_job()
+    behaviour["error"] = RuntimeError("boom")
+    release.set()
+    assert job.start()
+    wait_for(lambda: job.status()["state"] == FAILED)
+    assert job.status()["error"] == "RuntimeError: boom"
+
+    behaviour["error"] = None
+    assert job.start(), "after a failure the job can be started again"
+    wait_for(lambda: job.status()["state"] == SUCCEEDED)
+    assert "error" not in job.status()
+
+
+@pytest.fixture
+def api(monkeypatch):
+    """The real HTTP handler on a free port, with a fake pipeline behind /api/refresh."""
+    job, release, _ = gated_job()
+    monkeypatch.setattr(server, "REFRESH_JOB", job)
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), server.Handler)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    port = httpd.server_address[1]
+
+    def call(method, path):
+        request = urllib.request.Request(f"http://127.0.0.1:{port}{path}", method=method, data=b"" if method == "POST" else None)
+        try:
+            with urllib.request.urlopen(request, timeout=5) as response:
+                return response.status, json.load(response)
+        except urllib.error.HTTPError as error:
+            return error.code, json.load(error)
+
+    yield call, release
+    release.set()
+    httpd.shutdown()
+    httpd.server_close()
+
+
+def test_the_refresh_routes_start_a_job_report_busy_and_report_the_result(api):
+    call, release = api
+    assert call("GET", "/api/refresh/status") == (200, {"state": "idle"})
+
+    status, body = call("POST", "/api/refresh")
+    assert status == 202 and body["state"] == "running"
+
+    status, body = call("POST", "/api/refresh")
+    assert status == 409 and body["state"] == "running" and "already running" in body["error"]
+    assert call("GET", "/api/refresh/status")[1]["state"] == "running"
+
+    release.set()
+    wait_for(lambda: call("GET", "/api/refresh/status")[1]["state"] == "succeeded")
+    status, body = call("GET", "/api/refresh/status")
+    assert status == 200 and body["chunks"] == 3325
+
+
+def test_the_old_blocking_get_route_is_gone_and_unknown_paths_are_404(api):
+    call, _ = api
+    assert call("GET", "/api/refresh")[0] == 404, "a GET must never start a pipeline run"
+    assert call("POST", "/api/nothing")[0] == 404
+    assert call("GET", "/api/health") == (200, {"ok": True})

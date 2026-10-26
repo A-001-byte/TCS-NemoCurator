@@ -2,11 +2,15 @@
 
   venv/Scripts/python -m pipeline.server        (listens on 127.0.0.1:8000)
 
+GET  /api/health          -> {"ok": true}
 POST /api/run  {"files": [{"name": "x.pdf", "data": "<base64>"}]}
   -> {"summary": <pipeline_summary.json>, "curated_jsonl": "<curated.jsonl text>", "log": "..."}
+POST /api/refresh         -> 202 {"state": "running", ...}, or 409 if a refresh is already running
+GET  /api/refresh/status  -> {"state": "idle" | "running" | "succeeded" | "failed", ...}
 
 The run itself lives in pipeline.api (the same code the library and the CLI use): each run gets
-its own temp data/ folder, so the committed corpus is untouched.
+its own temp data/ folder, so the committed corpus is untouched. A refresh re-runs the whole
+corpus (minutes) in a background thread and republishes the dashboard snapshots.
 """
 import base64
 import binascii
@@ -15,11 +19,14 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from pipeline.api import run_isolated
+from pipeline.refresh_job import RefreshJob
 from pipeline.refresh_snapshots import refresh
 
 HOST, PORT = "127.0.0.1", 8000
 MAX_FILES = 10
 MAX_TOTAL_BYTES = 30 * 1024 * 1024
+
+REFRESH_JOB = RefreshJob(refresh)
 
 
 class BadRequest(Exception):
@@ -68,25 +75,16 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/api/health":
             self._send(200, {"ok": True})
+        elif self.path == "/api/refresh/status":
+            self._send(200, REFRESH_JOB.status())
         else:
             self._send(404, {"error": "Not found"})
 
-    
-    
-    
     def do_POST(self):
         if self.path == "/api/refresh":
-            try:
-                summary = refresh()
-                self._send(200, {
-                    "ok": True,
-                    "message": "Pipeline rerun and snapshot refreshed.",
-                    "chunks": summary.get("final_output_chunks", 0),
-                })
-            except Exception as exc:
-                self.log_error("snapshot refresh failed: %r", exc)
-                self._send(500, {"error": f"Snapshot refresh failed: {exc}"})
-            return
+            if REFRESH_JOB.start():
+                return self._send(202, REFRESH_JOB.status())
+            return self._send(409, {"error": "A refresh is already running.", **REFRESH_JOB.status()})
 
         if self.path != "/api/run":
             return self._send(404, {"error": "Not found"})

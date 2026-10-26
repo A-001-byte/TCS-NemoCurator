@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
  * Load a JSON snapshot from the site root. status is "loading", "ready" or "missing"; a file that
  * is absent, is not JSON (a dev server answers a missing file with the page itself) or fails
  * `isValid` is "missing", so a panel can hide itself instead of breaking. A byte-order mark in the
- * file is ignored.
+ * file is ignored. Change `version` to load the file again.
  */
-export function useSnapshot(file, isValid = () => true) {
+export function useSnapshot(file, isValid = () => true, version = 0) {
   const [state, setState] = useState({ status: "loading", data: null });
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export function useSnapshot(file, isValid = () => true) {
     return () => {
       cancelled = true;
     };
-  }, [file]); // eslint-disable-line react-hooks/exhaustive-deps -- isValid is a fixed function per file
+  }, [file, version]); // eslint-disable-line react-hooks/exhaustive-deps -- isValid is a fixed function per file
 
   return state;
 }

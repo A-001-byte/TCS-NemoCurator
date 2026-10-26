@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import {
   LayoutDashboard,
   Workflow,
@@ -29,10 +29,11 @@ import {
 } from "lucide-react";
 import { STAGES, ENTITIES, reasonLabel, entityLabel } from "./stages";
 import { Bar, SectionHeader } from "./components/common";
-import { fmt, pct } from "./format";
+import { duration, fmt, pct } from "./format";
 import DocumentTypes from "./sections/DocumentTypes";
 import Tokens from "./sections/Tokens";
-import { isDocTypeReport, isTokenReport } from "./shapes";
+import { isDocTypeReport, isSummary, isTokenReport } from "./shapes";
+import { useRefresh } from "./useRefresh";
 import { useSnapshot } from "./useSnapshot";
 import {
   prepareCorpus,
@@ -157,7 +158,7 @@ function Sidebar({ sections, active, theme, onToggleTheme, documentCount }) {
 
 
 /* `device` is the compute device the run reported (null while the summary loads, "" if it is absent). */
-function Topbar({ sections, active, device, onRefresh, refreshing }) {
+function Topbar({ sections, active, device, onRefresh, refreshing, elapsed }) {
   const section = sections.find((s) => s.id === active);
 
   return (
@@ -187,11 +188,46 @@ function Topbar({ sections, active, device, onRefresh, refreshing }) {
           disabled={refreshing}
         >
           <RefreshCw size={16} />
-          {refreshing ? "Re-running pipeline..." : "Re-run pipeline and refresh numbers"}
+          {refreshing ? `Re-running pipeline… ${duration(elapsed)}` : "Re-run pipeline and refresh numbers"}
         </button>
       </div>
     </header>
   );
+}
+
+/* Progress, result or failure of a pipeline refresh started from the top bar. */
+function RefreshStatus({ job }) {
+  if (job.state === "running") {
+    return (
+      <div className="callout" role="status">
+        <LoaderCircle size={18} className="spin" />
+        <p>
+          Re-running the pipeline on every document. This takes several minutes; the numbers on this
+          page update by themselves when it finishes ({duration(job.elapsed_seconds)} so far).
+        </p>
+      </div>
+    );
+  }
+  if (job.state === "succeeded") {
+    return (
+      <div className="callout" role="status">
+        <CircleCheck size={18} />
+        <p>
+          Snapshots refreshed: {fmt(job.chunks)} curated chunks, {fmt(job.pii_entities)} PII entities
+          redacted ({duration(job.elapsed_seconds)}).
+        </p>
+      </div>
+    );
+  }
+  if (job.state === "failed") {
+    return (
+      <div className="card empty" role="alert">
+        <TriangleAlert size={18} />
+        <p>The refresh failed: {job.error}</p>
+      </div>
+    );
+  }
+  return null;
 }
 
 
@@ -1385,12 +1421,14 @@ function RunPipeline() {
 /* ---------- app ---------- */
 
 export default function App() {
-  const [summary, setSummary] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState(null);
   const [theme, toggleTheme] = useTheme();
-  const doctypes = useSnapshot("doctype_eval.json", isDocTypeReport);
-  const tokens = useSnapshot("token_stats.json", isTokenReport);
+  // Bumped when a refresh finishes: every snapshot is read again and every section remounts.
+  const [dataVersion, setDataVersion] = useState(0);
+  const summaryState = useSnapshot("pipeline_summary.json", isSummary, dataVersion);
+  const summary = summaryState.data;
+  const doctypes = useSnapshot("doctype_eval.json", isDocTypeReport, dataVersion);
+  const tokens = useSnapshot("token_stats.json", isTokenReport, dataVersion);
+  const refresh = useRefresh(useCallback(() => setDataVersion((v) => v + 1), []));
   const hasDoctypes = doctypes.status === "ready";
   const hasTokens = tokens.status === "ready";
   const sections = useMemo(
@@ -1401,44 +1439,6 @@ export default function App() {
   // null until the summary loads; "" when a run did not report a device
   const device = summary ? byStage(summary.stages, "quality_filter").device || "" : null;
 
- 
-const loadSummary = async (refreshSnapshot = false) => {
-  setRefreshing(true);
-  setError(null);
-
-  try {
-    if (refreshSnapshot) {
-      const refreshRes = await fetch("/api/refresh", { method: "POST" });
-      const refreshData = await refreshRes.json();
-
-      if (!refreshRes.ok) {
-        throw new Error(
-          refreshData.error || `HTTP ${refreshRes.status}`
-        );
-      }
-    }
-
-    const res = await fetch("/pipeline_summary.json", {
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
-
-    const data = await res.json();
-    setSummary(data);
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setRefreshing(false);
-  }
-};
-
-
-useEffect(() => {
-  loadSummary();
-}, []);
 
   return (
     <div className="shell">
@@ -1454,22 +1454,25 @@ useEffect(() => {
           sections={sections}
           active={active}
           device={device}
-          onRefresh={() => loadSummary(true)}
-          refreshing={refreshing}
+          onRefresh={refresh.start}
+          refreshing={refresh.job.state === "running"}
+          elapsed={refresh.job.elapsed_seconds}
         />
         <main className="content">
-          {error && (
+          <RefreshStatus job={refresh.job} />
+          {summaryState.status === "missing" && (
             <div className="card empty">
               <TriangleAlert size={18} />
               <p>
-                Could not load pipeline_summary.json ({error}). Run <code>python -m pipeline.run</code>{" "}
-                from the project root first.
+                Could not load pipeline_summary.json. Run <code>python -m pipeline.run</code> from the
+                project root first, or start the server with <code>python -m pipeline.server</code> and
+                use the re-run button above.
               </p>
             </div>
           )}
-          {!summary && !error && <p className="muted">Loading pipeline results…</p>}
+          {summaryState.status === "loading" && <p className="muted">Loading pipeline results…</p>}
           {summary && (
-            <>
+            <Fragment key={dataVersion}>
               <Overview summary={summary} />
               <Pipeline stages={summary.stages} />
               <CorpusQuality summary={summary} />
@@ -1480,7 +1483,7 @@ useEffect(() => {
               <Documents documents={summary.documents || []} />
               <SimilaritySearch />
               <RunPipeline />
-            </>
+            </Fragment>
           )}
         </main>
       </div>

@@ -4,8 +4,8 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
-import { fmt, pct, share } from "./format.js";
-import { isDocTypeReport, isTokenReport } from "./shapes.js";
+import { duration, fmt, pct, share } from "./format.js";
+import { isDocTypeReport, isSummary, isTokenReport } from "./shapes.js";
 
 const PUBLIC = path.resolve(import.meta.dirname, "..", "public");
 // Same tolerance as the dashboard: a byte-order mark must not break a snapshot.
@@ -35,6 +35,19 @@ test("a missing, empty or differently shaped file hides the panel instead of bre
   const report = load("doctype_eval.json");
   assert.equal(isDocTypeReport({ ...report, caption: undefined }), false, "no caption, no panel");
   assert.equal(isDocTypeReport({ ...report, accuracy: {} }), false);
+});
+
+test("the pipeline summary is recognised, an empty or foreign file is not", () => {
+  assert.ok(isSummary(load("pipeline_summary.json")));
+  for (const bad of [null, {}, { stages: [] }, { stages: "x" }, []]) assert.equal(isSummary(bad), false, JSON.stringify(bad));
+});
+
+test("a refresh's elapsed time reads as m:ss", () => {
+  assert.equal(duration(0), "0:00");
+  assert.equal(duration(5), "0:05");
+  assert.equal(duration(754), "12:34");
+  assert.equal(duration(undefined), "–");
+  assert.equal(duration(-1), "–");
 });
 
 test("number formatting never prints NaN or undefined", () => {
