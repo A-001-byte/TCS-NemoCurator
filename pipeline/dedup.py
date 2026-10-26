@@ -42,6 +42,8 @@ from pathlib import Path
 
 from datasketch import MinHash, MinHashLSH
 
+from pipeline.extract import PAGES_SUFFIX
+from pipeline.pages import PageIndex
 from pipeline.versioning import newest_first
 
 # ---------------------------------------------------------------------------
@@ -52,6 +54,8 @@ CLEANED_DIR = Path(__file__).resolve().parent.parent / "data" / "cleaned"
 HEALED_DIR = Path(__file__).resolve().parent.parent / "data" / "healed"
 # Documents to dedup. run.py points this at CLEANED_DIR when HEAL_ENABLED is False.
 INPUT_DIR = HEALED_DIR
+# Where extract.py kept each document's per-page text, used to give every chunk its page numbers.
+EXTRACTED_DIR = Path(__file__).resolve().parent.parent / "data" / "extracted"
 DEDUPED_DIR = Path(__file__).resolve().parent.parent / "data" / "deduped"
 STAGE_RECORD_PATH = DEDUPED_DIR / "_stage_record.json"
 OUT_PATH = DEDUPED_DIR / "chunks.jsonl"
@@ -212,16 +216,33 @@ def build_chunks(documents: list) -> list:
     """
     chunks = []
     for record in newest_first(documents):
+        index = _page_index(record["doc_id"])
+        cursor = 0
         for idx, chunk_text in enumerate(split_into_chunks(record["text"])):
+            located = index.locate(chunk_text, cursor) if index else None
+            if located:
+                cursor = located[2]
             chunks.append(
                 {
                     "chunk_id": f"{record['doc_id']}__{idx}",
                     "doc_id": record["doc_id"],
                     "source_file": record["source_file"],
                     "text": chunk_text,
+                    # Additive fields (the chunk contract allows new fields): None when the chunk cannot be found.
+                    "page_start": located[0] if located else None,
+                    "page_end": located[1] if located else None,
                 }
             )
     return chunks
+
+
+def _page_index(doc_id: str):
+    """The page index of one document, or None when its per-page text was not kept (for example a standalone run)."""
+    path = EXTRACTED_DIR / (doc_id + PAGES_SUFFIX)
+    if not path.is_file():
+        return None
+    pages = json.loads(path.read_text(encoding="utf-8")).get("pages", [])
+    return PageIndex(pages) if pages else None
 
 
 def main():

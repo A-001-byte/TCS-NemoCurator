@@ -9,6 +9,7 @@ import pdfplumber
 RAW_DIR = Path(__file__).resolve().parent.parent / "data" / "raw"
 EXTRACTED_DIR = Path(__file__).resolve().parent.parent / "data" / "extracted"
 STAGE_RECORD_PATH = EXTRACTED_DIR / "_stage_record.json"
+PAGES_SUFFIX = ".pages.json"  # next to each document's .txt: {"pages": [text of page 1, text of page 2, ...]}
 
 
 def list_pdfs(folder: Path) -> list:
@@ -17,13 +18,17 @@ def list_pdfs(folder: Path) -> list:
     return sorted(p for p in Path(folder).iterdir() if p.is_file() and p.suffix.lower() == ".pdf")
 
 
-def extract_pdf_text(pdf_path: Path) -> str:
+def extract_pdf_pages(pdf_path: Path) -> list:
+    """The text of each page, in order (an empty string for a page with no text layer)."""
     pages = []
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
-            text = page.extract_text() or ""
-            pages.append(text)
-    return "\n".join(pages)
+            pages.append(page.extract_text() or "")
+    return pages
+
+
+def extract_pdf_text(pdf_path: Path) -> str:
+    return "\n".join(extract_pdf_pages(pdf_path))
 
 
 def main():
@@ -36,14 +41,19 @@ def main():
     for pdf_path in pdfs:
         out_path = EXTRACTED_DIR / (pdf_path.stem + ".txt")
         try:
-            text = extract_pdf_text(pdf_path)
+            pages = extract_pdf_pages(pdf_path)
         except Exception as exc:
             failures.append({"file": pdf_path.name, "error": str(exc)})
             continue
+        text = "\n".join(pages)
         if not text.strip():
             failures.append({"file": pdf_path.name, "error": "empty extraction"})
             continue
         out_path.write_text(text, encoding="utf-8")
+        # Kept so a chunk can be traced back to its page later (pipeline/pages.py); the clean stage reads only *.txt.
+        (EXTRACTED_DIR / (pdf_path.stem + PAGES_SUFFIX)).write_text(
+            json.dumps({"pages": pages}, ensure_ascii=False), encoding="utf-8", newline="\n"
+        )
         docs_out += 1
 
     record = {
