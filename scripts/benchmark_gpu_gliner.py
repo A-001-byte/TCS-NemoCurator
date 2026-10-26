@@ -5,10 +5,13 @@ import os
 import statistics
 import time
 from collections import Counter
+
 import torch
 from benchmark_gpu_quality import PDFS, samples
+
 from pipeline import pii
 from pipeline.device import pick
+
 
 def measure(mode, texts):
     os.environ["CURATOR_DEVICE"] = mode

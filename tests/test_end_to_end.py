@@ -6,12 +6,7 @@ JSONL structure, PII redaction (requiring the 'en_core_web_sm' spaCy model for
 PERSON_NAME detection), and byte-for-byte run determinism.
 """
 import json
-import sys
 from pathlib import Path
-
-ROOT = Path(__file__).resolve().parent.parent
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
 
 from pipeline import run
 from pipeline.api import curate

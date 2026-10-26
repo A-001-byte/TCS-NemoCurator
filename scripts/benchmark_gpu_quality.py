@@ -6,10 +6,12 @@ import statistics
 import time
 from collections import Counter
 from pathlib import Path
+
 import torch
+
 from pipeline import quality
-from pipeline.extract import extract_pdf_text
 from pipeline.device import pick
+from pipeline.extract import extract_pdf_text
 
 PDFS = (
     "bank_of_baroda_kyc.pdf",

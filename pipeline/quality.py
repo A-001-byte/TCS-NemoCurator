@@ -43,6 +43,7 @@ import re
 import sys
 from collections import Counter
 from pathlib import Path
+
 from pipeline.device import describe
 
 # ---------------------------------------------------------------------------
@@ -338,9 +339,9 @@ def _load_quality_classifier():
     if _classifier_model is not None:
         return
     import torch
-    from torch import nn
-    from transformers import AutoModel, AutoTokenizer, AutoConfig
     from huggingface_hub import PyTorchModelHubMixin
+    from torch import nn
+    from transformers import AutoConfig, AutoModel, AutoTokenizer
 
     class QualityModel(nn.Module, PyTorchModelHubMixin):
         def __init__(self, config):

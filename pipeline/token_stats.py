@@ -31,9 +31,9 @@ def resolve_tokenizer(preference: str = "auto") -> Tuple[str, Callable[[str], in
             import tiktoken
             enc = tiktoken.get_encoding("cl100k_base")
             return "tiktoken:cl100k_base", lambda text: len(enc.encode(text, disallowed_special=()))
-        except Exception:
+        except Exception as exc:
             if pref in ("tiktoken", "cl100k_base", "tiktoken:cl100k_base"):
-                raise RuntimeError("tiktoken 'cl100k_base' requested but unavailable.")
+                raise RuntimeError("tiktoken 'cl100k_base' requested but unavailable.") from exc
 
     # Try locally cached transformers tokenizer without network requests
     if pref == "auto":
@@ -42,7 +42,7 @@ def resolve_tokenizer(preference: str = "auto") -> Tuple[str, Callable[[str], in
             for candidate in ("gpt2", "meta-llama/Llama-2-7b", "nvidia/quality-classifier-deberta"):
                 try:
                     tok = AutoTokenizer.from_pretrained(candidate, local_files_only=True)
-                    return f"hf:{candidate}", lambda text: len(tok.tokenize(text))
+                    return f"hf:{candidate}", lambda text, tok=tok: len(tok.tokenize(text))
                 except Exception:
                     continue
         except Exception:

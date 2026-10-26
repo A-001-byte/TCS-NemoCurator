@@ -4,7 +4,9 @@ import os
 import statistics
 import time
 from pathlib import Path
+
 import torch
+
 from pipeline import api, pii, quality, run
 
 PDFS = (
@@ -30,13 +32,13 @@ def main():
             runs = []
             for _ in range(3):
                 stage_seconds = {}
-                def timed(name, fn):
+                def timed(name, fn, sink=stage_seconds):
                     def wrapped():
                         start = time.perf_counter()
                         try:
                             return fn()
                         finally:
-                            stage_seconds[name] = round(time.perf_counter() - start, 4)
+                            sink[name] = round(time.perf_counter() - start, 4)
                     return wrapped
                 run.STAGES = [(name, timed(name, fn)) for name, fn in original_stages]
                 result, _log = api.run_isolated(files=files)

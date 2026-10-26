@@ -4,14 +4,9 @@ Validates grouping, chunk counting, total sums, strict line-numbered failure on
 malformed JSON or missing fields, atomic file writing on failure, and tokenizer labels.
 """
 import json
-import sys
 from pathlib import Path
 
 import pytest
-
-ROOT = Path(__file__).resolve().parent.parent
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
 
 from pipeline.token_stats import compute_token_stats, main, resolve_tokenizer
 
