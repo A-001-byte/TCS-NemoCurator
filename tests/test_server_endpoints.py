@@ -229,3 +229,43 @@ def test_a_second_run_while_one_is_in_progress_is_409_at_once_not_a_wait(http):
     finally:
         api.RUN_LOCK.release()
     assert status == 409 and "in progress" in body["error"]
+
+
+def test_capabilities_report_the_server_gpu_name(http, monkeypatch):
+    monkeypatch.setattr(server, "pick", lambda requested: "cuda:0")
+    monkeypatch.setattr(server, "describe", lambda device: "cuda:0 (Test NVIDIA GPU)")
+    status, body, _ = http("GET", "/api/capabilities")
+    assert status == 200
+    assert body == {"cuda_available": True, "gpu_name": "cuda:0 (Test NVIDIA GPU)"}
+
+
+def test_upload_passes_selected_device_and_quality_to_pipeline(http, monkeypatch):
+    seen = {}
+
+    def fake(files, **options):
+        seen.update(options)
+        return {"summary": {"final_output_chunks": 1}, "curated_jsonl": "{}\n"}, "ok"
+
+    monkeypatch.setattr(server, "run_on_upload", fake)
+    status, _, _ = http("POST", "/api/run", {**upload("a.pdf"), "device": "cuda", "quality_signal": "model"})
+    assert status == 200
+    assert seen == {"device": "cuda", "quality_signal": "model"}
+
+
+@pytest.mark.parametrize(
+    "options",
+    [{"device": "rtx4050"}, {"quality_signal": "gliner"}, {"device": None}],
+)
+def test_bad_run_options_are_rejected_before_processing(http, monkeypatch, options):
+    monkeypatch.setattr(server, "run_on_upload", lambda *args, **kwargs: pytest.fail("must not run"))
+    status, body, _ = http("POST", "/api/run", {**upload("a.pdf"), **options})
+    assert status == 400 and "must be one of" in body["error"]
+
+
+def test_upload_reports_unavailable_gpu_without_crashing(http, monkeypatch):
+    def no_cuda(files, **options):
+        raise RuntimeError("CUDA requested but CUDA-enabled PyTorch is unavailable")
+
+    monkeypatch.setattr(server, "run_on_upload", no_cuda)
+    status, body, _ = http("POST", "/api/run", {**upload("a.pdf"), "device": "cuda", "quality_signal": "model"})
+    assert status == 422 and "CUDA requested" in body["error"]

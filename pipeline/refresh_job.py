@@ -28,14 +28,14 @@ class RefreshJob:
         self._state = {"state": IDLE}
         self._started = 0.0
 
-    def start(self) -> bool:
-        """Start the job; False (and nothing started) if one is already running."""
+    def start(self, options: dict | None = None) -> bool:
+        """Start the job with validated per-run options; refuse a concurrent refresh."""
         with self._lock:
             if self._state["state"] == RUNNING:
                 return False
-            self._state = {"state": RUNNING, "started_at": _now()}
+            self._state = {"state": RUNNING, "started_at": _now(), **(options or {})}
             self._started = time.monotonic()
-        threading.Thread(target=self._work, name="snapshot-refresh", daemon=True).start()
+        threading.Thread(target=self._work, args=(options or {},), name="snapshot-refresh", daemon=True).start()
         return True
 
     def status(self) -> dict:
@@ -46,9 +46,9 @@ class RefreshJob:
                 status["elapsed_seconds"] = round(time.monotonic() - self._started)
             return status
 
-    def _work(self) -> None:
+    def _work(self, options: dict) -> None:
         try:
-            summary = self._run()
+            summary = self._run(**options)
         except Exception as exc:  # report any failure to the dashboard instead of losing it in a thread
             log.exception("snapshot refresh failed")
             self._finish({"state": FAILED, "error": f"{type(exc).__name__}: {exc}"})

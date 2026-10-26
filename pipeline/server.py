@@ -36,6 +36,7 @@ from urllib.parse import urlsplit
 
 from pipeline import __version__
 from pipeline.api import PipelineBusy, run_isolated, stop_reason
+from pipeline.device import describe, pick
 from pipeline.refresh_job import RefreshJob
 from pipeline.refresh_snapshots import refresh
 
@@ -102,10 +103,28 @@ def _decode_files(payload) -> list:
     return decoded
 
 
-def run_on_upload(files: list) -> tuple:
-    """(result, log) for a list of (name, pdf_bytes); result is None if the pipeline stopped.
-    Raises PipelineBusy at once if another run is in progress."""
-    return run_isolated(files, wait=False)
+def run_on_upload(files: list, *, device: str = "auto", quality_signal: str = "off") -> tuple:
+    """(result, log) for uploaded PDFs with a per-run device and quality choice."""
+    return run_isolated(
+        files,
+        wait=False,
+        pii_engine="regex",
+        quality_signal=quality_signal,
+        device=device,
+    )
+
+
+def _run_options(payload) -> dict:
+    """Validate optional per-run choices; omitted fields keep endpoint defaults."""
+    if not isinstance(payload, dict):
+        raise BadRequest("Run settings must be a JSON object.")
+    options = {}
+    for field, choices in (("device", ("auto", "cpu", "cuda")), ("quality_signal", ("off", "model"))):
+        if field in payload:
+            if payload[field] not in choices:
+                raise BadRequest(f"{field} must be one of: {', '.join(choices)}.")
+            options[field] = payload[field]
+    return options
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -139,6 +158,7 @@ class Handler(BaseHTTPRequestHandler):
         path = urlsplit(self.path).path
         routes = {
             ("GET", "/api/health"): self._health,
+            ("GET", "/api/capabilities"): self._capabilities,
             ("GET", "/api/refresh/status"): self._refresh_status,
             ("POST", "/api/refresh"): self._refresh_start,
             ("POST", "/api/run"): self._run,
@@ -176,11 +196,22 @@ class Handler(BaseHTTPRequestHandler):
     def _health(self):
         self._send(200, {"ok": True, "version": __version__})
 
+    def _capabilities(self):
+        gpu = pick("cuda")
+        self._send(
+            200,
+            {"cuda_available": gpu.startswith("cuda"), "gpu_name": describe(gpu) if gpu.startswith("cuda") else None},
+        )
+
     def _refresh_status(self):
         self._send(200, REFRESH_JOB.status())
 
     def _refresh_start(self):
-        if REFRESH_JOB.start():
+        try:
+            options = _run_options(self._read_json())
+        except BadRequest as exc:
+            return self._error(400, str(exc))
+        if REFRESH_JOB.start(options):
             return self._send(202, REFRESH_JOB.status())
         self._error(409, "A refresh is already running.", **REFRESH_JOB.status())
 
@@ -204,13 +235,17 @@ class Handler(BaseHTTPRequestHandler):
 
     def _run(self):
         try:
-            files = _decode_files(self._read_json())
+            payload = self._read_json()
+            files = _decode_files(payload)
+            options = _run_options(payload)
         except BadRequest as exc:
             return self._error(400, str(exc))
         try:
-            result, pipeline_log = run_on_upload(files)
+            result, pipeline_log = run_on_upload(files, **options)
         except PipelineBusy as exc:
             return self._error(409, str(exc))
+        except RuntimeError as exc:
+            return self._error(422, str(exc))
         except Exception as exc:  # report pipeline crashes to the UI instead of dropping the connection
             log.exception("pipeline crashed")
             return self._error(500, f"Pipeline crashed: {exc}")

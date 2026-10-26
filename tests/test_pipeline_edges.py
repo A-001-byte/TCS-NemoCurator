@@ -2,6 +2,7 @@
 
 import json
 import logging
+import os
 import shutil
 import sys
 import types
@@ -90,6 +91,30 @@ def test_optional_model_modes_are_scoped_to_one_run(monkeypatch):
     assert result is not None
     assert seen == [(True, "model", True)]
     assert (pii.USE_GLINER_PII, quality.QUALITY_SIGNAL_MODE, quality.QUALITY_SIGNAL_STRICT) == original
+
+
+def test_uploaded_run_scopes_its_requested_device(monkeypatch):
+    seen = []
+    previous = os.environ.get(api.DEVICE_ENV)
+    monkeypatch.setattr(api, "pick", lambda requested: "cuda:0")
+
+    def fake_main():
+        seen.append(os.environ.get(api.DEVICE_ENV))
+        output.OUT_PATH.write_text("", encoding="utf-8")
+        run.SUMMARY_PATH.write_text("{}", encoding="utf-8")
+
+    monkeypatch.setattr(run, "main", fake_main)
+    result, _ = api.run_isolated(device="cuda", pii_engine="regex", quality_signal="model")
+    assert result is not None and seen == ["cuda:0"]
+    assert os.environ.get(api.DEVICE_ENV) == previous
+
+
+def test_uploaded_run_rejects_explicit_gpu_when_cuda_is_unavailable(monkeypatch):
+    monkeypatch.setattr(api, "pick", lambda requested: "cpu")
+    with pytest.raises(RuntimeError, match="CUDA-enabled PyTorch is unavailable"):
+        api.run_isolated(device="cuda")
+    assert api.RUN_LOCK.acquire(blocking=False), "a rejected request must release the pipeline lock"
+    api.RUN_LOCK.release()
 
 
 def test_explicit_quality_model_failure_is_reported(monkeypatch):
