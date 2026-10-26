@@ -1,9 +1,15 @@
 # Python
 venv/
+venv-curator/
+venv-pii/
 __pycache__/
 *.pyc
 *.pyo
 .pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
 
 # Node / React
 node_modules/
@@ -22,6 +28,14 @@ data/redacted/
 data/output/
 data/healed/
 
+# Local demo and scratch folders (see docs/demo/DEMO_SCRIPT.md)
+demo_pdfs/
+out/
+
+# Secrets and local settings: never commit
+.env
+.env.*
+
 # OS
 .DS_Store
 Thumbs.db
@@ -30,12 +44,8 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Logs (nemo_curator_install.log / spacy_model_dl.log in logs/ are kept
-# as tracked evidence of the documented install failure -- see README)
-logs/*.log
-
 # Local harness/session state (not project-relevant, churns per session)
 .claude/scheduled_tasks.lock
-venv-curator/
-venv-pii/
-venv-curator/
+
+# The owner's local working brief, never committed
+REPO-IMPROVEMENT-PROMPT.md

@@ -1,7 +1,7 @@
 # Project Status
 
 Last updated: Wednesday 21 Oct 2026. Final review: Thursday 22 Oct 2026, morning, in person.
-Owners and gates are in `docs/team/01_WORK_PLAN.md`; every change with before/after numbers is in `docs/IMPROVEMENT_LOG.md`.
+The plan to the release is `docs/FINALIZATION_LOOP.md`; every change with before/after numbers is in `docs/IMPROVEMENT_LOG.md`.
 
 ## Done (with the evidence)
 
