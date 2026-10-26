@@ -40,6 +40,8 @@ Numbers in parentheses are pull requests. Before-and-after figures for each pipe
   numbers are replaced by the generated table.
 
 ### Fixed
+- `curated.jsonl` and `pipeline_summary.json` were written with Windows line endings on Windows, so the same input gave a different
+  file hash on each operating system. Both are now written with Unix line endings everywhere.
 - Uploaded or listed PDFs with an upper-case extension (`REPORT.PDF`) were skipped on Linux; folders named `x.pdf` were
   counted as inputs (#25).
 - A spaCy load failure silently turned person-name detection off (68 PII items became 66). It is now reported

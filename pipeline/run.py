@@ -143,7 +143,7 @@ def main():
     }
     SUMMARY_PATH.parent.mkdir(parents=True, exist_ok=True)
     summary_json = json.dumps(summary, indent=2, ensure_ascii=False)
-    SUMMARY_PATH.write_text(summary_json, encoding="utf-8")
+    SUMMARY_PATH.write_text(summary_json, encoding="utf-8", newline="\n")
 
     print(f"\nPipeline complete. Summary written to {SUMMARY_PATH}")
     print(f"duplicates_removed={summary['duplicates_removed']}")

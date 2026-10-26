@@ -56,6 +56,9 @@ def test_end_to_end(tmp_path: Path):
     assert res1.device == "cpu"
     assert res1.output_path.is_file()
     assert res1.summary_path.is_file()
+    # Unix line endings on every operating system, so the same input gives the same bytes (and hash) everywhere.
+    for written in (res1.output_path, res1.summary_path):
+        assert b"\r" not in written.read_bytes(), written.name
 
     # 3. Stage names and contract keys
     stages = summary1["stages"]
