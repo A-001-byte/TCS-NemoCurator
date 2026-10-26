@@ -456,6 +456,7 @@ def quality_reason_curator(text: str):
 # The cache maps SHA-256(chunk text) -> label, so it survives re-chunking and re-ordering.
 # ---------------------------------------------------------------------------
 QUALITY_SIGNAL_MODE = "off"
+QUALITY_SIGNAL_STRICT = False  # CLI model mode must fail if inference cannot run.
 CACHE_SAVE_EVERY = 100  # a full model pass takes ~50 min; do not lose it to a crash
 
 _SIGNAL_STATE = {"computed": 0, "model_error": None}
@@ -485,7 +486,9 @@ def quality_signal_label(text: str, cache: dict):
         return None
     try:
         label = _classifier_label(text)
-    except Exception as exc:  # ImportError, missing weights, no network: degrade, but say so
+    except Exception as exc:  # ImportError, missing weights, no network
+        if QUALITY_SIGNAL_STRICT:
+            raise RuntimeError(f"Quality signal model failed: {type(exc).__name__}: {exc}") from exc
         _SIGNAL_STATE["model_error"] = f"{type(exc).__name__}: {exc}"
         print(f"quality signal: model unavailable ({_SIGNAL_STATE['model_error']}); using cache only", file=sys.stderr)
         return None

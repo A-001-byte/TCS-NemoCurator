@@ -3,6 +3,7 @@
 import logging
 import threading
 import urllib.request
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -50,7 +51,7 @@ def test_a_folder_where_nothing_can_be_read_is_exit_1_with_a_one_line_reason(tmp
 
 
 def test_a_successful_run_prints_the_table_and_warns_when_name_detection_is_off(monkeypatch, capsys):
-    monkeypatch.setattr(api, "curate", lambda *args: fake_result(names_on=False))
+    monkeypatch.setattr(api, "curate", lambda *args, **kwargs: fake_result(names_on=False))
     assert cli.main(["run", "in", "-o", "out"]) == 0
     captured = capsys.readouterr()
     assert "chunks written: 7" in captured.out and "PII entities redacted: 3" in captured.out
@@ -58,13 +59,48 @@ def test_a_successful_run_prints_the_table_and_warns_when_name_detection_is_off(
 
 
 def test_no_warning_when_name_detection_is_on(monkeypatch, capsys):
-    monkeypatch.setattr(api, "curate", lambda *args: fake_result(names_on=True))
+    monkeypatch.setattr(api, "curate", lambda *args, **kwargs: fake_result(names_on=True))
     assert cli.main(["run", "in", "-o", "out"]) == 0
     assert capsys.readouterr().err == ""
 
 
+def test_cuda_detection_with_default_stages_explains_no_model_uses_it(monkeypatch, capsys):
+    monkeypatch.setattr(api, "curate", lambda *args, **kwargs: replace(fake_result(), device="cuda:0"))
+    assert cli.main(["run", "in", "-o", "out"]) == 0
+    assert "no GPU model is enabled" in capsys.readouterr().err
+
+
+def test_optional_model_flags_reach_the_api(monkeypatch, capsys):
+    seen = {}
+
+    def capture(*args, **kwargs):
+        seen.update(kwargs)
+        return fake_result()
+
+    monkeypatch.setattr(api, "curate", capture)
+    assert (
+        cli.main(
+            [
+                "run",
+                "in",
+                "-o",
+                "out",
+                "--device",
+                "cuda",
+                "--pii-engine",
+                "gliner",
+                "--quality-signal",
+                "model",
+            ]
+        )
+        == 0
+    )
+    assert seen == {"pii_engine": "gliner", "quality_signal": "model"}
+    capsys.readouterr()
+
+
 def test_ctrl_c_is_exit_130(monkeypatch, capsys):
-    def interrupted(*args):
+    def interrupted(*args, **kwargs):
         raise KeyboardInterrupt
 
     monkeypatch.setattr(api, "curate", interrupted)
