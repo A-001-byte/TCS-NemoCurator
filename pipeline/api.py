@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Union
 
-from pipeline import clean, dedup, extract, heal, manifest, output, pii, quality, run
+from pipeline import clean, dedup, extract, heal, manifest, nemo_run, output, pii, quality, run
 from pipeline.device import pick
 
 log = logging.getLogger(__name__)
@@ -131,6 +131,7 @@ def run_isolated(
     quality_signal: Optional[str] = None,
     device: Optional[str] = None,
     ocr: Optional[bool] = None,
+    nemo: bool = False,
 ) -> tuple:
     """Run every stage in a throwaway data/ folder.
 
@@ -147,6 +148,8 @@ def run_isolated(
         raise ValueError(f"Unknown quality signal mode: {quality_signal}")
     if device not in (None, "auto", "cpu", "cuda"):
         raise ValueError(f"Unknown device: {device}")
+    if nemo and output_dir is None:
+        raise ValueError("Running NeMo Curator needs an output folder for its comparison file.")
 
     with _exclusive(wait), _requested_device(device), tempfile.TemporaryDirectory(prefix="kyc_run_") as tmp:
         tmp_root = Path(tmp)
@@ -179,6 +182,11 @@ def run_isolated(
             Path(output_dir).mkdir(parents=True, exist_ok=True)
             shutil.copyfile(curated_path, Path(output_dir) / "curated.jsonl")
             shutil.copyfile(summary_path, Path(output_dir) / "pipeline_summary.json")
+            if nemo:
+                # Real NeMo Curator on the chunks that entered our quality stage, beside what ours removed.
+                deduped = tmp_root / "data" / "deduped" / "chunks.jsonl"
+                with contextlib.redirect_stdout(log):
+                    nemo_run.compare_with_ours(deduped, curated_path, Path(output_dir) / "nemo_comparison.json")
         return result, log.getvalue()
 
 
@@ -190,6 +198,7 @@ def curate(
     pii_engine: str = "regex",
     quality_signal: str = "off",
     ocr: bool = False,
+    nemo: bool = False,
 ) -> CurateResult:
     """Run the full pipeline on every PDF in `input_dir`; write the results to `output_dir`.
 
@@ -206,6 +215,10 @@ def curate(
 
     if ocr:
         reason = extract.ocr_unavailable_reason()
+        if reason:
+            raise RuntimeError(reason)
+    if nemo:
+        reason = nemo_run.unavailable_reason()
         if reason:
             raise RuntimeError(reason)
     resolved = pick(device)
@@ -234,6 +247,7 @@ def curate(
             pii_engine=pii_engine,
             quality_signal=quality_signal,
             ocr=ocr,
+            nemo=nemo,
         )
         if result is None:
             raise RuntimeError(f"{stop_reason(pipeline_log)}\n{pipeline_log}")

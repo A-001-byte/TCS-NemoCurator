@@ -123,6 +123,15 @@ pip show nemo-curator                        # Version: 1.3.0
 python3 -m pipeline.nemo_compare data/deduped/chunks.jsonl data/output/curated.jsonl dashboard/public/nemo_comparison.json
 ```
 
+The command line does the same without the manual paths. With the NeMo environment active:
+
+```bash
+bfsi-curate run pdfs/ -o out/ --nemo                # our pipeline, then real NeMo on the chunks; writes out/nemo_comparison.json
+bfsi-curate nemo out/curated.jsonl -o nemo_out/     # NeMo's filters directly on any chunks file
+```
+
+NeMo Curator 1.3.0 has been run for real on the Ubuntu VM (Python 3.12). Whether it installs and runs on other Python versions (for example 3.13) has not been checked.
+
 Run `python3 -m pipeline.run` first so the two input files exist. The comparison follows NVIDIA's official text quickstart for 1.3.0 (`Pipeline`, `JsonlReader`, `ScoreFilter`, `JsonlWriter`) on the CPU executor; no GPU is needed.
 
 ## 7. Troubleshooting
