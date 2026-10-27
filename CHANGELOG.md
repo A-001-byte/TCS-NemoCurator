@@ -4,19 +4,22 @@ All notable changes to this project. The format follows [Keep a Changelog](https
 Numbers in parentheses are pull requests. Before-and-after figures for each pipeline change are in
 `docs/IMPROVEMENT_LOG.md`.
 
-## [Unreleased]
-
-### Added
-- A run manifest (`manifest.json`) and an append-only audit log (`audit.jsonl`) next to every library or terminal run:
-  inputs and outputs with SHA-256, options, tool version, stage counts, who started the run and how it ended.
-  `curated.jsonl` is unchanged.
-
 ## [1.0.0] - 2026-10-27
 
-First release. The curated output of the 35-PDF corpus is unchanged since the finalisation began: 3,325 chunks, 68 PII
-items, SHA-256 of `curated.jsonl` starting `0c238547804a8407` on Windows, native Linux and WSL.
+First release. The curated output of the 35-PDF corpus: 3,325 chunks, 68 PII items, 34 of 35 PDFs readable. The
+finalisation changed no counts. The last addition, page numbers, adds two metadata keys to each line, so the SHA-256 of
+`curated.jsonl` starts `f15576599d3fecb3` (it was `0c238547804a8407` before page numbers).
 
 ### Added
+- Page numbers on every chunk: `page_start` and `page_end` in the output metadata (1-based, inclusive; `null` when a
+  chunk cannot be located). All 3,325 chunks of the corpus are located (#40).
+- A run manifest (`manifest.json`) and an append-only audit log (`audit.jsonl`) next to every library or terminal run:
+  inputs and outputs with SHA-256, options, tool version, stage counts, who started the run and how it ended (#33).
+- PII recall and precision measured on a labelled synthetic set, with a generated report that lists every miss
+  (`python -m pipeline.eval_pii`, `docs/PII_RECALL.md`) (#35).
+- A Docker image for the `bfsi-curate` command, built and exercised in CI (#36).
+- Optional OCR for scanned PDFs: `bfsi-curate run --ocr`, off by default, tested with a stubbed engine (#41).
+- Per-run device and quality-label choices in the dashboard, and a `/api/capabilities` endpoint (#34).
 - `bfsi-curate run --pii-engine regex|gliner --quality-signal off|model`: the optional GPU models behind explicit flags;
   `--device cuda` fails clearly when CUDA-enabled PyTorch is missing. Off by default (#29).
 - One entry point for the pipeline: `curate()` in `pipeline/api.py`, the `bfsi-curate` command (`run`, `serve`,
