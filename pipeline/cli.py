@@ -1,7 +1,8 @@
 """bfsi-curate: run the curation pipeline from the terminal.
 
     bfsi-curate run PDF_DIR -o OUT_DIR [--device auto|cpu|cuda] [--pii-engine regex|gliner]
-                    [--quality-signal off|model] [--verbose]
+                    [--quality-signal off|model] [--ocr] [--nemo] [--verbose]
+    bfsi-curate nemo CHUNKS.jsonl -o OUT_DIR                 real NeMo Curator's filters on a chunks file
     bfsi-curate serve [--host 127.0.0.1] [--port 8000]       the local API for the dashboard
     bfsi-curate --version
     python -m pipeline.cli ...                                same thing, without installing
@@ -12,6 +13,7 @@ Exit codes: 0 success; 1 the pipeline stopped (the reason is printed; --verbose 
 
 import argparse
 import sys
+from pathlib import Path
 from typing import Optional
 
 from pipeline import __version__
@@ -38,7 +40,18 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="read scanned pages (no text layer) with Tesseract OCR; needs pytesseract and the tesseract program",
     )
+    run_cmd.add_argument(
+        "--nemo",
+        action="store_true",
+        help="also run real NeMo Curator's filters on the chunks and save nemo_comparison.json (Linux or WSL2 only)",
+    )
     run_cmd.add_argument("-v", "--verbose", action="store_true", help="on failure, print the pipeline's full log")
+
+    nemo_cmd = commands.add_parser("nemo", help="run real NeMo Curator's filters directly on a chunks file")
+    nemo_cmd.add_argument("chunks", help="a .jsonl file of chunks: {chunk_id, text} or curated.jsonl lines")
+    nemo_cmd.add_argument(
+        "-o", "--output", required=True, help="folder for nemo_kept.jsonl, nemo_removed.jsonl, report"
+    )
 
     serve_cmd = commands.add_parser("serve", help="start the local API the dashboard talks to")
     serve_cmd.add_argument("--host", help="default 127.0.0.1 (or CURATOR_HOST)")
@@ -57,6 +70,7 @@ def _run(args) -> int:
             pii_engine=args.pii_engine,
             quality_signal=args.quality_signal,
             ocr=args.ocr,
+            nemo=args.nemo,
         )
     except (FileNotFoundError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
@@ -92,6 +106,27 @@ def _run(args) -> int:
     return 0
 
 
+def _nemo(args) -> int:
+    from pipeline import nemo_run  # imported late: it is only needed by this command
+
+    reason = nemo_run.unavailable_reason()
+    if reason:
+        print(f"error: {reason}", file=sys.stderr)
+        return 1
+    try:
+        report = nemo_run.run(args.chunks, args.output)
+    except (FileNotFoundError, ValueError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    print(f"NeMo Curator {report['nemo_curator_version']} ({report['executor']}) in {report['pipeline_seconds']} s")
+    print(f"chunks in: {report['input_chunks']}  kept: {report['kept']}  removed: {report['removed']}")
+    for entry in sorted(report["filters"], key=lambda f: -f["removed"]):
+        if entry["removed"]:
+            print(f"  {entry['removed']:>6}  {entry['label']}")
+    print(f"output: {Path(args.output) / nemo_run.KEPT_NAME}, {nemo_run.REMOVED_NAME}, {nemo_run.REPORT_NAME}")
+    return 0
+
+
 def _serve(args) -> int:
     from pipeline.server import main as serve_main
 
@@ -106,7 +141,7 @@ def _serve(args) -> int:
 def main(argv: Optional[list] = None) -> int:
     args = build_parser().parse_args(argv)
     try:
-        return _serve(args) if args.command == "serve" else _run(args)
+        return {"serve": _serve, "nemo": _nemo}.get(args.command, _run)(args)
     except KeyboardInterrupt:
         print("interrupted", file=sys.stderr)
         return 130

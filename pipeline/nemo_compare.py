@@ -100,6 +100,23 @@ def run_nemo_pipeline(input_path, filters):
     return {row["chunk_id"] for row in kept}, round(time.time() - started, 1)
 
 
+def score_chunks(chunks, chunks_path):
+    """Run every NeMo filter on `chunks` ([{chunk_id, text}], also written to `chunks_path` as JSONL) and report which
+    filters each removed chunk failed, using NeMo's own Pipeline for the final answer (see pipeline/nemo_run.py)."""
+    failed_by, per_filter = {}, []
+    for key, label, cls, params, _ours in FILTERS:
+        filt = cls(**params)
+        removed = {c["chunk_id"] for c in chunks if not filt.keep_document(filt.score_document(c["text"]))}
+        for chunk_id in removed:
+            failed_by.setdefault(chunk_id, []).append(key)
+        per_filter.append({"key": key, "label": label, "removed": len(removed)})
+    kept_ids, seconds = run_nemo_pipeline(chunks_path, [cls(**params) for _, _, cls, params, _ in FILTERS])
+    all_ids = {c["chunk_id"] for c in chunks}
+    # Filters applied one at a time must agree with NeMo's own chained pipeline (the same check main() makes).
+    assert all_ids - kept_ids == set(failed_by), (len(all_ids - kept_ids), len(failed_by))
+    return {"failed_by": failed_by, "seconds": seconds, "version": nemo_curator.__version__, "filters": per_filter}
+
+
 def main(chunks_path, curated_path, out_path):
     chunks = read_jsonl(chunks_path)
     all_ids = {c["chunk_id"] for c in chunks}

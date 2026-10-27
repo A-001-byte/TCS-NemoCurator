@@ -123,7 +123,10 @@ Every library or terminal run also leaves a record next to the output: `out/mani
 pip install -e .                                   # installs the `bfsi-curate` command
 bfsi-curate run pdfs/ -o out/ --device auto        # or: python -m pipeline.cli run pdfs/ -o out/
 bfsi-curate serve                                  # the HTTP API below, on 127.0.0.1:8000
+bfsi-curate run pdfs/ -o out/ --nemo               # also run real NeMo Curator on the chunks (Linux or WSL2, see below)
+bfsi-curate nemo chunks.jsonl -o nemo_out/         # real NeMo Curator's filters directly on a chunks file
 ```
+**Real NeMo Curator, run directly.** `--nemo` runs our pipeline on the PDFs and then NeMo Curator's own filters (its `Pipeline` and `XennaExecutor`) on the chunks that entered our quality stage, and saves `nemo_comparison.json` in the output folder. `bfsi-curate nemo` runs the same filters on any chunks file (`{chunk_id, text}` lines, or a `curated.jsonl`) and writes `nemo_kept.jsonl`, `nemo_removed.jsonl` (each removed chunk with the filters it failed) and `nemo_report.json`. NeMo is optional and installs only on Linux or WSL2 (`requirements-nemo.txt`); without it these stop with a one-line reason. NeMo's filters run on the CPU: a GPU only matters to NeMo's own deduplication, which is not run here.
 Exit codes: `0` success, `1` the pipeline stopped (a one-line reason is printed; `--verbose` adds the log), `2` bad input or arguments, `130` Ctrl+C.
 
 **3. HTTP API and dashboard**

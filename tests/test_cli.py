@@ -95,7 +95,7 @@ def test_optional_model_flags_reach_the_api(monkeypatch, capsys):
         )
         == 0
     )
-    assert seen == {"pii_engine": "gliner", "quality_signal": "model", "ocr": False}
+    assert seen == {"pii_engine": "gliner", "quality_signal": "model", "ocr": False, "nemo": False}
     capsys.readouterr()
 
 
